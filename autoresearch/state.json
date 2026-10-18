@@ -1,0 +1,37 @@
+{
+ "best": {
+  "by": {
+   "motor|F2023": 0.10908,
+   "motor|F2024": 0.14227,
+   "buildings|F2023": 0.11964,
+   "buildings|F2024": 0.13958,
+   "contents|F2023": 0.08607,
+   "contents|F2024": 0.10038
+  },
+  "score": 0.11712,
+  "pooled": {
+   "F2023": 0.16178,
+   "F2024": 0.2016
+  },
+  "pooled_mean": 0.18169,
+  "seconds": 85.9
+ },
+ "iter": 3,
+ "history": [
+  {
+   "status": "discarded",
+   "score": 0.17539,
+   "idea": "num_leaves=31, learning_rate=0.05"
+  },
+  {
+   "status": "rejected: import not allowed: subprocess",
+   "score": "",
+   "idea": "read extra data"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18034,
+   "idea": "num_leaves=31, learning_rate=0.03"
+  }
+ ]
+}

@@ -1,0 +1,623 @@
+{
+ "motor": {
+  "by_quintile": [
+   {
+    "q": "Q1",
+    "righe": 91639,
+    "disacc_mediano_%": 13.5016,
+    "osservato": 43253559.7878,
+    "AE_fs2_all_ll": 1.0042,
+    "AE_gbm_clean": 1.0077,
+    "AE_qwen_gbm": 0.9947,
+    "AE_glm_peril": 1.0051,
+    "D2_fs2_all_ll": 0.1188
+   },
+   {
+    "q": "Q2",
+    "righe": 91639,
+    "disacc_mediano_%": 22.8095,
+    "osservato": 45061462.7034,
+    "AE_fs2_all_ll": 1.0203,
+    "AE_gbm_clean": 1.0303,
+    "AE_qwen_gbm": 1.0066,
+    "AE_glm_peril": 1.0291,
+    "D2_fs2_all_ll": 0.121
+   },
+   {
+    "q": "Q3",
+    "righe": 91639,
+    "disacc_mediano_%": 31.8339,
+    "osservato": 45144905.759,
+    "AE_fs2_all_ll": 0.9905,
+    "AE_gbm_clean": 1.0053,
+    "AE_qwen_gbm": 0.9813,
+    "AE_glm_peril": 1.0087,
+    "D2_fs2_all_ll": 0.1199
+   },
+   {
+    "q": "Q4",
+    "righe": 91639,
+    "disacc_mediano_%": 43.7208,
+    "osservato": 48230300.7493,
+    "AE_fs2_all_ll": 0.997,
+    "AE_gbm_clean": 1.0169,
+    "AE_qwen_gbm": 1.0044,
+    "AE_glm_peril": 1.0253,
+    "D2_fs2_all_ll": 0.1442
+   },
+   {
+    "q": "Q5",
+    "righe": 91639,
+    "disacc_mediano_%": 68.3725,
+    "osservato": 52663465.8248,
+    "AE_fs2_all_ll": 0.9899,
+    "AE_gbm_clean": 0.9874,
+    "AE_qwen_gbm": 1.0364,
+    "AE_glm_peril": 0.9916,
+    "D2_fs2_all_ll": 0.1628
+   }
+  ],
+  "who_is_right_Q5": {
+   "gbm_clean": [
+    {
+     "index": "fs2_all_ll<gbm_clean",
+     "righe": 30547,
+     "rapporto_medio": 0.598,
+     "AE_fs2_all_ll": 1.05,
+     "AE_gbm_clean": 0.63
+    },
+    {
+     "index": "simili",
+     "righe": 30546,
+     "rapporto_medio": 0.927,
+     "AE_fs2_all_ll": 1.008,
+     "AE_gbm_clean": 0.941
+    },
+    {
+     "index": "fs2_all_ll>gbm_clean",
+     "righe": 30546,
+     "rapporto_medio": 1.537,
+     "AE_fs2_all_ll": 0.949,
+     "AE_gbm_clean": 1.469
+    }
+   ],
+   "qwen_gbm": [
+    {
+     "index": "fs2_all_ll<qwen_gbm",
+     "righe": 30547,
+     "rapporto_medio": 0.795,
+     "AE_fs2_all_ll": 1.058,
+     "AE_qwen_gbm": 0.849
+    },
+    {
+     "index": "simili",
+     "righe": 30546,
+     "rapporto_medio": 0.978,
+     "AE_fs2_all_ll": 1.004,
+     "AE_qwen_gbm": 0.985
+    },
+    {
+     "index": "fs2_all_ll>qwen_gbm",
+     "righe": 30546,
+     "rapporto_medio": 1.219,
+     "AE_fs2_all_ll": 0.954,
+     "AE_qwen_gbm": 1.196
+    }
+   ],
+   "glm_peril": [
+    {
+     "index": "fs2_all_ll<glm_peril",
+     "righe": 30547,
+     "rapporto_medio": 0.7,
+     "AE_fs2_all_ll": 0.925,
+     "AE_glm_peril": 0.645
+    },
+    {
+     "index": "simili",
+     "righe": 30546,
+     "rapporto_medio": 0.993,
+     "AE_fs2_all_ll": 0.994,
+     "AE_glm_peril": 0.984
+    },
+    {
+     "index": "fs2_all_ll>glm_peril",
+     "righe": 30546,
+     "rapporto_medio": 1.391,
+     "AE_fs2_all_ll": 1.03,
+     "AE_glm_peril": 1.477
+    }
+   ]
+  },
+  "profile_Q5": [
+   [
+    "telematics_score",
+    "num",
+    0.399
+   ],
+   [
+    "customer_age",
+    "num",
+    -0.24
+   ],
+   [
+    "driver_age",
+    "num",
+    -0.239
+   ],
+   [
+    "years_licensed",
+    "num",
+    -0.234
+   ],
+   [
+    "ncb_years",
+    "num",
+    -0.199
+   ],
+   [
+    "pol_prev_rate",
+    "num",
+    0.169
+   ],
+   [
+    "pol_prev_n_last",
+    "num",
+    0.163
+   ],
+   [
+    "addr_prev_rate",
+    "num",
+    0.161
+   ],
+   [
+    "pol_prev_cost_rate",
+    "num",
+    0.148
+   ],
+   [
+    "vehicle_value_group",
+    "num",
+    -0.137
+   ],
+   [
+    "missed_payments_12m",
+    "num",
+    0.135
+   ],
+   [
+    "engine_size_cc",
+    "num",
+    -0.129
+   ],
+   [
+    "years_at_address",
+    "num",
+    -0.12
+   ],
+   [
+    "addr_prev_cost_rate",
+    "num",
+    0.119
+   ],
+   [
+    "vehicle_age",
+    "num",
+    0.107
+   ]
+  ]
+ },
+ "buildings": {
+  "by_quintile": [
+   {
+    "q": "Q1",
+    "righe": 66272,
+    "disacc_mediano_%": 19.8789,
+    "osservato": 27770422.4782,
+    "AE_fs2_all_ll": 0.9828,
+    "AE_gbm_clean": 0.9689,
+    "AE_qwen_gbm": 0.9587,
+    "AE_glm_peril": 0.9356,
+    "D2_fs2_all_ll": 0.0693
+   },
+   {
+    "q": "Q2",
+    "righe": 66272,
+    "disacc_mediano_%": 33.9367,
+    "osservato": 24796999.9134,
+    "AE_fs2_all_ll": 0.9903,
+    "AE_gbm_clean": 0.9611,
+    "AE_qwen_gbm": 0.9498,
+    "AE_glm_peril": 0.8816,
+    "D2_fs2_all_ll": 0.0957
+   },
+   {
+    "q": "Q3",
+    "righe": 66271,
+    "disacc_mediano_%": 46.7572,
+    "osservato": 22340400.4709,
+    "AE_fs2_all_ll": 0.9975,
+    "AE_gbm_clean": 0.9651,
+    "AE_qwen_gbm": 0.9564,
+    "AE_glm_peril": 0.8372,
+    "D2_fs2_all_ll": 0.0735
+   },
+   {
+    "q": "Q4",
+    "righe": 66272,
+    "disacc_mediano_%": 62.0985,
+    "osservato": 19307334.8724,
+    "AE_fs2_all_ll": 0.9346,
+    "AE_gbm_clean": 0.9221,
+    "AE_qwen_gbm": 0.9152,
+    "AE_glm_peril": 0.7541,
+    "D2_fs2_all_ll": 0.0824
+   },
+   {
+    "q": "Q5",
+    "righe": 66272,
+    "disacc_mediano_%": 92.4869,
+    "osservato": 44126962.7231,
+    "AE_fs2_all_ll": 0.9978,
+    "AE_gbm_clean": 1.1031,
+    "AE_qwen_gbm": 1.0943,
+    "AE_glm_peril": 1.5562,
+    "D2_fs2_all_ll": 0.2273
+   }
+  ],
+  "who_is_right_Q5": {
+   "gbm_clean": [
+    {
+     "index": "fs2_all_ll<gbm_clean",
+     "righe": 22091,
+     "rapporto_medio": 0.768,
+     "AE_fs2_all_ll": 1.215,
+     "AE_gbm_clean": 0.944
+    },
+    {
+     "index": "simili",
+     "righe": 22090,
+     "rapporto_medio": 1.038,
+     "AE_fs2_all_ll": 0.942,
+     "AE_gbm_clean": 0.979
+    },
+    {
+     "index": "fs2_all_ll>gbm_clean",
+     "righe": 22091,
+     "rapporto_medio": 1.456,
+     "AE_fs2_all_ll": 0.932,
+     "AE_gbm_clean": 1.372
+    }
+   ],
+   "qwen_gbm": [
+    {
+     "index": "fs2_all_ll<qwen_gbm",
+     "righe": 22091,
+     "rapporto_medio": 0.777,
+     "AE_fs2_all_ll": 1.146,
+     "AE_qwen_gbm": 0.899
+    },
+    {
+     "index": "simili",
+     "righe": 22090,
+     "rapporto_medio": 1.02,
+     "AE_fs2_all_ll": 1.045,
+     "AE_qwen_gbm": 1.069
+    },
+    {
+     "index": "fs2_all_ll>qwen_gbm",
+     "righe": 22091,
+     "rapporto_medio": 1.386,
+     "AE_fs2_all_ll": 0.9,
+     "AE_qwen_gbm": 1.278
+    }
+   ],
+   "glm_peril": [
+    {
+     "index": "fs2_all_ll<glm_peril",
+     "righe": 22091,
+     "rapporto_medio": 0.534,
+     "AE_fs2_all_ll": 1.125,
+     "AE_glm_peril": 0.604
+    },
+    {
+     "index": "simili",
+     "righe": 22090,
+     "rapporto_medio": 0.735,
+     "AE_fs2_all_ll": 0.962,
+     "AE_glm_peril": 0.741
+    },
+    {
+     "index": "fs2_all_ll>glm_peril",
+     "righe": 22091,
+     "rapporto_medio": 2.45,
+     "AE_fs2_all_ll": 0.99,
+     "AE_glm_peril": 2.681
+    }
+   ]
+  },
+  "profile_Q5": [
+   [
+    "building_age",
+    "num",
+    -0.408
+   ],
+   [
+    "rainfall_mm",
+    "num",
+    0.351
+   ],
+   [
+    "bedrooms",
+    "num",
+    -0.219
+   ],
+   [
+    "sum_insured",
+    "num",
+    -0.169
+   ],
+   [
+    "distance_to_river_km",
+    "num",
+    -0.166
+   ],
+   [
+    "flood_zone",
+    "cat:4.0",
+    0.155
+   ],
+   [
+    "wildfire_index",
+    "num",
+    -0.128
+   ],
+   [
+    "channel",
+    "cat:direct",
+    0.121
+   ],
+   [
+    "discount_applied",
+    "cat:0.05",
+    0.121
+   ],
+   [
+    "dry_summer_index",
+    "num",
+    -0.113
+   ],
+   [
+    "missed_payments_12m",
+    "num",
+    -0.112
+   ],
+   [
+    "addr_prev_cost_rate",
+    "num",
+    0.108
+   ],
+   [
+    "pol_prev_cost_rate",
+    "num",
+    0.105
+   ],
+   [
+    "prior_claims_5y",
+    "num",
+    -0.097
+   ],
+   [
+    "energy_rating",
+    "cat:B",
+    0.086
+   ]
+  ]
+ },
+ "contents": {
+  "by_quintile": [
+   {
+    "q": "Q1",
+    "righe": 67549,
+    "disacc_mediano_%": 15.724,
+    "osservato": 6365509.3203,
+    "AE_fs2_all_ll": 0.9209,
+    "AE_gbm_clean": 0.912,
+    "AE_qwen_gbm": 0.908,
+    "AE_glm_peril": 0.8821,
+    "D2_fs2_all_ll": 0.063
+   },
+   {
+    "q": "Q2",
+    "righe": 67549,
+    "disacc_mediano_%": 26.9449,
+    "osservato": 6086219.4468,
+    "AE_fs2_all_ll": 0.9561,
+    "AE_gbm_clean": 0.9339,
+    "AE_qwen_gbm": 0.9269,
+    "AE_glm_peril": 0.86,
+    "D2_fs2_all_ll": 0.0579
+   },
+   {
+    "q": "Q3",
+    "righe": 67549,
+    "disacc_mediano_%": 37.135,
+    "osservato": 5739595.6779,
+    "AE_fs2_all_ll": 0.9652,
+    "AE_gbm_clean": 0.934,
+    "AE_qwen_gbm": 0.9258,
+    "AE_glm_peril": 0.8248,
+    "D2_fs2_all_ll": 0.0494
+   },
+   {
+    "q": "Q4",
+    "righe": 67549,
+    "disacc_mediano_%": 49.6406,
+    "osservato": 5921080.4129,
+    "AE_fs2_all_ll": 1.0491,
+    "AE_gbm_clean": 1.0121,
+    "AE_qwen_gbm": 1.0015,
+    "AE_glm_peril": 0.8663,
+    "D2_fs2_all_ll": 0.0997
+   },
+   {
+    "q": "Q5",
+    "righe": 67549,
+    "disacc_mediano_%": 76.3461,
+    "osservato": 10862835.9393,
+    "AE_fs2_all_ll": 1.0383,
+    "AE_gbm_clean": 1.1305,
+    "AE_qwen_gbm": 1.1226,
+    "AE_glm_peril": 1.5133,
+    "D2_fs2_all_ll": 0.1715
+   }
+  ],
+  "who_is_right_Q5": {
+   "gbm_clean": [
+    {
+     "index": "fs2_all_ll<gbm_clean",
+     "righe": 22517,
+     "rapporto_medio": 0.624,
+     "AE_fs2_all_ll": 0.989,
+     "AE_gbm_clean": 0.624
+    },
+    {
+     "index": "simili",
+     "righe": 22516,
+     "rapporto_medio": 0.922,
+     "AE_fs2_all_ll": 1.113,
+     "AE_gbm_clean": 1.062
+    },
+    {
+     "index": "fs2_all_ll>gbm_clean",
+     "righe": 22516,
+     "rapporto_medio": 1.414,
+     "AE_fs2_all_ll": 1.004,
+     "AE_gbm_clean": 1.441
+    }
+   ],
+   "qwen_gbm": [
+    {
+     "index": "fs2_all_ll<qwen_gbm",
+     "righe": 22517,
+     "rapporto_medio": 0.635,
+     "AE_fs2_all_ll": 1.07,
+     "AE_qwen_gbm": 0.685
+    },
+    {
+     "index": "simili",
+     "righe": 22516,
+     "rapporto_medio": 0.911,
+     "AE_fs2_all_ll": 1.081,
+     "AE_qwen_gbm": 1.02
+    },
+    {
+     "index": "fs2_all_ll>qwen_gbm",
+     "righe": 22516,
+     "rapporto_medio": 1.37,
+     "AE_fs2_all_ll": 1.008,
+     "AE_qwen_gbm": 1.407
+    }
+   ],
+   "glm_peril": [
+    {
+     "index": "fs2_all_ll<glm_peril",
+     "righe": 22517,
+     "rapporto_medio": 0.583,
+     "AE_fs2_all_ll": 1.022,
+     "AE_glm_peril": 0.6
+    },
+    {
+     "index": "simili",
+     "righe": 22516,
+     "rapporto_medio": 0.799,
+     "AE_fs2_all_ll": 1.098,
+     "AE_glm_peril": 0.913
+    },
+    {
+     "index": "fs2_all_ll>glm_peril",
+     "righe": 22516,
+     "rapporto_medio": 2.367,
+     "AE_fs2_all_ll": 1.022,
+     "AE_glm_peril": 2.67
+    }
+   ]
+  },
+  "profile_Q5": [
+   [
+    "distance_to_river_km",
+    "num",
+    -0.246
+   ],
+   [
+    "mean_temperature_c",
+    "num",
+    0.182
+   ],
+   [
+    "freezing_days",
+    "num",
+    -0.173
+   ],
+   [
+    "dry_summer_index",
+    "num",
+    0.166
+   ],
+   [
+    "flood_zone",
+    "cat:4.0",
+    0.164
+   ],
+   [
+    "elevation_m",
+    "num",
+    -0.153
+   ],
+   [
+    "sum_insured",
+    "num",
+    -0.13
+   ],
+   [
+    "pol_prev_cost_rate",
+    "num",
+    0.109
+   ],
+   [
+    "si_per_bedroom",
+    "num",
+    -0.108
+   ],
+   [
+    "accidental_damage_cover",
+    "cat:False",
+    0.098
+   ],
+   [
+    "payment_method",
+    "cat:monthly",
+    -0.097
+   ],
+   [
+    "wildfire_index",
+    "num",
+    0.095
+   ],
+   [
+    "addr_prev_cost_rate",
+    "num",
+    0.093
+   ],
+   [
+    "years_at_address",
+    "num",
+    0.086
+   ],
+   [
+    "wind_exposure_index",
+    "num",
+    -0.083
+   ]
+  ]
+ }
+}

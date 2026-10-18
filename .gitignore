@@ -1,0 +1,22 @@
+# dati della competizione: mai nel repository (regolamento §2.5)
+data/
+# output pesanti e rigenerabili
+results/oof/
+results/*.parquet
+results/**/*.parquet
+results/mercato_finto/
+submissions/*.csv
+submissions/*.zip
+logs/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+# credenziali
+.kaggle/
+kaggle.json
+access_token
+# loop Qwen: ha il suo repository
+autoresearch/.git/
+autoresearch/runs/
+autoresearch/.git_loop_qwen_disabled/

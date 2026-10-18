@@ -1,0 +1,27 @@
+{
+ "models": [
+  "fs2_all_ll",
+  "fs2_all_ll_cred",
+  "fs2_bag",
+  "gbm_clean",
+  "qwen_gbm",
+  "qwen_gbm73_cred"
+ ],
+ "weights": {
+  "motor": {
+   "fs2_bag": 0.5,
+   "fs2_all_ll": 0.3,
+   "qwen_gbm": 0.1,
+   "gbm_clean": 0.1
+  },
+  "buildings": {
+   "fs2_all_ll_cred": 0.55,
+   "qwen_gbm73_cred": 0.45
+  },
+  "contents": {
+   "fs2_all_ll_cred": 0.95,
+   "qwen_gbm73_cred": 0.05
+  }
+ },
+ "note": "sub_07 = sub_05 con buildings 55% fs2_cred + 45% qwen73_cred; sub_09 = stessi pesi, stima su TUTTE le polizze (holdout incluso)"
+}

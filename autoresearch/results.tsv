@@ -1,0 +1,5 @@
+iter	time	model	status	pooled_mean	score	delta	seconds	idea
+0	2026-10-17 09:15	mock	baseline	0.18169	0.11712	0	89	baseline
+1	2026-10-17 09:15	mock	discarded	0.17539	0.11019	-0.0063	87	num_leaves=31, learning_rate=0.05
+2	2026-10-17 09:17	mock	rejected: import not allowed: subprocess				0	read extra data
+3	2026-10-17 09:17	mock	discarded	0.18034	0.11548	-0.00135	90	num_leaves=31, learning_rate=0.03
