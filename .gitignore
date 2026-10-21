@@ -20,3 +20,9 @@ access_token
 autoresearch/.git/
 autoresearch/runs/
 autoresearch/.git_loop_qwen_disabled/
+# 18/10: catene alternative e previsioni (contengono il target derivato dai dati)
+*.parquet
+results_*/oof/
+# pagine guida: contengono righe di esempio dei dati → restano artifact privati
+viz/*_guida.html
+results_s3/spie_scan.csv

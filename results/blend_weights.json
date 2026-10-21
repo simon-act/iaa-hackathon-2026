@@ -1,27 +1,90 @@
 {
  "models": [
-  "fs2_all_ll",
-  "fs2_all_ll_cred",
-  "fs2_bag",
-  "gbm_clean",
-  "qwen_gbm",
+  "fs2_v2_cred",
   "qwen_gbm73_cred"
  ],
  "weights": {
   "motor": {
-   "fs2_bag": 0.5,
-   "fs2_all_ll": 0.3,
-   "qwen_gbm": 0.1,
-   "gbm_clean": 0.1
+   "fs2_v2_cred": 0.75,
+   "qwen_gbm73_cred": 0.25
   },
   "buildings": {
-   "fs2_all_ll_cred": 0.55,
-   "qwen_gbm73_cred": 0.45
+   "fs2_v2_cred": 0.6,
+   "qwen_gbm73_cred": 0.4
   },
   "contents": {
-   "fs2_all_ll_cred": 0.95,
-   "qwen_gbm73_cred": 0.05
+   "fs2_v2_cred": 0.8,
+   "qwen_gbm73_cred": 0.2
   }
  },
- "note": "sub_07 = sub_05 con buildings 55% fs2_cred + 45% qwen73_cred; sub_09 = stessi pesi, stima su TUTTE le polizze (holdout incluso)"
+ "in_sample": {
+  "by": {
+   "buildings|F2023": 0.12811,
+   "buildings|F2024": 0.14925,
+   "contents|F2023": 0.10116,
+   "contents|F2024": 0.11032,
+   "motor|F2023": 0.12435,
+   "motor|F2024": 0.15484
+  },
+  "score": 0.1292,
+  "pooled": {
+   "F2023": 0.17367,
+   "F2024": 0.21155
+  },
+  "pooled_mean": 0.19261
+ },
+ "cross_fold": {
+  "by": {
+   "buildings|F2023": 0.12809,
+   "buildings|F2024": 0.14925,
+   "contents|F2023": 0.10057,
+   "contents|F2024": 0.10985,
+   "motor|F2023": 0.12421,
+   "motor|F2024": 0.15457
+  },
+  "score": 0.12895,
+  "pooled": {
+   "F2023": 0.1735,
+   "F2024": 0.21135
+  },
+  "pooled_mean": 0.19242
+ },
+ "cross_detail": {
+  "motor": {
+   "w_from_F2023_scored_on_F2024": 0.15457,
+   "w_from_F2024_scored_on_F2023": 0.12421,
+   "w23": [
+    0.9,
+    0.1
+   ],
+   "w24": [
+    0.65,
+    0.35
+   ]
+  },
+  "buildings": {
+   "w_from_F2023_scored_on_F2024": 0.14925,
+   "w_from_F2024_scored_on_F2023": 0.12809,
+   "w23": [
+    0.6,
+    0.4
+   ],
+   "w24": [
+    0.55,
+    0.45
+   ]
+  },
+  "contents": {
+   "w_from_F2023_scored_on_F2024": 0.10985,
+   "w_from_F2024_scored_on_F2023": 0.10057,
+   "w23": [
+    0.95,
+    0.05
+   ],
+   "w24": [
+    0.6,
+    0.4
+   ]
+  }
+ }
 }

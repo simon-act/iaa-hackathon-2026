@@ -132,11 +132,14 @@ def main(interim: str, model_dir: str) -> None:
             df["start_month"] = ps.dt.month
             df["starts_jan1"] = (ps.dt.month == 1) & (ps.dt.day == 1)
             df["ends_dec"] = pe.dt.month == 12
-            df["customer_age"] = df["year"] - df["birth_year"]
-            if line == "motor":
+            # colonne derivate solo se le sorgenti esistono (revisione Qwen 19/10: Parte 2 con colonne rinominate/assenti)
+            if "birth_year" in df:
+                df["customer_age"] = df["year"] - df["birth_year"]
+            if line == "motor" and {"driver_age", "years_licensed"} <= set(df.columns):
                 df["licence_age"] = df["driver_age"] - df["years_licensed"]
+            if line == "motor" and "annual_mileage" in df:
                 df["mileage_k"] = df["annual_mileage"] / 1000
-            if "sum_insured" in df:
+            if "sum_insured" in df and "bedrooms" in df:
                 df["si_per_bedroom"] = df["sum_insured"] / df["bedrooms"].clip(lower=1)
             df.to_parquet(model_dir / f"{fname}.parquet", index=False)
             rep[f"{kind}_{line}"] = {"rows": len(df),

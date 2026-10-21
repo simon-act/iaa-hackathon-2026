@@ -23,33 +23,46 @@ ENET_GRID = [0.03, 0.1, 0.3, 1.0, 3.0]
 ENET_L1 = 0.5
 
 
+def _design_old(train, valid, line, nbins=10, min_count=2000):
+    raise NotImplementedError   # versione con stringhe Python: 6 GB sui dati auto, sostituita il 18/10
+
+
+def _cat_pair(fa, fb, min_count):
+    """fa, fb: Series categoriche (stesse etichette). Unisce i livelli rari, allinea la validazione."""
+    vc = fa.value_counts()
+    rare = list(vc[vc < min_count].index)
+    if rare:   # livelli con poche righe: un grande sinistro basterebbe a dare un coefficiente enorme
+        if "rare" not in fa.cat.categories:
+            fa = fa.cat.add_categories("rare")
+        fa = fa.where(~fa.isin(rare), "rare")
+        fb = fb.astype(object).where(~fb.astype(object).isin(rare), "rare")
+    fa = fa.cat.remove_unused_categories()
+    cats = list(fa.cat.categories)
+    fb = pd.Categorical(pd.Series(fb, dtype=object).where(pd.Series(fb, dtype=object).isin(cats), cats[0]), categories=cats)
+    return pd.Categorical(fa, categories=cats), fb
+
+
 def _design(train, valid, line, nbins=10, min_count=2000):
+    """Stesso disegno di prima (classi per quantile, livelli rari uniti), costruito con categorie invece di stringhe."""
     cols = [c for c in M._features(train, line)]
     Xtr, Xva = {}, {}
     for c in cols:
         a, b = train[c], valid[c]
-        if pd.api.types.is_numeric_dtype(a) and a.nunique() > nbins:
+        if pd.api.types.is_numeric_dtype(a) and not pd.api.types.is_bool_dtype(a) and a.nunique() > nbins:
             edges = np.unique(np.nanquantile(a.astype(float), np.linspace(0, 1, nbins + 1)[1:-1]))
-            fa = np.where(a.isna(), "na", np.searchsorted(edges, a.astype(float).fillna(0), side="right").astype(str))
-            fb = np.where(b.isna(), "na", np.searchsorted(edges, b.astype(float).fillna(0), side="right").astype(str))
+            fa = np.where(a.isna(), -1, np.searchsorted(edges, a.astype(float).fillna(0), side="right"))
+            fb = np.where(b.isna(), -1, np.searchsorted(edges, b.astype(float).fillna(0), side="right"))
+            fa, fb = pd.Series(fa, dtype="category"), pd.Series(fb)
         else:
-            fa = a.astype(object).where(a.notna(), "na").astype(str).to_numpy()
-            fb = b.astype(object).where(b.notna(), "na").astype(str).to_numpy()
-        Xtr[c], Xva[c] = fa, fb
+            fa = a.astype("string").fillna("na").astype("category").reset_index(drop=True)
+            fb = b.astype("string").fillna("na").reset_index(drop=True)
+        Xtr[c], Xva[c] = _cat_pair(fa, fb, min_count)
     if "soil_type" in train.columns and "dry_summer_index" in train.columns:
         q = np.nanquantile(train["dry_summer_index"], [0.25, 0.5, 0.75])
-        Xtr["soil_x_dry"] = [f"{a}|{b}" for a, b in zip(train["soil_type"].astype(str), np.searchsorted(q, train["dry_summer_index"].fillna(0)))]
-        Xva["soil_x_dry"] = [f"{a}|{b}" for a, b in zip(valid["soil_type"].astype(str), np.searchsorted(q, valid["dry_summer_index"].fillna(0)))]
-    Xtr, Xva = pd.DataFrame(Xtr), pd.DataFrame(Xva)
-    for c in Xtr.columns:
-        vc = Xtr[c].value_counts()
-        rare = set(vc[vc < min_count].index)
-        if rare:   # livelli con poche righe: un grande sinistro basterebbe a dare un coefficiente enorme
-            Xtr[c] = Xtr[c].where(~Xtr[c].isin(rare), "rare"); Xva[c] = Xva[c].where(~Xva[c].isin(rare), "rare")
-        cats = sorted(set(Xtr[c]))
-        Xtr[c] = pd.Categorical(Xtr[c], categories=cats)
-        Xva[c] = pd.Categorical(Xva[c].where(Xva[c].isin(cats), cats[0]), categories=cats)
-    return Xtr, Xva
+        fa = train["soil_type"].astype("string").fillna("na").str.cat(pd.Series(np.searchsorted(q, train["dry_summer_index"].fillna(0)), index=train.index).astype("string"), sep="|")
+        fb = valid["soil_type"].astype("string").fillna("na").str.cat(pd.Series(np.searchsorted(q, valid["dry_summer_index"].fillna(0)), index=valid.index).astype("string"), sep="|")
+        Xtr["soil_x_dry"], Xva["soil_x_dry"] = _cat_pair(fa.astype("category").reset_index(drop=True), fb.reset_index(drop=True), min_count)
+    return pd.DataFrame(Xtr), pd.DataFrame(Xva)
 
 
 def glm_enet(train, valid, line, alpha=None, l1_ratio=ENET_L1):

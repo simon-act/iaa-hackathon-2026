@@ -1,0 +1,8 @@
+{
+  "name": "parte1_v3",
+  "interim": "data/interim_v3",
+  "model_dir": "data/model_v3",
+  "results": "results_v3",
+  "trend": {"sev_nonsig": "own"},
+  "fixes": {"loss_date_fix": true}
+}

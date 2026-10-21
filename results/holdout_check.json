@@ -3,56 +3,56 @@
   {
    "line": "motor",
    "rows": 25524,
-   "new_blend": 0.12810034326762854,
+   "new_blend": 0.12565117432254247,
    "sub01_blend": 0.12411082804484996,
-   "fs2_all_ll_cred": 0.12404388161453495,
+   "fs2_v2_cred": 0.12439847960586614,
    "gbm_b": 0.12662396925896557,
-   "gbm_clean": 0.12755294120017635,
    "glm_b": 0.10927801711139895,
-   "qwen_gbm_cred": 0.1268893440096962
+   "glm_enet_cred": 0.120295825266586,
+   "qwen_gbm73_cred": 0.12627656449532831
   },
   {
    "line": "buildings",
    "rows": 18384,
-   "new_blend": 0.14873956657109788,
+   "new_blend": 0.15083873054900498,
    "sub01_blend": 0.12426303455519361,
-   "fs2_all_ll_cred": 0.1500021262143586,
+   "fs2_v2_cred": 0.15329379499672569,
    "gbm_b": 0.12789889059544723,
-   "gbm_clean": 0.1383760493041143,
    "glm_b": 0.1099764757827737,
-   "qwen_gbm_cred": 0.1415398111381273
+   "glm_enet_cred": 0.1363619447411668,
+   "qwen_gbm73_cred": 0.14642047999543994
   },
   {
    "line": "contents",
    "rows": 18628,
-   "new_blend": 0.1093655955447459,
+   "new_blend": 0.10875060138146253,
    "sub01_blend": 0.09266725956653254,
-   "fs2_all_ll_cred": 0.10973047684507187,
+   "fs2_v2_cred": 0.10965119778281118,
    "gbm_b": 0.08606756601677157,
-   "gbm_clean": 0.08938503995185643,
    "glm_b": 0.0918960901295025,
-   "qwen_gbm_cred": 0.09423398807781247
+   "glm_enet_cred": 0.10081378956420517,
+   "qwen_gbm73_cred": 0.10212396845306582
   }
  ],
  "pooled": {
-  "new_blend": 0.20739,
+  "new_blend": 0.2072,
   "sub01_blend": 0.19362
  },
  "weights": {
   "motor": {
-   "fs2_all_ll_cred": 0.75,
-   "qwen_gbm_cred": 0.15,
-   "gbm_clean": 0.1
+   "fs2_v2_cred": 0.7,
+   "qwen_gbm73_cred": 0.1,
+   "glm_enet_cred": 0.2
   },
   "buildings": {
-   "fs2_all_ll_cred": 0.65,
-   "qwen_gbm_cred": 0.3,
-   "gbm_clean": 0.05
+   "fs2_v2_cred": 0.5,
+   "qwen_gbm73_cred": 0.3,
+   "glm_enet_cred": 0.2
   },
   "contents": {
-   "fs2_all_ll_cred": 0.95,
-   "qwen_gbm_cred": 0.05,
-   "gbm_clean": 0.0
+   "fs2_v2_cred": 0.75,
+   "qwen_gbm73_cred": 0.15,
+   "glm_enet_cred": 0.1
   }
  }
 }

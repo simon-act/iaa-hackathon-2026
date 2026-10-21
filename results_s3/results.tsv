@@ -1,0 +1,6 @@
+2026-10-18 20:27	fs2_v2_cred	0.12834	0.18734	{"buildings|F2023": 0.12697, "buildings|F2024": 0.14745, "contents|F2023": 0.1028, "contents|F2024": 0.11012, "motor|F2023": 0.12461, "motor|F2024": 0.15141}
+2026-10-18 20:48	qwen_gbm73_cred	0.12634	0.18565	{"buildings|F2023": 0.12569, "buildings|F2024": 0.14655, "contents|F2023": 0.09752, "contents|F2024": 0.10891, "motor|F2023": 0.12211, "motor|F2024": 0.15045}
+2026-10-18 20:49	blend_opt[fs2_v2_cred+qwen_gbm73_cred]	0.12875	0.18788	{"motor": {"fs2_v2_cred": 0.75, "qwen_gbm73_cred": 0.25}, "buildings": {"fs2_v2_cred": 0.6, "qwen_gbm73_cred": 0.4}, "contents": {"fs2_v2_cred": 0.8, "qwen_gbm73_cred": 0.2}}
+2026-10-19 12:23	fs2_sev1_cred	0.12834	0.18734	{"buildings|F2023": 0.12697, "buildings|F2024": 0.14745, "contents|F2023": 0.1028, "contents|F2024": 0.11012, "motor|F2023": 0.12461, "motor|F2024": 0.15142}
+2026-10-19 13:02	fs2_pc4	0.12832	0.1873	{"buildings|F2023": 0.12684, "buildings|F2024": 0.14714, "contents|F2023": 0.10266, "contents|F2024": 0.11028, "motor|F2023": 0.12462, "motor|F2024": 0.15164}
+2026-10-19 13:12	fs2_pc4_cred	0.12802	0.18708	{"buildings|F2023": 0.12695, "buildings|F2024": 0.14763, "contents|F2023": 0.10296, "contents|F2024": 0.10994, "motor|F2023": 0.12427, "motor|F2024": 0.15011}

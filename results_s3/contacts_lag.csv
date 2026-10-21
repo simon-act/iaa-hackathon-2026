@@ -1,0 +1,49 @@
+line,var,fold,valore,righe,AE,se
+motor,contatti_anno_prima (anno prima senza sinistri),2023,0,112059,1.024,0.023
+motor,contatti_anno_prima (anno prima senza sinistri),2023,1,46871,1.01,0.034
+motor,contatti_anno_prima (anno prima senza sinistri),2023,2,11005,0.927,0.057
+motor,contatti_anno_prima (anno prima senza sinistri),2023,3,1856,0.876,0.128
+motor,contatti_anno_prima (anno prima senza sinistri),2023,4,351,2.249,1.172
+motor,contatti_anno_prima (anno prima senza sinistri),2024,0,113264,1.07,0.024
+motor,contatti_anno_prima (anno prima senza sinistri),2024,1,46368,1.045,0.04
+motor,contatti_anno_prima (anno prima senza sinistri),2024,2,10965,1.028,0.069
+motor,contatti_anno_prima (anno prima senza sinistri),2024,3,1935,1.279,0.209
+motor,contatti_anno_prima (anno prima senza sinistri),2024,4,349,0.924,0.213
+motor,renewal_decision anno prima,2023,declined_by_insurer,1362,1.063,0.136
+motor,renewal_decision anno prima,2023,mid_term_change,15574,0.944,0.046
+motor,renewal_decision anno prima,2023,renewed,176988,1.014,0.018
+motor,renewal_decision anno prima,2024,declined_by_insurer,1381,0.898,0.116
+motor,renewal_decision anno prima,2024,mid_term_change,15534,1.197,0.069
+motor,renewal_decision anno prima,2024,renewed,177034,1.053,0.019
+buildings,contatti_anno_prima (anno prima senza sinistri),2023,0,87151,0.99,0.041
+buildings,contatti_anno_prima (anno prima senza sinistri),2023,1,37437,1.087,0.068
+buildings,contatti_anno_prima (anno prima senza sinistri),2023,2,8810,0.809,0.108
+buildings,contatti_anno_prima (anno prima senza sinistri),2023,3,1452,1.156,0.416
+buildings,contatti_anno_prima (anno prima senza sinistri),2023,4,204,0.157,0.091
+buildings,contatti_anno_prima (anno prima senza sinistri),2024,0,87408,0.98,0.043
+buildings,contatti_anno_prima (anno prima senza sinistri),2024,1,37043,0.961,0.056
+buildings,contatti_anno_prima (anno prima senza sinistri),2024,2,8783,0.965,0.144
+buildings,contatti_anno_prima (anno prima senza sinistri),2024,3,1410,0.6,0.142
+buildings,contatti_anno_prima (anno prima senza sinistri),2024,4,195,0.647,0.398
+buildings,renewal_decision anno prima,2023,declined_by_insurer,760,0.934,0.255
+buildings,renewal_decision anno prima,2023,mid_term_change,5620,0.971,0.131
+buildings,renewal_decision anno prima,2023,renewed,134021,1.008,0.034
+buildings,renewal_decision anno prima,2024,declined_by_insurer,874,1.302,0.289
+buildings,renewal_decision anno prima,2024,mid_term_change,5615,1.058,0.189
+buildings,renewal_decision anno prima,2024,renewed,133902,0.962,0.032
+contents,contatti_anno_prima (anno prima senza sinistri),2023,0,89364,1.021,0.036
+contents,contatti_anno_prima (anno prima senza sinistri),2023,1,38111,0.951,0.05
+contents,contatti_anno_prima (anno prima senza sinistri),2023,2,9013,1.104,0.133
+contents,contatti_anno_prima (anno prima senza sinistri),2023,3,1478,0.786,0.194
+contents,contatti_anno_prima (anno prima senza sinistri),2023,4,257,1.096,0.607
+contents,contatti_anno_prima (anno prima senza sinistri),2024,0,89668,0.961,0.033
+contents,contatti_anno_prima (anno prima senza sinistri),2024,1,37656,1.008,0.055
+contents,contatti_anno_prima (anno prima senza sinistri),2024,2,9023,0.967,0.107
+contents,contatti_anno_prima (anno prima senza sinistri),2024,3,1443,1.079,0.261
+contents,contatti_anno_prima (anno prima senza sinistri),2024,4,243,0.658,0.428
+contents,renewal_decision anno prima,2023,declined_by_insurer,181,1.128,0.566
+contents,renewal_decision anno prima,2023,mid_term_change,8477,1.067,0.118
+contents,renewal_decision anno prima,2023,renewed,134365,1.022,0.029
+contents,renewal_decision anno prima,2024,declined_by_insurer,202,1.245,0.523
+contents,renewal_decision anno prima,2024,mid_term_change,8553,0.924,0.106
+contents,renewal_decision anno prima,2024,renewed,134348,0.977,0.027

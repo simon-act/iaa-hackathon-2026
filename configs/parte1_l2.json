@@ -1,0 +1,8 @@
+{
+  "name": "parte1_l2",
+  "interim": "data/interim_l2",
+  "model_dir": "data/model_l2",
+  "results": "results_l2",
+  "trend": {"sev_nonsig": "own"},
+  "large_loss": {"method": "pareto", "lines": ["motor"], "u0": 50000}
+}

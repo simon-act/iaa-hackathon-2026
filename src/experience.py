@@ -63,3 +63,60 @@ if __name__ == "__main__":
             s = o[(o.line == line) & (o.fold == f)]
             res[(line, f)] = {k: P.d2(s.target_b, apply(s.pred.to_numpy(), s, line, k)) for k in ks}
         print(line, {f: {k: round(v, 5) for k, v in res[(line, f)].items()} for f in ("F2023", "F2024")}, flush=True)
+
+
+# --- 20/10: credibilità senza i perili che non si ripetono ---
+# Residui del freq×sev nel fabbricato: chi ha avuto solo sinistri di cedimento ha A/E 0,62/0,48 (2023/2024), chi ha avuto
+# altri sinistri 1,14/1,18. Il cedimento dipende da terreno e siccità dell'anno, non dall'assicurato: non entra nel
+# conteggio N della credibilità; gli attesi E si riducono della sua quota di sinistri. Verifica sulle OOF (k=8):
+# blend fabbricato +0,00006 / +0,00006 nei due fold. Config: credibility.exclude_perils = {"buildings": ["subsidence"]}.
+EXCL_DEFAULT = {"buildings": ["subsidence"]}
+_cache_x = {}
+
+
+def history_excl(line, excl):
+    """N2 = sinistri passati della polizza senza i perili esclusi (AY < anno), H come in history(), quota dei conteggi tenuti."""
+    key = (line, tuple(excl))
+    if key in _cache_x:
+        return _cache_x[key]
+    h, _, sev = history(line)
+    tr = P.load(line)
+    perils = [c[3:] for c in tr.columns if c.startswith("pi_")]
+    nn = tr[[f"n_{p}" for p in perils]].sum().to_numpy(); w = nn / nn.sum()
+    keep = [p for p in perils if p not in excl]
+    frac = float(w[[perils.index(p) for p in keep]].sum())
+    tr["n_keep"] = tr[[f"n_{p}" for p in keep]].sum(axis=1)
+    yr = tr.groupby(["policy_id", "year"])["n_keep"].sum().reset_index()
+    te = P.load(line, "test")[["row_id", "policy_id", "year"]]
+    allr = pd.concat([tr[["row_id", "policy_id", "year"]], te])
+    yr2 = pd.concat([yr, te[["policy_id", "year"]].drop_duplicates().assign(n_keep=0.0)]).groupby(["policy_id", "year"], as_index=False)["n_keep"].sum()
+    yr2 = yr2.sort_values(["policy_id", "year"])
+    yr2["N2"] = yr2.groupby("policy_id")["n_keep"].transform(lambda s: s.shift().fillna(0).cumsum())
+    n2 = allr.merge(yr2[["policy_id", "year", "N2"]], on=["policy_id", "year"], how="left").set_index("row_id")["N2"]
+    _cache_x[key] = (h, n2, sev, frac)
+    return _cache_x[key]
+
+
+def apply_excl(pred, valid, line, k, excl=None):
+    excl = EXCL_DEFAULT.get(line, []) if excl is None else excl
+    if not excl:
+        return apply(pred, valid, line, k)
+    h, n2, sev, frac = history_excl(line, excl)
+    pred = np.asarray(pred, float)
+    H = h.reindex(valid["row_id"]).to_numpy(); N = n2.reindex(valid["row_id"]).to_numpy()
+    E = H * pred / (valid["exposure"].to_numpy() * sev) * frac
+    out = pred * (N + k) / (E + k)
+    return out * pred.sum() / out.sum()
+
+
+def uncred(pred_cred, valid, line, k):
+    """Inverte apply(): dalla previsione con credibilità k alla previsione senza (esatta, iterazione sul riscalamento)."""
+    h, n, sev = history(line)
+    H = h.reindex(valid["row_id"]).to_numpy(); N = n.reindex(valid["row_id"]).to_numpy()
+    a = H / (valid["exposure"].to_numpy() * sev); out = np.asarray(pred_cred, float); s = 1.0
+    for _ in range(80):
+        o = out / s; pr = k * o / (N + k - a * o); s_new = s * pr.sum() / out.sum()
+        if abs(s_new - s) < 1e-13:
+            break
+        s = s_new
+    return pr

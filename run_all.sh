@@ -15,4 +15,5 @@ $PY -I src/develop.py        "$INTERIM" > /dev/null
 $PY -I src/trend.py          "$INTERIM" > /dev/null
 $PY -I src/build_datasets.py "$RAW" "$INTERIM" "$MODEL" > /dev/null
 $PY -I src/features.py       "$INTERIM" "$MODEL" > /dev/null
+$PY -I src/judge_own.py > /dev/null      # giudice secondario senza IBNR/LL spalmati (19/10)
 echo "pipeline ok -> $MODEL"

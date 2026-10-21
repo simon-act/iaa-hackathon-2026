@@ -68,7 +68,7 @@ def main(interim: str) -> None:
     c = pd.read_parquet(interim / "claims_clean.parquet")
     out_rows, curves, rel_curves, notes = [], {}, {}, {}
 
-    for line in ("motor", "buildings", "contents"):
+    for line in LINES:   # era una tupla fissa (revisione Qwen 19/10: Parte 2 con linee diverse)
         pol = pd.read_parquet(interim / f"train_{line}.parquet",
                               columns=["row_id", "period_start", "period_end", "exposure", "year"])
         cl = c[c["line"] == line]
@@ -83,7 +83,7 @@ def main(interim: str) -> None:
             comp_cols[peril] = row_completeness(pol["period_start"], pol["period_end"], comp_day)
 
             # 4. severità dei tardivi
-            mat = g[g["ay"] <= 2022]
+            mat = g[g["ay"] <= YEARS[-1] - 2]   # AY maturi: era "<= 2022" fisso (revisione Qwen 19/10)
             s = mat.sort_values("report_lag_days")
             lag_s, sev_s = s["report_lag_days"].to_numpy(), s["net_capped"].to_numpy()
             tail_sum = np.cumsum(sev_s[::-1])[::-1]; tail_n = np.arange(len(sev_s), 0, -1)
@@ -139,6 +139,11 @@ def main(interim: str) -> None:
         pooled = float(np.median(own)) if own else 0.05
         for peril in d.loc[d["line"] == line, "peril"].unique():
             infl.setdefault((line, peril), (pooled, "mediana della linea (perilo senza 3 AY maturi)"))
+    # 18/10 — S3: per i perili senza 3 AY maturi la mediana della linea può essere sbagliata (lesioni: +6,4% della
+    # linea contro +1,9% stimato sul perilo); la config permette un valore per perilo, documentato
+    for key, v in CFG.get("development", {}).get("inflation_override", {}).items():
+        l, p_ = key.split("|")
+        infl[(l, p_)] = (float(v), "valore da config (perilo senza AY maturi)")
     d["inflation"] = [infl[(l, p)][0] for l, p in zip(d["line"], d["peril"])]
     d["inflation_source"] = [infl[(l, p)][1] for l, p in zip(d["line"], d["peril"])]
 

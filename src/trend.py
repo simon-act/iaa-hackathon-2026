@@ -57,14 +57,26 @@ def main(interim: str) -> None:
         use = (t["line"] == line) & (t["freq_p"] > P_MAX) & (pl <= P_MAX)
         t.loc[use, "freq_trend"] = np.expm1(bl)
         t.loc[use, "freq_rule"] = f"trend di linea (p={pl:.3f})"
+    # 19/10: override puntuale del trend di frequenza (es. furto auto: stima propria −0,4% invece del trend di linea −2,6%;
+    # il test di previsione 2021–23 → 2024 con i driver dice che il trend di linea peggiora il furto)
+    for key, val in CFG.get("trend", {}).get("freq_override", {}).items():
+        l_, p_ = key.split("|")
+        sel = (t["line"] == l_) & (t["peril"] == p_)
+        t.loc[sel, "freq_trend"] = float(val); t.loc[sel, "freq_rule"] = f"override config ({val:+.3f})"
     wmask = [(l, p) in WEATHER_PERILS for l, p in zip(t["line"], t["peril"])]
     t.loc[wmask, "freq_trend"] = 0.0
     t.loc[wmask, "freq_rule"] = "zero (perilo meteo: lo gestisce il modello con weather)"
     sig = t[t["sev_p"] <= P_MAX]
     line_med = sig.groupby("line")["sev_slope"].median()
-    t["sev_trend"] = np.where(t["sev_p"] <= P_MAX, np.expm1(t["sev_slope"]),
-                              np.expm1(t["line"].map(line_med).fillna(0.05)))
-    t["sev_rule"] = np.where(t["sev_p"] <= P_MAX, "stimato", "mediana della linea")
+    rule = CFG.get("trend", {}).get("sev_nonsig", "line_median")
+    if rule == "own":        # 18/10: la mediana della linea dava alle lesioni (motor) +7,9% invece del +1,9% osservato
+        alt, lab = np.expm1(t["sev_slope"]), "stima propria (non significativa)"
+    elif rule == "zero":
+        alt, lab = np.zeros(len(t)), "zero (non significativo)"
+    else:
+        alt, lab = np.expm1(t["line"].map(line_med).fillna(0.05)), "mediana della linea"
+    t["sev_trend"] = np.where(t["sev_p"] <= P_MAX, np.expm1(t["sev_slope"]), alt)
+    t["sev_rule"] = np.where(t["sev_p"] <= P_MAX, "stimato", lab)
 
     d = d.merge(t[["line", "peril", "freq_trend", "sev_trend"]], on=["line", "peril"])
     h = TARGET_YEAR - d["ay"]
@@ -103,6 +115,23 @@ def main(interim: str) -> None:
         prior = src["ll_load_2025"].reindex(line_bc.index) * line_bc["bc_2025_capped"] / src["bc_2025_capped"].reindex(line_bc.index)
         line_bc["ll_load_prior_src"] = prior; line_bc["ll_Z"] = Z; line_bc["n_large"] = n_large
         line_bc["ll_load_2025"] = Z * line_bc["ll_load_own"] + (1 - Z) * prior
+    # 18/10 — L2: carico grandi sinistri da una coda di Pareto invece che dalla media empirica. In auto la media empirica
+    # è dominata da un solo sinistro da 11,9 M (atteso ~0,013 volte in 4 anni sotto la coda stimata, α ≈ 2).
+    llc = CFG.get("large_loss", {})
+    if llc.get("method") == "pareto":
+        cl = pd.read_parquet(interim / "claims_clean.parquet", columns=["line", "net_incurred"])
+        u0 = float(llc.get("u0", 50000))
+        for line in llc.get("lines", ["motor"]):
+            x = cl.loc[(cl["line"] == line) & (cl["net_incurred"] > u0), "net_incurred"].to_numpy()
+            alpha = len(x) / np.log(x / u0).sum()
+            cap = float(CFG["cap"][line]); expo = float(ll.loc[ll["line"] == line, "exposure"].sum())
+            lam = len(x) / expo * (u0 / cap) ** alpha
+            raw = lam * cap / (alpha - 1)
+            emp_raw = float(ll.loc[ll["line"] == line, "excess"].sum()) / expo
+            onlev = line_bc.loc[line, "ll_load_2025"] / emp_raw if emp_raw > 0 else 1.0
+            line_bc.loc[line, "ll_alpha"] = alpha
+            line_bc.loc[line, "ll_load_empirical"] = line_bc.loc[line, "ll_load_2025"]
+            line_bc.loc[line, "ll_load_2025"] = raw * onlev
     line_bc["bc_2025_total"] = line_bc["bc_2025_capped"] + line_bc["ll_load_2025"]
 
     d.to_parquet(interim / "development_onlevel.parquet", index=False)

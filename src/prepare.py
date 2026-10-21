@@ -94,6 +94,43 @@ def check_features(cols, df) -> None:
         raise ValueError(f"colonne non ammesse nel modello: {bad}")
 
 
+_JOWN = None
+
+
+def d2_own(row_id, pred):
+    """Giudice secondario senza spalmatura (19/10, src/judge_own.py): D² tra costo denunciato sviluppato e
+    (pred − LL) × completezza attesa, livello riallineato. None se judge_own.parquet non esiste per il mercato.
+    Serve a non premiare previsioni piatte quando l'IBNR spalmato pesa (anni recenti, Parte 2)."""
+    global _JOWN
+    if _JOWN is None:
+        f = RESULTS / "judge_own.parquet"
+        _JOWN = pd.read_parquet(f).set_index("row_id") if f.exists() else False
+    if _JOWN is False:
+        return None
+    j = _JOWN.reindex(np.asarray(row_id))
+    attr = np.clip(np.asarray(pred, float) - j["ll_expo"].to_numpy(), 1e-3, None) * j["pi_eff"].to_numpy()
+    y = j["target_rep"].to_numpy()
+    return d2(y, attr * y.sum() / attr.sum())
+
+
+_JUNC = None
+
+
+def d2_unc(row_id, pred):
+    """Terzo giudice (20/10, src/judge_unc.py): target con i grandi sinistri veri (attritivo denunciato + eccesso oltre il
+    taglio), previsione × completezza attesa, livello riallineato. Per valutare il riparto del caricamento large loss."""
+    global _JUNC
+    if _JUNC is None:
+        f = RESULTS / "judge_unc.parquet"
+        _JUNC = pd.read_parquet(f).set_index("row_id")["excess_onl"] if f.exists() else False
+    if _JUNC is False or d2_own(row_id, pred) is None:
+        return None
+    j = _JOWN.reindex(np.asarray(row_id))
+    y = j["target_rep"].to_numpy() + _JUNC.reindex(np.asarray(row_id)).fillna(0).to_numpy()
+    mu = np.asarray(pred, float) * j["pi_eff"].to_numpy()
+    return d2(y, mu * y.sum() / mu.sum())
+
+
 def load(line: str, kind: str = "train") -> pd.DataFrame:
     return pd.read_parquet(MODEL_DIR / f"{'model' if kind == 'train' else 'test'}_{line}.parquet")
 
@@ -101,7 +138,7 @@ def load(line: str, kind: str = "train") -> pd.DataFrame:
 def evaluate(fit_predict, lines=LINES, folds=FOLDS, verbose=True):
     """fit_predict(train_df, valid_df, line) -> previsioni per riga (CU) su valid_df.
     Restituisce un dict con D² per linea × fold e la media ponderata (punteggio da ottimizzare)."""
-    res, pooled = {}, {f: ([], []) for f in folds}
+    res, res_own, pooled = {}, {}, {f: ([], []) for f in folds}
     for line in lines:
         df = load(line)
         ho = is_holdout(df["policy_id"])
@@ -113,9 +150,13 @@ def evaluate(fit_predict, lines=LINES, folds=FOLDS, verbose=True):
             if (pred < 0).any() or not np.isfinite(pred).all():
                 raise ValueError("previsioni negative o non finite")
             res[(line, fname)] = d2(va[TARGET].to_numpy(), pred)
+            own = d2_own(va["row_id"], pred)
+            if own is not None:
+                res_own[(line, fname)] = own
             pooled[fname][0].append(va[TARGET].to_numpy()); pooled[fname][1].append(pred)
             if verbose:
-                print(f"  {line:9s} {fname}: D2 = {res[(line, fname)]:.4f}", flush=True)
+                print(f"  {line:9s} {fname}: D2 = {res[(line, fname)]:.4f}"
+                      + (f"  (senza spalmatura {own:.4f})" if own is not None else ""), flush=True)
     # media con pesi = numero righe del test 2025 per linea (come conta Kaggle su tutte le righe insieme)
     w = {l: len(load(l, "test")) for l in lines}   # come conta Kaggle: righe del test per linea
     score = sum(res[(l, f)] * w[l] for l in lines for f in folds) / (sum(w[l] for l in lines) * len(folds))
@@ -123,8 +164,12 @@ def evaluate(fit_predict, lines=LINES, folds=FOLDS, verbose=True):
     pool = {f: round(d2(np.concatenate(a), np.concatenate(b)), 5) for f, (a, b) in pooled.items()} if len(lines) == len(LINES) else {}
     if verbose and pool:
         print("  pooled (tutte le linee):", pool, flush=True)
-    return {"by": {f"{l}|{f}": round(v, 5) for (l, f), v in res.items()}, "score": round(score, 5), "pooled": pool,
-            "pooled_mean": round(float(np.mean(list(pool.values()))), 5) if pool else None}
+    out = {"by": {f"{l}|{f}": round(v, 5) for (l, f), v in res.items()}, "score": round(score, 5), "pooled": pool,
+           "pooled_mean": round(float(np.mean(list(pool.values()))), 5) if pool else None}
+    if len(res_own) == len(res):
+        out["by_own"] = {f"{l}|{f}": round(v, 5) for (l, f), v in res_own.items()}
+        out["score_own"] = round(sum(res_own[(l, f)] * w[l] for l in lines for f in folds) / (sum(w[l] for l in lines) * len(folds)), 5)
+    return out
 
 
 def holdout_score(fit_predict, lines=LINES):

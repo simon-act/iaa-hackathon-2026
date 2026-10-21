@@ -58,8 +58,17 @@ def score(o):
     by = {f"{l}|{f}": P.d2(g["target_b"], g["pred"]) for (l, f), g in o.groupby(["line", "fold"])}
     sc = sum(by[f"{l}|{f}"] * w[l] for l in P.LINES for f in P.FOLDS) / (sum(w.values()) * len(P.FOLDS))
     pool = {f: P.d2(g["target_b"], g["pred"]) for f, g in o.groupby("fold")}
-    return {"by": {k: round(v, 5) for k, v in by.items()}, "score": round(sc, 5),
-            "pooled": {k: round(v, 5) for k, v in pool.items()}, "pooled_mean": round(float(np.mean(list(pool.values()))), 5)}
+    out = {"by": {k: round(v, 5) for k, v in by.items()}, "score": round(sc, 5),
+           "pooled": {k: round(v, 5) for k, v in pool.items()}, "pooled_mean": round(float(np.mean(list(pool.values()))), 5)}
+    own = {f"{l}|{f}": P.d2_own(g["row_id"], g["pred"]) for (l, f), g in o.groupby(["line", "fold"])}
+    if all(v is not None for v in own.values()):   # giudice secondario senza spalmatura (19/10)
+        out["by_own"] = {k: round(v, 5) for k, v in own.items()}
+        out["score_own"] = round(sum(own[f"{l}|{f}"] * w[l] for l in P.LINES for f in P.FOLDS) / (sum(w.values()) * len(P.FOLDS)), 5)
+    unc = {f"{l}|{f}": P.d2_unc(g["row_id"], g["pred"]) for (l, f), g in o.groupby(["line", "fold"])}
+    if all(v is not None for v in unc.values()):   # terzo giudice con i grandi sinistri veri (20/10)
+        out["by_unc"] = {k: round(v, 5) for k, v in unc.items()}
+        out["score_unc"] = round(sum(unc[f"{l}|{f}"] * w[l] for l in P.LINES for f in P.FOLDS) / (sum(w.values()) * len(P.FOLDS)), 5)
+    return out
 
 
 if __name__ == "__main__":

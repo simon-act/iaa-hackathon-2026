@@ -31,9 +31,13 @@ STATE = P.RESULTS / "train_state.json"
 def to_frame(df: pd.DataFrame, cols: list, cats: dict | None = None):
     X = df[cols].copy()
     cats = cats if cats is not None else {}
+    fitted = cats is not None and len(cats) > 0   # frame di validazione/test: le categoriche sono quelle del training
     for c in cols:
         if X[c].dtype == bool:
             X[c] = X[c].astype(float)
+        elif not pd.api.types.is_numeric_dtype(X[c]) and fitted and c not in cats:
+            # nel training era numerica o booleana; qui è object (es. booleana con mancanti): riporto a numero
+            X[c] = pd.to_numeric(X[c].map({True: 1.0, False: 0.0, "True": 1.0, "False": 0.0}).where(X[c].notna()), errors="coerce")
         elif not pd.api.types.is_numeric_dtype(X[c]):
             v = X[c].astype(object).where(X[c].notna(), "missing").astype(str)
             if c not in cats:

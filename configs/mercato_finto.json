@@ -1,11 +1,29 @@
 {
-  "name": "mercato_finto",
-  "_nota": "prova generale della Parte 2 sui dati finti di scripts/make_fake_market.py; le voci sotto sono le differenze trovate dall'audit",
-  "raw": "data/fake_market",
-  "interim": "data/fake_market/interim",
-  "model_dir": "data/fake_market/model",
-  "results": "results/mercato_finto",
-  "rename": {"no_claims_years": "ncb_years"},
-  "fixes": {"sum_insured_div_if_per_bedroom_over": 0, "construction_map": {"brick": "brick", "stone": "stone", "non_standard": "non_standard", "w": "timber", "t": "timber", "adobe": "adobe"}},
-  "transfer": {"source_market": "configs/parte1.json", "mode": "offset_credibility"}
+ "name": "mercato_finto",
+ "_nota": "prova generale della Parte 2 sui dati finti di scripts/make_fake_market.py; le voci sotto sono le differenze trovate dall'audit",
+ "raw": "data/fake_market",
+ "interim": "data/fake_market/interim",
+ "model_dir": "data/fake_market/model",
+ "results": "results/mercato_finto",
+ "rename": {
+  "no_claims_years": "ncb_years"
+ },
+ "fixes": {
+  "sum_insured_div_if_per_bedroom_over": 0,
+  "construction_map": {
+   "brick": "brick",
+   "stone": "stone",
+   "non_standard": "non_standard",
+   "w": "timber",
+   "t": "timber",
+   "adobe": "adobe"
+  },
+  "scale": {
+   "sum_insured": 1000
+  }
+ },
+ "transfer": {
+  "source_market": "configs/parte1.json",
+  "mode": "offset_credibility"
+ }
 }

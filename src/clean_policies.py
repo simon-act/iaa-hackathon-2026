@@ -24,6 +24,9 @@ def clean_one(df: pd.DataFrame, line: str, addresses: pd.DataFrame, rep: dict) -
     df = df.copy()
     if CFG["rename"]:
         df = df.rename(columns=CFG["rename"])
+    for c, k in FIX.get("scale", {}).items():      # unità diverse dal mercato di partenza (dall'audit)
+        if c in df.columns:
+            df[c] = df[c] * float(k); rep[f"scaled_{c}"] = float(k)
     # customer_id motor: ~10% ha perso gli zeri iniziali (letto come numero); gli ID sono a 8 cifre (Parte 1)
     if FIX["customer_id_zfill"]:
         short = df["customer_id"].astype(str).str.len() < FIX["customer_id_zfill"]

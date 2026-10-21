@@ -34,7 +34,12 @@ DEFAULT = {
         "customer_id_zfill": 8,          # 0 = spento
         "sum_insured_div_if_per_bedroom_over": 100.0,   # 0 = spento
         "construction_map": {"brick": "brick", "stone": "stone", "non_standard": "non_standard", "w": "timber", "t": "timber"},
-        "exposure_from_dates": True
+        "exposure_from_dates": True,
+        "scale": {},                     # Parte 2: colonne da riportare alle unità della Parte 1, es. {"sum_insured": 1000}
+        "loss_date_fix": False           # 18/10: True (o soglia in giorni) = data di accadimento da denuncia − ritardo mediano
+    },
+    "trend": {
+        "sev_nonsig": "line_median"      # severità con trend non significativo: "line_median" (Parte 1 fino al 18/10), "own" (stima propria), "zero"
     },
     "transfer": {                        # Parte 2: adattamento dal mercato di partenza
         "source_market": None,           # es. "configs/parte1.json": None = nessun trasferimento

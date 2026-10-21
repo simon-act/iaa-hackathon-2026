@@ -1,0 +1,7 @@
+{
+  "name": "parte1_trend_own",
+  "interim": "data/interim_tro",
+  "model_dir": "data/model_tro",
+  "results": "results_tro",
+  "trend": {"sev_nonsig": "own"}
+}

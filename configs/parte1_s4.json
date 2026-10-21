@@ -1,0 +1,17 @@
+{
+ "name": "parte1_s4",
+ "interim": "data/interim_s4",
+ "model_dir": "data/model_s4",
+ "results": "results_s4",
+ "trend": {
+  "sev_nonsig": "own",
+  "freq_override": {
+   "motor|theft": 0.0
+  }
+ },
+ "development": {
+  "inflation_override": {
+   "motor|bodily_injury": 0.019
+  }
+ }
+}

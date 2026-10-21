@@ -1,0 +1,8 @@
+{
+  "name": "parte1_s3",
+  "interim": "data/interim_s3",
+  "model_dir": "data/model_s3",
+  "results": "results_s3",
+  "trend": {"sev_nonsig": "own"},
+  "development": {"inflation_override": {"motor|bodily_injury": 0.019}}
+}
