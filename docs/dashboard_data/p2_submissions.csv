@@ -1,0 +1,19 @@
+submission,date,public,kind
+p2_sub_02_genere_mix,2026-10-24 06:06,0.16154,candidate
+p2_sub_01_prior_genere,2026-10-24 06:06,0.16176,candidate
+p2_sub_03_senza_nb,2026-10-24 06:15,0.16008,candidate
+p2_sub_05_sonda_x104,2026-10-24 06:16,0.16267,diagnostic probe (not a candidate)
+p2_sub_06_meteo,2026-10-24 17:13,0.16147,candidate
+p2_sonda_auto_x105,2026-10-24 17:16,0.16305,diagnostic probe (not a candidate)
+p2_sonda_contenuto_x105,2026-10-24 17:17,0.16156,diagnostic probe (not a candidate)
+p2_sonda_fabbricato_x105,2026-10-24 17:17,0.16173,diagnostic probe (not a candidate)
+p2_sonda_auto_rinnovi_x127,2026-10-24 17:18,0.16115,diagnostic probe (not a candidate)
+p2_sonda_auto_nb_x106,2026-10-24 17:18,0.16324,diagnostic probe (not a candidate)
+p2_sub_07_genere_nb,2026-10-25 05:18,0.1647,candidate
+p2_sub_08_ll_pareto,2026-10-25 11:08,0.16463,candidate
+p2_sub_09_contenuto_perilo,2026-10-25 11:45,0.16478,candidate
+p2_sub_10_ll_frequenze,2026-10-25 11:48,0.16472,candidate
+p2_sonda_sub10_auto_x120,2026-10-25 14:44,0.16473,diagnostic probe (not a candidate)
+p2_sonda_sub10_auto_x110,2026-10-25 14:44,0.16539,diagnostic probe (not a candidate)
+p2_sub_11_senza_nb,2026-10-25 17:42,0.161,candidate
+p2_sub_12_nb_tagliato,2026-10-25 17:43,0.16236,candidate

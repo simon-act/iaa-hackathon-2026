@@ -1,21 +1,39 @@
 # IAA AI Assisted Hackathon 2026 — team "Simone"
 
-Claim cost pricing for a motor + home (buildings, contents) portfolio: predict the expected 2025 claim cost of every
-policy row from 2021–2024 policies and claims. Kaggle: *IAA AI Assisted Hackathon 2026 – Part 1*
-(metric: Tweedie deviance D², p = 1.5, averaged over lines weighted by test rows).
+Claim cost pricing for a motor + home (buildings, contents) portfolio, in two markets: predict the expected 2025 claim cost
+(risk premium) of every policy row. Kaggle: *IAA AI Assisted Hackathon 2026* Part 1 (developed market, 2021–24) and
+Part 2 (emerging market, 2023–24). Metric: Tweedie deviance D², p = 1.5.
 
-Final Part 1 candidates (public leaderboard, a third of the test set):
+## Results
 
-| Submission | What it is | Internal score (OOF 2023/2024) | Public LB |
+| | Submission | Public LB | Private LB (final) |
 |---|---|---|---|
-| `sub_41` | final pipeline + contents flood severity = mean of GBM and Gamma GLM | best on all three internal judges | 0.12920 |
-| `sub_40` | final pipeline (motor bodily-injury severity constant, buildings GBM on gross target) | +0.00006 below sub_41 | 0.12927 |
-| `sub_36` | earlier variant, best public score | lower | 0.12930 |
+| Part 1 — developed | `sub_51` (selected) | 0.12926 | **0.13875 — 2nd of 51 teams** |
+| Part 1 — best of ours on private | `sub_26` (frequency × severity only) | 0.12916 | 0.13932 |
+| Part 2 — emerging | `p2_sub_01` (Part 1 model as prior × emerging level × gender) | **0.16176** (1st at 24/10; next team 0.11166) | — |
 
-The choice of the final submissions is made on the internal judges, with the leaderboard only as a check
-(the noise between near-identical submissions on the public third is about ±0.0001–0.00015).
+Lesson from the Part 1 private leaderboard (`results_s3/subs_private_p1.csv`): the public third rewarded fine choices that
+did not hold on the private two thirds (blend with the GBM, level probes); the plain structural model was the most robust.
+Part 2 therefore keeps the structure and lets the new data set only what they can support.
 
-## How to reproduce
+## Part 2 — the emerging market (`docs/30_parte2.md`, `configs/parte2.json`)
+
+```bash
+./run_all.sh configs/parte2.json                                                          # same pipeline, one config file
+IAA_MARKET=configs/parte1_s3.json python3 scripts/p2_export.py configs/parte2.json motor,buildings,contents   # prior
+IAA_MARKET=configs/parte2.json python3 scripts/p2_final.py p2_sub_01_prior_genere         # submission
+IAA_MARKET=configs/parte2.json python3 scripts/p2_office_premium.py submissions_p2/p2_sub_01_prior_genere.csv
+```
+- Automated audit of what changed (`src/audit_new_market.py` → `docs/30_parte2_audit_auto.md`).
+- Reporting delays identical to the developed market per peril → delays, late-claim severity, IBNER by age and trends
+  borrowed from the developed market (`src/develop.py`, `src/trend.py`, options in the config).
+- Prior = Part 1 frequency × severity fitted on the developed market with the shared columns (`src/transfer.py`);
+  emerging data set the level; one correction passes all judges: gender (absent in the developed market).
+- Checks: internal fold (fit 2023 → score 2024), simulation of a small, different market inside the developed data
+  (`scripts/p2_sim.py`: prior beats new-data-only in 16/18 cases), leaderboard probes for new business and level (diagnostic only).
+- Office premium for the 20 reference policies: `results_p2/office_premium_reference.csv`.
+
+## Part 1 — how to reproduce
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt

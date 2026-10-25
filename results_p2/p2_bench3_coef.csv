@@ -1,0 +1,92 @@
+linea,fold,variante,alpha,coef,intercept
+motor,F2024,auto,0.01,"{'gender[F]': np.float64(-0.087), 'gender[M]': np.float64(0.087), 'new_business[False]': np.float64(-0.213), 'new_business[True]': np.float64(0.213)}",-0.042
+motor,F2024,alpha=0.001,0.001,"{'gender[F]': np.float64(-0.088), 'gender[M]': np.float64(0.088), 'new_business[False]': np.float64(-0.224), 'new_business[True]': np.float64(0.224)}",-0.033
+motor,F2024,alpha=0.003,0.003,"{'gender[F]': np.float64(-0.088), 'gender[M]': np.float64(0.088), 'new_business[False]': np.float64(-0.222), 'new_business[True]': np.float64(0.222)}",-0.035
+motor,F2024,alpha=0.03,0.03,"{'gender[F]': np.float64(-0.083), 'gender[M]': np.float64(0.083), 'new_business[False]': np.float64(-0.192), 'new_business[True]': np.float64(0.192)}",-0.058
+motor,F2024,alpha=0.1,0.1,"{'gender[F]': np.float64(-0.073), 'gender[M]': np.float64(0.073), 'new_business[False]': np.float64(-0.142), 'new_business[True]': np.float64(0.142)}",-0.097
+motor,F2024,alpha=0.3,0.3,"{'gender[F]': np.float64(-0.054), 'gender[M]': np.float64(0.054), 'new_business[False]': np.float64(-0.082), 'new_business[True]': np.float64(0.082)}",-0.144
+motor,F2024,alpha=1.0,1.0,"{'gender[F]': np.float64(-0.028), 'gender[M]': np.float64(0.028), 'new_business[False]': np.float64(-0.033), 'new_business[True]': np.float64(0.033)}",-0.181
+motor,F2023,auto,3.0,"{'gender[F]': np.float64(-0.013), 'gender[M]': np.float64(0.013), 'new_business[False]': np.float64(0.001), 'new_business[True]': np.float64(-0.001)}",-0.177
+motor,F2023,alpha=0.001,0.001,"{'gender[F]': np.float64(-0.099), 'gender[M]': np.float64(0.099), 'new_business[False]': np.float64(0.021), 'new_business[True]': np.float64(-0.021)}",-0.199
+motor,F2023,alpha=0.003,0.003,"{'gender[F]': np.float64(-0.098), 'gender[M]': np.float64(0.098), 'new_business[False]': np.float64(0.021), 'new_business[True]': np.float64(-0.021)}",-0.199
+motor,F2023,alpha=0.03,0.03,"{'gender[F]': np.float64(-0.093), 'gender[M]': np.float64(0.093), 'new_business[False]': np.float64(0.018), 'new_business[True]': np.float64(-0.018)}",-0.196
+motor,F2023,alpha=0.1,0.1,"{'gender[F]': np.float64(-0.081), 'gender[M]': np.float64(0.081), 'new_business[False]': np.float64(0.014), 'new_business[True]': np.float64(-0.014)}",-0.192
+motor,F2023,alpha=0.3,0.3,"{'gender[F]': np.float64(-0.06), 'gender[M]': np.float64(0.06), 'new_business[False]': np.float64(0.008), 'new_business[True]': np.float64(-0.008)}",-0.186
+motor,F2023,alpha=1.0,1.0,"{'gender[F]': np.float64(-0.031), 'gender[M]': np.float64(0.031), 'new_business[False]': np.float64(0.004), 'new_business[True]': np.float64(-0.004)}",-0.18
+motor,K1,auto,0.01,"{'gender[F]': np.float64(-0.096), 'gender[M]': np.float64(0.096), 'new_business[False]': np.float64(-0.103), 'new_business[True]': np.float64(0.103)}",-0.111
+motor,K1,alpha=0.001,0.001,"{'gender[F]': np.float64(-0.098), 'gender[M]': np.float64(0.098), 'new_business[False]': np.float64(-0.108), 'new_business[True]': np.float64(0.108)}",-0.107
+motor,K1,alpha=0.003,0.003,"{'gender[F]': np.float64(-0.098), 'gender[M]': np.float64(0.098), 'new_business[False]': np.float64(-0.107), 'new_business[True]': np.float64(0.107)}",-0.108
+motor,K1,alpha=0.03,0.03,"{'gender[F]': np.float64(-0.092), 'gender[M]': np.float64(0.092), 'new_business[False]': np.float64(-0.093), 'new_business[True]': np.float64(0.093)}",-0.118
+motor,K1,alpha=0.1,0.1,"{'gender[F]': np.float64(-0.081), 'gender[M]': np.float64(0.081), 'new_business[False]': np.float64(-0.07), 'new_business[True]': np.float64(0.07)}",-0.135
+motor,K1,alpha=0.3,0.3,"{'gender[F]': np.float64(-0.059), 'gender[M]': np.float64(0.059), 'new_business[False]': np.float64(-0.041), 'new_business[True]': np.float64(0.041)}",-0.157
+motor,K1,alpha=1.0,1.0,"{'gender[F]': np.float64(-0.031), 'gender[M]': np.float64(0.031), 'new_business[False]': np.float64(-0.017), 'new_business[True]': np.float64(0.017)}",-0.173
+motor,K2,auto,0.01,"{'gender[F]': np.float64(-0.067), 'gender[M]': np.float64(0.067), 'new_business[False]': np.float64(-0.054), 'new_business[True]': np.float64(0.054)}",-0.187
+motor,K2,alpha=0.001,0.001,"{'gender[F]': np.float64(-0.069), 'gender[M]': np.float64(0.069), 'new_business[False]': np.float64(-0.057), 'new_business[True]': np.float64(0.057)}",-0.185
+motor,K2,alpha=0.003,0.003,"{'gender[F]': np.float64(-0.068), 'gender[M]': np.float64(0.068), 'new_business[False]': np.float64(-0.056), 'new_business[True]': np.float64(0.056)}",-0.185
+motor,K2,alpha=0.03,0.03,"{'gender[F]': np.float64(-0.064), 'gender[M]': np.float64(0.064), 'new_business[False]': np.float64(-0.049), 'new_business[True]': np.float64(0.049)}",-0.191
+motor,K2,alpha=0.1,0.1,"{'gender[F]': np.float64(-0.056), 'gender[M]': np.float64(0.056), 'new_business[False]': np.float64(-0.036), 'new_business[True]': np.float64(0.036)}",-0.201
+motor,K2,alpha=0.3,0.3,"{'gender[F]': np.float64(-0.041), 'gender[M]': np.float64(0.041), 'new_business[False]': np.float64(-0.02), 'new_business[True]': np.float64(0.02)}",-0.213
+motor,K2,alpha=1.0,1.0,"{'gender[F]': np.float64(-0.021), 'gender[M]': np.float64(0.021), 'new_business[False]': np.float64(-0.008), 'new_business[True]': np.float64(0.008)}",-0.221
+motor,K3,auto,0.01,"{'gender[F]': np.float64(-0.099), 'gender[M]': np.float64(0.099), 'new_business[False]': np.float64(-0.119), 'new_business[True]': np.float64(0.119)}",-0.099
+motor,K3,alpha=0.001,0.001,"{'gender[F]': np.float64(-0.101), 'gender[M]': np.float64(0.101), 'new_business[False]': np.float64(-0.125), 'new_business[True]': np.float64(0.125)}",-0.095
+motor,K3,alpha=0.003,0.003,"{'gender[F]': np.float64(-0.101), 'gender[M]': np.float64(0.101), 'new_business[False]': np.float64(-0.123), 'new_business[True]': np.float64(0.123)}",-0.096
+motor,K3,alpha=0.03,0.03,"{'gender[F]': np.float64(-0.095), 'gender[M]': np.float64(0.095), 'new_business[False]': np.float64(-0.107), 'new_business[True]': np.float64(0.107)}",-0.108
+motor,K3,alpha=0.1,0.1,"{'gender[F]': np.float64(-0.083), 'gender[M]': np.float64(0.083), 'new_business[False]': np.float64(-0.08), 'new_business[True]': np.float64(0.08)}",-0.128
+motor,K3,alpha=0.3,0.3,"{'gender[F]': np.float64(-0.061), 'gender[M]': np.float64(0.061), 'new_business[False]': np.float64(-0.047), 'new_business[True]': np.float64(0.047)}",-0.153
+motor,K3,alpha=1.0,1.0,"{'gender[F]': np.float64(-0.032), 'gender[M]': np.float64(0.032), 'new_business[False]': np.float64(-0.019), 'new_business[True]': np.float64(0.019)}",-0.172
+motor,K4,auto,0.01,"{'gender[F]': np.float64(-0.105), 'gender[M]': np.float64(0.105), 'new_business[False]': np.float64(-0.075), 'new_business[True]': np.float64(0.075)}",-0.118
+motor,K4,alpha=0.001,0.001,"{'gender[F]': np.float64(-0.107), 'gender[M]': np.float64(0.107), 'new_business[False]': np.float64(-0.079), 'new_business[True]': np.float64(0.079)}",-0.115
+motor,K4,alpha=0.003,0.003,"{'gender[F]': np.float64(-0.107), 'gender[M]': np.float64(0.107), 'new_business[False]': np.float64(-0.078), 'new_business[True]': np.float64(0.078)}",-0.115
+motor,K4,alpha=0.03,0.03,"{'gender[F]': np.float64(-0.101), 'gender[M]': np.float64(0.101), 'new_business[False]': np.float64(-0.068), 'new_business[True]': np.float64(0.068)}",-0.123
+motor,K4,alpha=0.1,0.1,"{'gender[F]': np.float64(-0.088), 'gender[M]': np.float64(0.088), 'new_business[False]': np.float64(-0.051), 'new_business[True]': np.float64(0.051)}",-0.136
+motor,K4,alpha=0.3,0.3,"{'gender[F]': np.float64(-0.065), 'gender[M]': np.float64(0.065), 'new_business[False]': np.float64(-0.029), 'new_business[True]': np.float64(0.029)}",-0.15
+motor,K4,alpha=1.0,1.0,"{'gender[F]': np.float64(-0.034), 'gender[M]': np.float64(0.034), 'new_business[False]': np.float64(-0.012), 'new_business[True]': np.float64(0.012)}",-0.162
+motor,K5,auto,0.01,"{'gender[F]': np.float64(-0.1), 'gender[M]': np.float64(0.1), 'new_business[False]': np.float64(-0.08), 'new_business[True]': np.float64(0.08)}",-0.125
+motor,K5,alpha=0.001,0.001,"{'gender[F]': np.float64(-0.102), 'gender[M]': np.float64(0.102), 'new_business[False]': np.float64(-0.084), 'new_business[True]': np.float64(0.084)}",-0.122
+motor,K5,alpha=0.003,0.003,"{'gender[F]': np.float64(-0.101), 'gender[M]': np.float64(0.101), 'new_business[False]': np.float64(-0.083), 'new_business[True]': np.float64(0.083)}",-0.123
+motor,K5,alpha=0.03,0.03,"{'gender[F]': np.float64(-0.096), 'gender[M]': np.float64(0.096), 'new_business[False]': np.float64(-0.072), 'new_business[True]': np.float64(0.072)}",-0.131
+motor,K5,alpha=0.1,0.1,"{'gender[F]': np.float64(-0.083), 'gender[M]': np.float64(0.083), 'new_business[False]': np.float64(-0.053), 'new_business[True]': np.float64(0.053)}",-0.145
+motor,K5,alpha=0.3,0.3,"{'gender[F]': np.float64(-0.061), 'gender[M]': np.float64(0.061), 'new_business[False]': np.float64(-0.031), 'new_business[True]': np.float64(0.031)}",-0.162
+motor,K5,alpha=1.0,1.0,"{'gender[F]': np.float64(-0.032), 'gender[M]': np.float64(0.032), 'new_business[False]': np.float64(-0.012), 'new_business[True]': np.float64(0.012)}",-0.175
+contents,F2024,auto,0.01,"{'gender[F]': np.float64(0.119), 'gender[M]': np.float64(-0.119)}",-0.071
+contents,F2024,alpha=0.03,0.03,"{'gender[F]': np.float64(0.115), 'gender[M]': np.float64(-0.115)}",-0.071
+contents,F2024,alpha=0.1,0.1,"{'gender[F]': np.float64(0.101), 'gender[M]': np.float64(-0.101)}",-0.07
+contents,F2024,alpha=0.3,0.3,"{'gender[F]': np.float64(0.075), 'gender[M]': np.float64(-0.075)}",-0.068
+contents,F2024,alpha=3.0,3.0,"{'gender[F]': np.float64(0.017), 'gender[M]': np.float64(-0.017)}",-0.063
+contents,F2024,alpha=10.0,10.0,"{'gender[F]': np.float64(0.006), 'gender[M]': np.float64(-0.006)}",-0.062
+contents,F2023,auto,3.0,"{'gender[F]': np.float64(0.018), 'gender[M]': np.float64(-0.018)}",-0.143
+contents,F2023,alpha=0.03,0.03,"{'gender[F]': np.float64(0.125), 'gender[M]': np.float64(-0.125)}",-0.152
+contents,F2023,alpha=0.1,0.1,"{'gender[F]': np.float64(0.11), 'gender[M]': np.float64(-0.11)}",-0.151
+contents,F2023,alpha=0.3,0.3,"{'gender[F]': np.float64(0.081), 'gender[M]': np.float64(-0.081)}",-0.148
+contents,F2023,alpha=3.0,3.0,"{'gender[F]': np.float64(0.018), 'gender[M]': np.float64(-0.018)}",-0.143
+contents,F2023,alpha=10.0,10.0,"{'gender[F]': np.float64(0.006), 'gender[M]': np.float64(-0.006)}",-0.142
+contents,K1,auto,1.0,"{'gender[F]': np.float64(0.046), 'gender[M]': np.float64(-0.046)}",-0.079
+contents,K1,alpha=0.03,0.03,"{'gender[F]': np.float64(0.133), 'gender[M]': np.float64(-0.133)}",-0.086
+contents,K1,alpha=0.1,0.1,"{'gender[F]': np.float64(0.117), 'gender[M]': np.float64(-0.117)}",-0.085
+contents,K1,alpha=0.3,0.3,"{'gender[F]': np.float64(0.087), 'gender[M]': np.float64(-0.087)}",-0.082
+contents,K1,alpha=3.0,3.0,"{'gender[F]': np.float64(0.019), 'gender[M]': np.float64(-0.019)}",-0.076
+contents,K1,alpha=10.0,10.0,"{'gender[F]': np.float64(0.006), 'gender[M]': np.float64(-0.006)}",-0.075
+contents,K2,auto,0.01,"{'gender[F]': np.float64(0.113), 'gender[M]': np.float64(-0.113)}",-0.099
+contents,K2,alpha=0.03,0.03,"{'gender[F]': np.float64(0.109), 'gender[M]': np.float64(-0.109)}",-0.099
+contents,K2,alpha=0.1,0.1,"{'gender[F]': np.float64(0.096), 'gender[M]': np.float64(-0.096)}",-0.098
+contents,K2,alpha=0.3,0.3,"{'gender[F]': np.float64(0.071), 'gender[M]': np.float64(-0.071)}",-0.096
+contents,K2,alpha=3.0,3.0,"{'gender[F]': np.float64(0.016), 'gender[M]': np.float64(-0.016)}",-0.091
+contents,K2,alpha=10.0,10.0,"{'gender[F]': np.float64(0.005), 'gender[M]': np.float64(-0.005)}",-0.09
+contents,K3,auto,3.0,"{'gender[F]': np.float64(0.013), 'gender[M]': np.float64(-0.013)}",-0.093
+contents,K3,alpha=0.03,0.03,"{'gender[F]': np.float64(0.088), 'gender[M]': np.float64(-0.088)}",-0.099
+contents,K3,alpha=0.1,0.1,"{'gender[F]': np.float64(0.078), 'gender[M]': np.float64(-0.078)}",-0.098
+contents,K3,alpha=0.3,0.3,"{'gender[F]': np.float64(0.058), 'gender[M]': np.float64(-0.058)}",-0.097
+contents,K3,alpha=3.0,3.0,"{'gender[F]': np.float64(0.013), 'gender[M]': np.float64(-0.013)}",-0.093
+contents,K3,alpha=10.0,10.0,"{'gender[F]': np.float64(0.004), 'gender[M]': np.float64(-0.004)}",-0.092
+contents,K4,auto,1.0,"{'gender[F]': np.float64(0.044), 'gender[M]': np.float64(-0.044)}",-0.148
+contents,K4,alpha=0.03,0.03,"{'gender[F]': np.float64(0.132), 'gender[M]': np.float64(-0.132)}",-0.155
+contents,K4,alpha=0.1,0.1,"{'gender[F]': np.float64(0.115), 'gender[M]': np.float64(-0.115)}",-0.154
+contents,K4,alpha=0.3,0.3,"{'gender[F]': np.float64(0.085), 'gender[M]': np.float64(-0.085)}",-0.151
+contents,K4,alpha=3.0,3.0,"{'gender[F]': np.float64(0.019), 'gender[M]': np.float64(-0.019)}",-0.146
+contents,K4,alpha=10.0,10.0,"{'gender[F]': np.float64(0.006), 'gender[M]': np.float64(-0.006)}",-0.145
+contents,K5,auto,1.0,"{'gender[F]': np.float64(0.047), 'gender[M]': np.float64(-0.047)}",-0.114
+contents,K5,alpha=0.03,0.03,"{'gender[F]': np.float64(0.138), 'gender[M]': np.float64(-0.138)}",-0.121
+contents,K5,alpha=0.1,0.1,"{'gender[F]': np.float64(0.121), 'gender[M]': np.float64(-0.121)}",-0.12
+contents,K5,alpha=0.3,0.3,"{'gender[F]': np.float64(0.089), 'gender[M]': np.float64(-0.089)}",-0.117
+contents,K5,alpha=3.0,3.0,"{'gender[F]': np.float64(0.02), 'gender[M]': np.float64(-0.02)}",-0.111
+contents,K5,alpha=10.0,10.0,"{'gender[F]': np.float64(0.007), 'gender[M]': np.float64(-0.007)}",-0.11

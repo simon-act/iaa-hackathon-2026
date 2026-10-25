@@ -1,0 +1,16 @@
+linea,perilo,visti_2023,previsti_fine_2024,veri_fine_2024,AE,dev_AE_stesso_test,sd_poisson_AE
+buildings,accidental_damage,55,56.8,55,0.969,0.995,0.023
+buildings,escape_of_water,119,124.6,131,1.051,1.025,0.019
+buildings,fire,48,48.8,49,1.005,1.013,0.021
+buildings,flood,42,43.3,42,0.969,1.012,0.027
+buildings,storm,193,199.4,210,1.053,1.028,0.013
+buildings,subsidence,22,31.7,32,1.01,0.977,0.098
+contents,accidental_damage,161,166.3,166,0.998,1.001,0.014
+contents,escape_of_water,77,80.7,86,1.065,1.024,0.024
+contents,flood,50,52.2,51,0.978,1.008,0.028
+contents,theft,182,185.3,188,1.015,0.997,0.01
+motor,bodily_injury,161,270.3,266,0.984,0.989,0.039
+motor,glass_hail,586,601.0,601,1.0,1.009,0.006
+motor,own_damage,1326,1368.7,1377,1.006,1.001,0.005
+motor,theft,191,194.7,194,0.997,1.0,0.01
+motor,third_party_prop,1059,1127.2,1119,0.993,1.002,0.007

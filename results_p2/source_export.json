@@ -1,0 +1,4 @@
+{
+ "source": "configs/parte1_s3.json",
+ "new": "configs/parte2.json"
+}

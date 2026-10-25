@@ -33,6 +33,16 @@ Severity is mostly noise: +0.002 on pooled_mean is a real gain, +0.005 would be 
 - Heavy tails: bodily_injury, fire, flood, subsidence have few claims and huge variance. Robust choices (fewer
   parameters, shrinkage towards the mean, log-linear GLMs) usually beat flexible ones there.
 
+## Update (after iteration 9)
+- The kept change (MIN_CLAIMS 500, L2 100, 100 rounds) only added models for the small perils that the baseline left at
+  the mean. The TEAM'S REAL MODEL already fits those perils with a Gamma GLM on log(sum_insured) (power law), whose
+  out-of-fold D² is: fire 0.045/0.053, buildings flood 0.045/0.036, subsidence 0.028/0.021, contents flood 0.076/0.073
+  (2023/2024). The current experiment.py is about equal to that. So the bar to beat per peril is now: those numbers for
+  the small perils, and the baseline numbers for the others. Gains must come from BETTER drivers or functional forms,
+  not from switching a peril from "mean" to "a model".
+- Target encoding of make_model with k=20 overfits badly (-0.012). Ridge/IRLS GLMs written by hand have produced
+  invalid predictions 6 times: if you use a GLM, use sklearn GammaRegressor with standardized log inputs.
+
 ## Directions worth trying (ONE per iteration)
 1. Gamma GLM with log link (sklearn GammaRegressor or statsmodels-free numpy IRLS) on 1–3 numeric drivers:
    log(sum_insured), vehicle_value_group, vehicle_age — compare with the GBM.

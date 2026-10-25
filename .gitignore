@@ -26,3 +26,11 @@ results_*/oof/
 # pagine guida: contengono righe di esempio dei dati → restano artifact privati
 viz/*_guida.html
 results_s3/spie_scan.csv
+submissions_p2/*.csv
+results_p2/oof_parts/
+results_p2/*.parquet
+
+# 25/10: premio commerciale per riga delle 20 polizze di riferimento (contiene dati della gara) -> solo locale e nel report
+results_p2/office_premium_reference*.csv
+results_p2_llc/
+results_p2_llp/

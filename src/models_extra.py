@@ -296,6 +296,8 @@ HIST = ("pol_prev", "cust_other_prev", "addr_prev")
 _DROP_CUST_LINES = {}   # 20/10: linee in cui togliere cust_other_prev_* (variante fs2_v2_nocust_cred)
 _YEAR_DECAY = None      # 21/10: peso degli anni di stima = decay^(ultimo anno − anno) in frequenza e severità (None = pesi uguali)
 _SEV_PERIL = {}         # 20/10: {linea: {perilo: {"_all": True} (severità su tutte le variabili del modello) o {"_mean": True}}}
+_FREQ_2PH = {}          # 22/10 sera: {linea: perili} con la franchigia applicata dopo (due fasi)
+_FREQ_XS = {}           # 22/10 sera: {linea: perili} con la franchigia relativa (xs_rel) nella frequenza
 _FREQ_OVERRIDE = {}     # 20/10: {linea: {perilo o "*": parametri LightGBM della frequenza, "_mult" = moltiplicatore dei giri}}
 
 
@@ -329,6 +331,12 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
         if has_mm:
             te_tr, te_va = _te_make_model(train, valid, n, np.exp(off + base), k=30.0)
             Xtr = Xtr0.assign(mm_freq_te=te_tr); Xva = Xva0.assign(mm_freq_te=te_va)
+        two_ph = p in _FREQ_2PH.get(line, ())
+        if two_ph:   # 22/10 sera, "lordo poi netto": frequenza senza franchigia, fattore franchigia × classe di valore applicato dopo
+            Xtr = Xtr.drop(columns=["voluntary_excess"], errors="ignore"); Xva = Xva.drop(columns=["voluntary_excess"], errors="ignore")
+        if p in _FREQ_XS.get(line, ()):   # 22/10 sera: franchigia relativa al valore del bene nella frequenza di questo perilo
+            Xtr = Xtr.assign(xs_rel=_add_xs(train, line)["xs_rel"].to_numpy())
+            Xva = Xva.assign(xs_rel=_add_xs(valid, line)["xs_rel"].to_numpy())
         params = dict(FREQ_PARAMS, **(fparams or {}))
         ov = dict(_FREQ_OVERRIDE.get(line, {}).get("*", {}), **_FREQ_OVERRIDE.get(line, {}).get(p, {}))
         mult_p = ov.pop("_mult", mult)
@@ -351,6 +359,9 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
             raw_tr = m.predict(Xtr, raw_score=True)
             f_va = np.exp(m.predict(Xva, raw_score=True) + base) * es_va
             f_tr = np.exp(raw_tr + base) * es_tr
+            if two_ph:
+                fac_tr, fac_va = _xs_factor(train, valid, line, n, np.exp(raw_tr + base + off))
+                f_tr, f_va = f_tr * fac_tr, f_va * fac_va
             if _PERIL_CRED_K:
                 f_va = _peril_cred(f_va, es_va, valid, line, p, ft, _PERIL_CRED_K)
             if zero_keep:
@@ -397,11 +408,15 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
             s_tr, s_va = np.sqrt(s_tr * g_tr), np.sqrt(s_va * g_va)
         total_va += f_va * s_va; total_tr += f_tr * s_tr
         parts[p] = (np.asarray(f_va, float), np.broadcast_to(np.asarray(s_va, float), np.shape(f_va)).copy())
+        _fs2.parts_tr = dict(getattr(_fs2, "parts_tr", {}) if p != perils[0] else {}, **{p: np.asarray(f_tr, float)})
     _fs2.last_log = log
     ll = float(lvl.loc[line, "ll_load_2025"])
     w_tr, w_va = _ll_weights(train, valid, line) if ll_si else (np.ones(len(train)), np.ones(len(valid)))
     if _LL_RISK:   # 20/10: caricamento large loss ripartito sul rischio previsto (Poisson dei grandi sinistri)
-        w_tr, w_va = _ll_risk_weights(train, valid, line, total_tr, total_va, e_tr, e_va)
+        if _LL_RISK == "bi" and line == "motor":   # 22/10: grandi sinistri auto ripartiti sulla frequenza lesioni prevista
+            w_tr, w_va = _ll_risk_weights(train, valid, line, _fs2.parts_tr["bodily_injury"] * 1.0, parts["bodily_injury"][0] * 1.0, e_tr, e_va)
+        else:
+            w_tr, w_va = _ll_risk_weights(train, valid, line, total_tr, total_va, e_tr, e_va)
     c = train[P.TARGET].sum() / (total_tr + ll * e_tr * w_tr).sum()
     _fs2.last_parts = {"perils": parts, "ll": ll * e_va * w_va, "c": c}   # numero atteso e severità per perilo (prima di c)
     return (total_va + ll * e_va * w_va) * c
@@ -1210,3 +1225,210 @@ def fs2_v2_llr_cust_cred(train, valid, line):
         return fs2_v2_llr_cred(train, valid, line)
     finally:
         DECOYS = old
+
+
+def fs2_v2_llr_lin_cred(train, valid, line):
+    """22/10 (banco meteo, scripts/weather_bench.py): frequenza di alluvione e incendio del fabbricato con linear_tree
+    (il meteo e le variabili continue pesano anche oltre il range visto): +22,6/+16,4 e +1,4/+9,4 e·4 di D² Poisson del perilo
+    nei due fold. Resto = fs2_v2_llr_cred (sub_40)."""
+    global _FREQ_OVERRIDE
+    old = _FREQ_OVERRIDE
+    lin = {"linear_tree": True, "linear_lambda": 1.0}
+    _FREQ_OVERRIDE = {"buildings": {"flood": dict(lin), "fire": dict(lin)}}
+    try:
+        return fs2_v2_llr_cred(train, valid, line)
+    finally:
+        _FREQ_OVERRIDE = old
+
+
+def fs2_v2_llr_linf_cred(train, valid, line):
+    """22/10: come fs2_v2_llr_lin_cred ma linear_tree solo sull'alluvione del fabbricato (alluvione+incendio: +0,73/−0,38 e·4)."""
+    global _FREQ_OVERRIDE
+    old = _FREQ_OVERRIDE
+    _FREQ_OVERRIDE = {"buildings": {"flood": {"linear_tree": True, "linear_lambda": 1.0}}}
+    try:
+        return fs2_v2_llr_cred(train, valid, line)
+    finally:
+        _FREQ_OVERRIDE = old
+
+
+
+def _motor_ll_variant(mode):
+    def f(train, valid, line):
+        global _LL_RISK
+        _LL_RISK = mode
+        try:
+            return fs2_v2fb_cred(train, valid, line)
+        finally:
+            _LL_RISK = False
+    return f
+
+
+# 22/10 (ricerca: rischio dei grandi sinistri legato al profilo, non uniforme per esposizione): carico LL auto (28 per
+# anno-esposizione, ~5% del costo) ripartito sul rischio previsto totale ("tot") o sulla frequenza lesioni ("bi")
+fs2_v2fb_llr_cred = _motor_ll_variant(True)
+fs2_v2fb_llrbi_cred = _motor_ll_variant("bi")
+
+
+# --- 22/10 sera: franchigia relativa al valore del bene nel GBM (domanda di Simone: "lordo e poi netto")
+# xs_rel = (franchigia volontaria + obbligatoria) ÷ valore (classe di valore del veicolo / somma assicurata)
+_XS_COMP = {"motor": 250, "buildings": 350, "contents": 350}
+
+
+def _add_xs(df, line):
+    d = df.copy()
+    scale = d["vehicle_value_group"].astype(float) if line == "motor" else d["sum_insured"].astype(float).clip(lower=1)
+    d["xs_rel"] = (d["voluntary_excess"].astype(float) + _XS_COMP[line]) / scale
+    return d
+
+
+def qwen_gbm73fix_xs(train, valid, line):
+    return qwen_gbm73fix(_add_xs(train, line), _add_xs(valid, line), line)
+
+
+qwen_gbm73fix_xs_cred = _cred(qwen_gbm73fix_xs, 8)
+
+
+def qwen_gbm73_gross_xs(train, valid, line):
+    return qwen_gbm73_gross(_add_xs(train, line), _add_xs(valid, line), line)
+
+
+qwen_gbm73_gross_xs_cred = _cred(qwen_gbm73_gross_xs, 8)
+
+
+# perili dove xs_rel nella frequenza vince nei due anni (scripts/excess_bench.py): danni propri e furto auto,
+# danni accidentali fabbricato, acqua contenuto
+_XS_PERILS = {"motor": ("own_damage", "theft"), "buildings": ("accidental_damage",), "contents": ("escape_of_water",)}
+
+
+def _xs_variant(fn):
+    def f(train, valid, line):
+        global _FREQ_XS
+        _FREQ_XS = _XS_PERILS
+        try:
+            return fn(train, valid, line)
+        finally:
+            _FREQ_XS = {}
+    return f
+
+
+fs2_v2fb_xs_cred = _xs_variant(fs2_v2fb_cred)
+fs2_v2_llr_xs_cred = _xs_variant(fs2_v2_llr_cred)
+fs2_v2_sevmix_xs_cred = _xs_variant(fs2_v2_sevmix_cred)
+
+
+# controlli per il guadagno di qwen_gbm73_gross_xs nel fabbricato: è la franchigia o solo una colonna in più?
+#  siinv = 1/somma assicurata senza franchigia (toglie l'effetto del vincolo monotono su sum_insured);
+#  rnd   = colonna di rumore (misura quanto cambia il GBM solo per il campionamento delle colonne)
+def _add_col(kind, seed=11):
+    def g(df, line):
+        d = df.copy()
+        if kind == "siinv":
+            d["si_inv"] = 1.0 / d["sum_insured"].astype(float).clip(lower=1)
+        else:
+            d["rnd"] = np.random.default_rng(seed).random(len(d))
+        return d
+    return g
+
+
+def qwen_gbm73_gross_siinv(train, valid, line):
+    g = _add_col("siinv"); return qwen_gbm73_gross(g(train, line), g(valid, line), line)
+
+
+def qwen_gbm73_gross_rnd(train, valid, line):
+    g = _add_col("rnd"); return qwen_gbm73_gross(g(train, line), g(valid, line), line)
+
+
+qwen_gbm73_gross_siinv_cred = _cred(qwen_gbm73_gross_siinv, 8)
+qwen_gbm73_gross_rnd_cred = _cred(qwen_gbm73_gross_rnd, 8)
+
+
+def _xs_factor(train, valid, line, n, mu_tr, k=50.0):
+    """Fattore franchigia volontaria × quintile di valore del bene: A/E sul train del modello senza franchigia, credibilità k sinistri."""
+    sc = lambda d: (d["vehicle_value_group"] if line == "motor" else d["sum_insured"]).astype(float).to_numpy()
+    edges = np.unique(np.quantile(sc(train), [0.2, 0.4, 0.6, 0.8]))
+    q_tr, q_va = np.searchsorted(edges, sc(train), side="right"), np.searchsorted(edges, sc(valid), side="right")
+    g = pd.DataFrame({"x": train["voluntary_excess"].to_numpy(), "q": q_tr, "n": n, "m": mu_tr}).groupby(["x", "q"]).sum()
+    fac = (g.n + k) / (g.m + k)
+    get = lambda d, q: fac.reindex(pd.MultiIndex.from_arrays([d["voluntary_excess"].to_numpy(), q])).fillna(1.0).to_numpy()
+    return get(train, q_tr), get(valid, q_va)
+
+
+# perili dove la versione a due fasi vince nei due anni (excess_bench.py, auto): danni propri +1,1/+2,9, furto +4,7/+5,1
+_2PH_PERILS = {"motor": ("own_damage", "theft")}
+
+
+def _2ph_variant(fn):
+    def f(train, valid, line):
+        global _FREQ_2PH
+        _FREQ_2PH = _2PH_PERILS
+        try:
+            return fn(train, valid, line)
+        finally:
+            _FREQ_2PH = {}
+    return f
+
+
+fs2_v2fb_2ph_cred = _2ph_variant(fs2_v2fb_cred)
+
+
+def _rnd_seed(seed):
+    def f(train, valid, line):
+        g = _add_col("rnd", seed); return qwen_gbm73_gross(g(train, line), g(valid, line), line)
+    return _cred(f, 8)
+
+
+qwen_gbm73_gross_rnd12_cred, qwen_gbm73_gross_rnd13_cred, qwen_gbm73_gross_rnd14_cred = _rnd_seed(12), _rnd_seed(13), _rnd_seed(14)
+
+
+# --- 23/10 mattina: "lordo poi netto" anche nel GBM e nella tempesta del fabbricato (richiesta di Simone, punti 1 e 2) ---
+# GBM a due fasi: stesso GBM senza franchigia volontaria (né xs_rel), poi fattore franchigia × quintile di valore del bene
+# = (Σ target + K) / (Σ previsione + K) sul train (previsione in-sample), K = 2000 righe di costo medio; applicato alla validazione.
+def _gbm_2ph(fn, gross):
+    def f(train, valid, line):
+        drop = [c for c in ("voluntary_excess", "xs_rel") if c in train.columns]
+        tr, va = train.drop(columns=drop), valid.drop(columns=drop)
+        both = pd.concat([tr, va], ignore_index=True)
+        pr = np.asarray(fn(tr, both, line), float)
+        p_tr, p_va = pr[:len(tr)], pr[len(tr):]
+        y = _gross_target(train) if gross else train[P.TARGET].to_numpy(float)
+        y = np.asarray(y, float)
+        sc = lambda d: (d["vehicle_value_group"] if line == "motor" else d["sum_insured"]).astype(float).to_numpy()
+        edges = np.unique(np.quantile(sc(train), [0.2, 0.4, 0.6, 0.8]))
+        q_tr, q_va = np.searchsorted(edges, sc(train), side="right"), np.searchsorted(edges, sc(valid), side="right")
+        K = y.sum() / len(y) * 2000.0
+        g = pd.DataFrame({"x": train["voluntary_excess"].to_numpy(), "q": q_tr, "y": y, "p": p_tr}).groupby(["x", "q"]).sum()
+        fac = (g.y + K) / (g.p + K)
+        fv = fac.reindex(pd.MultiIndex.from_arrays([valid["voluntary_excess"].to_numpy(), q_va])).fillna(1.0).to_numpy()
+        return p_va * fv
+    return f
+
+
+qwen_gbm73fix_2ph_cred = _cred(_gbm_2ph(qwen_gbm73fix, False), 8)          # auto (OOF come qwen_gbm73fix_cred)
+qwen_gbm73fix_gross_2ph_cred = _cred(_gbm_2ph(qwen_gbm73fix_gross, True), 8)  # auto, stima finale
+qwen_gbm73_gross_2ph_cred = _cred(_gbm_2ph(qwen_gbm73_gross, True), 8)        # fabbricato (sostituisce qwen_gbm73_gross_xs_cred)
+qwen_gbm73_2ph_cred = _cred(_gbm_2ph(qwen_gbm73, False), 8)                   # contenuto (sostituisce qwen_gbm73_cred)
+
+
+# tempesta del fabbricato a due fasi (excess_bench: +1,6 / +1,0 sul perilo)
+def fs2_v2_llr_2phs_cred(train, valid, line):
+    global _FREQ_2PH
+    _FREQ_2PH = {"buildings": ("storm",)}
+    try:
+        return fs2_v2_llr_cred(train, valid, line)
+    finally:
+        _FREQ_2PH = {}
+
+
+# --- 23/10 notte: Parte 2 (mercato emerging) — modelli di src/transfer.py richiamabili da oof_one.py / final_model_line.py
+def _tr(name):
+    def f(train, valid, line):
+        import transfer as TR
+        return getattr(TR, name)(train, valid, line)
+    f.__name__ = f"p2_{name}"
+    return f
+
+
+p2_scratch, p2_src_level, p2_src_glm, p2_src_gbm = _tr("scratch"), _tr("src_level"), _tr("src_glm"), _tr("src_gbm")
+p2_src_peril, p2_src_peril_nocorr = _tr("src_peril"), _tr("src_peril_nocorr")
+p2_src_glm2 = _tr("src_glm2")

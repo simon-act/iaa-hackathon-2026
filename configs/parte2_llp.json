@@ -1,0 +1,44 @@
+{
+ "name": "parte2_llp",
+ "_nota": "Come parte2.json, con il prior del carico grandi sinistri dalla coda di Pareto del developed (auto, soglia 50k), 25/10.",
+ "raw": "data/raw_p2",
+ "interim": "data/interim_p2_llp",
+ "model_dir": "data/model_p2_llp",
+ "results": "results_p2_llp",
+ "train_years": [
+  2023,
+  2024
+ ],
+ "folds": {
+  "F2024": [
+   [
+    2023
+   ],
+   2024
+  ]
+ },
+ "holdout_share": 0.0,
+ "fixes": {
+  "construction_map": {
+   "brk": "brick",
+   "stn": "stone",
+   "wod": "timber",
+   "mix": "non_standard"
+  },
+  "occupation_normalize": true
+ },
+ "trend": {
+  "from_source": true
+ },
+ "transfer": {
+  "source_market": "configs/parte1_s3.json",
+  "mode": "offset_credibility",
+  "ll_prior_pareto": {
+   "motor": 50000
+  }
+ },
+ "development": {
+  "source_interim": "data/interim_s3",
+  "reporting_from_source": true
+ }
+}

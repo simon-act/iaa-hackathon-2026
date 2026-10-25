@@ -120,3 +120,55 @@ def uncred(pred_cred, valid, line, k):
             break
         s = s_new
     return pr
+
+
+# --- 22/10 notte: storia dell'ultimo anno completata con i sinistri tardivi attesi dai contatti ---
+# Nel test la storia 2024 è ai denunciati entro il 31/12/2024 (−7% dei sinistri in auto). I contatti col servizio
+# clienti della riga 2024 nascono anche dai sinistri non ancora denunciati: fra le righe senza denunce, P(tardivo)
+# = 0,03% / 0,45% / 3,4% / 17% / 63% con 0/1/2/3/≥4 contatti (2022 e 2023 uguali; scripts/contacts_late.py).
+# Qui: N += E[tardivi | contatti, denunciati] della riga 2024 della polizza (tabella 2022+2023), H riportata alla
+# completezza piena (quella delle righe 2023, per mese). Simulazione nei fold (scripts/contacts_cred_bench.py):
+# auto +0,34/+0,39 ufficiale, +0,23/+0,15 senza spalmatura (e·4) → tenuta; casa e contenuto negative → no.
+CS_MAX, NR_MAX = 6, 2
+_cache_fix = {}
+
+
+def history_fix(line, last_year=2024, fit_years=(2022, 2023)):
+    """N_fix e H_fix per le righe del test: storia completata sull'anno last_year."""
+    key = (line, last_year)
+    if key in _cache_fix:
+        return _cache_fix[key]
+    h, n, sev = history(line)
+    tr = P.load(line); te = P.load(line, "test")
+    tr["period_start"] = pd.to_datetime(tr.period_start); tr["period_end"] = pd.to_datetime(tr.period_end); tr["mese"] = tr.period_end.dt.month
+    perils = [c[3:] for c in tr.columns if c.startswith("pi_")]
+    nn = tr[[f"n_{p}" for p in perils]].sum().to_numpy(); w = nn / nn.sum()
+    tr["pi_avg"] = tr[[f"pi_{p}" for p in perils]].to_numpy() @ w
+    cl = pd.read_parquet(next(Path(P.CFG["raw"]).glob("**/claims.parquet")), columns=["policy_id", "line", "loss_date", "report_date"])
+    cl = cl[cl.line == line]; cl["loss_date"] = pd.to_datetime(cl.loss_date); cl["report_date"] = pd.to_datetime(cl.report_date)
+    c = cl.merge(tr[["row_id", "policy_id", "period_start", "period_end", "year"]], on="policy_id")
+    c = c[(c.loss_date >= c.period_start) & (c.loss_date <= c.period_end)]
+    c["cut"] = pd.to_datetime(c.year.astype(str) + "-12-31")
+    tr["n_rep"] = c[c.report_date <= c.cut].groupby("row_id").size().reindex(tr.row_id).fillna(0).to_numpy()
+    tr["n_late"] = c[c.report_date > c.cut].groupby("row_id").size().reindex(tr.row_id).fillna(0).to_numpy()
+    tr["cs"] = tr.customer_service_contacts.clip(upper=CS_MAX); tr["nr"] = tr.n_rep.clip(upper=NR_MAX)
+    tab = tr[tr.year.isin(fit_years)].groupby(["cs", "nr"])["n_late"].mean()
+    pi_full = tr[tr.year == last_year - 1].groupby("mese")["pi_avg"].mean()
+    last = tr[tr.year == last_year].copy()
+    last["late_exp"] = tab.reindex(pd.MultiIndex.from_arrays([last.cs, last.nr])).fillna(0).to_numpy()
+    last["dH"] = last.exposure * (pi_full.reindex(last.mese).to_numpy() - last.pi_avg)
+    g = last.groupby("policy_id").agg(late_exp=("late_exp", "sum"), dH=("dH", "sum"))
+    gg = g.reindex(te.policy_id).fillna(0)
+    N_fix = pd.Series(n.reindex(te.row_id).to_numpy() + gg.late_exp.to_numpy(), index=te.row_id)
+    H_fix = pd.Series(h.reindex(te.row_id).to_numpy() + gg.dH.to_numpy(), index=te.row_id)
+    _cache_fix[key] = (N_fix, H_fix, sev, float(gg.late_exp.sum()), float(gg.dH.sum()))
+    return _cache_fix[key]
+
+
+def apply_fix(pred, valid, line, k):
+    """come apply(), con la storia dell'ultimo anno completata (solo righe del test)."""
+    N_fix, H_fix, sev, _, _ = history_fix(line)
+    pred = np.asarray(pred, float)
+    H = H_fix.reindex(valid["row_id"]).to_numpy(); N = N_fix.reindex(valid["row_id"]).to_numpy()
+    out = pred * (N + k) / (H * pred / (valid["exposure"].to_numpy() * sev) + k)
+    return out * pred.sum() / out.sum()

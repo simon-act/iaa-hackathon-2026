@@ -1,0 +1,5 @@
+area,checks,ok
+"data (rows, exposure, sums insured, claims)",22,22
+target reconciliation,12,12
+reporting-delay backtest,15,12
+level by year,3,2

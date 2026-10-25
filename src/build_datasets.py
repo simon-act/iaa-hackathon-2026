@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent))
-from market_config import LINES, TARGET_YEAR  # noqa: E402
+from market_config import CFG, LINES, TARGET_YEAR  # noqa: E402
 
 
 def add_context(df, customers, addresses, weather):
@@ -36,8 +36,12 @@ def main(raw, interim, out):
     raw, interim, out = Path(raw), Path(interim), Path(out)
     out.mkdir(parents=True, exist_ok=True)
     customers = pd.read_parquet(raw / "customers.parquet").drop(columns=["surname"])
-    customers["birth_year"] = pd.to_datetime(customers["date_of_birth"]).dt.year
-    customers = customers.drop(columns=["date_of_birth"])
+    if "date_of_birth" in customers.columns:   # Parte 2: il mercato emerging non ha la data di nascita
+        customers["birth_year"] = pd.to_datetime(customers["date_of_birth"]).dt.year
+        customers = customers.drop(columns=["date_of_birth"])
+    if "occupation" in customers.columns and CFG["fixes"].get("occupation_normalize"):
+        # Parte 2: professione a testo libero ("Retired", "retired", "Retired ") -> minuscolo senza spazi
+        customers["occupation"] = customers["occupation"].astype("string").str.strip().str.lower()
     addresses = pd.read_parquet(raw / "addresses.parquet")
     weather = pd.read_parquet(raw / "weather.parquet")
     claims = pd.read_parquet(interim / "claims_clean.parquet")
@@ -112,7 +116,7 @@ def main(raw, interim, out):
         te.to_parquet(out / f"test_{line}.parquet", index=False)
         rep[line]["test_rows"] = len(te)
         rep[line]["test_missing_weather"] = int(te["hail_days"].isna().sum())
-        rep[line]["test_missing_customer"] = int(te["credit_band"].isna().sum())
+        rep[line]["test_missing_customer"] = int(te["marital_status"].isna().sum())
 
     (out / "report_datasets.json").write_text(json.dumps(rep, indent=2, default=str))
     print(json.dumps(rep, indent=2, default=str))

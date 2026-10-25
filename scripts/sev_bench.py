@@ -17,6 +17,9 @@ import models_extra as M  # noqa: E402
 
 C = pd.read_parquet(ROOT / "autoresearch_sev/claims_sev.parquet")
 DRIV = M.SEV_DRIVERS
+# 22/10 sera: franchigia relativa al valore del bene (obbligatoria fissa: 250 auto, 350 casa)
+C["xs_rel"] = (C["voluntary_excess"].astype(float) + np.where(C["line"] == "motor", 250, 350)) / np.where(
+    C["line"] == "motor", C["vehicle_value_group"].astype(float), C["sum_insured"].astype(float).clip(lower=1))
 ALLX = [c for c in C.columns if c not in ("row_id", "line", "peril", "ay", "is_open", "exposure", "sev")]
 CONFIGS = {
     "base": {}, "tweedie1.8": {"objective": "tweedie", "tweedie_variance_power": 1.8},
@@ -24,6 +27,7 @@ CONFIGS = {
     "huber_log": {"_log": "huber"}, "l2_10": {"lambda_l2": 10.0}, "l2_200": {"lambda_l2": 200.0},
     "giri_75": {"_rounds": 75}, "giri_300": {"_rounds": 300}, "foglie3": {"num_leaves": 3, "max_depth": 2},
     "min_sinistri_750": {"_min": 750}, "min_sinistri_3000": {"_min": 3000}, "piu_franchigia": {"_extra": ["voluntary_excess", "compulsory_excess"]},
+    "xsrel": {"_extra": ["voluntary_excess", "xs_rel"]},
     "tutte_variabili": {"_all": True}, "glm_logsi_casa_tutti": {"_glm_all": True}, "media": {"_mean": True},
 }
 

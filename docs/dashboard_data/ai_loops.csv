@@ -1,0 +1,8 @@
+loop,experiments,kept,discarded_by_judge,blocked_by_guardrail,crashed_or_timeout
+Part 1 main model,316,9,267,7,33
+Part 1 frequency,55,0,42,2,11
+Part 1 boosting model,89,0,88,0,1
+Part 1 severity,113,1,87,4,21
+Part 1 residuals,64,1,62,0,1
+Part 1 claims history,94,0,84,0,10
+Part 2 emerging market (running),28,2,25,0,1

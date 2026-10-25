@@ -1,0 +1,479 @@
+{
+ "best": {
+  "by": {
+   "motor|2023": 0.09303,
+   "motor|2024": 0.09672,
+   "buildings|2023": 0.11209,
+   "buildings|2024": 0.11382,
+   "contents|2023": 0.08997,
+   "contents|2024": 0.09317
+  },
+  "pooled_mean": 0.09772,
+  "score": 0.0992,
+  "folds": {
+   "2023": 0.09772,
+   "2024": 0.10068
+  },
+  "official_folds": {
+   "2023": 0.11554,
+   "2024": 0.13664
+  },
+  "by_official": {
+   "motor|2023": 0.12173,
+   "motor|2024": 0.15047,
+   "buildings|2023": 0.12573,
+   "buildings|2024": 0.14596,
+   "contents|2023": 0.09711,
+   "contents|2024": 0.10867
+  },
+  "seconds": 321.2
+ },
+ "iter": 89,
+ "history": [
+  {
+   "status": "discarded",
+   "score": 0.09727,
+   "idea": "Increase LightGBM regularisation (raise min_data_in_leaf and lambda_l2, lower feature_fraction and num_leaves) to suppress noisy relativities."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Increase LightGBM regularisation (raise min_data_in_leaf and lambda_l2, lower feature_fraction and num_leaves) to suppress noisy relativities."
+  },
+  {
+   "status": "discarded",
+   "score": -382.09424,
+   "idea": "Use `pol_prev_rate` and `pol_prev_cost_rate` as the `init_score` for the GBM (instead of a global log-mean) to anchor predictions to the policy's own historical cost level, letting the model focus purely on residual risk adjustments."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09313,
+   "idea": "Drop the decoy list and the fixed high-cardinality drops so that the LightGBM model can use all available non-target, non-exposure features (including previously excluded signal like engine_size_cc and telematics_score) while relying on the strong L2 regularisation and feature subsampling to control"
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Remove `engine_size_cc` and `telematics_score` from the decoy exclusion list to allow the GBM to capture verified residual signal in motor, relying on existing regularization to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0976,
+   "idea": "Increase LightGBM regularisation for the motor line (raise min_data_in_leaf to 5000, min_sum_hessian_in_leaf to 200, lambda_l2 to 150.0, lower feature_fraction to 0.4, num_leaves to 6) to suppress noisy relativities and improve the shape of predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Use `pol_prev_rate` and `pol_prev_cost_rate` as a per-row multiplicative offset to anchor predictions to the policy's own historical cost level, allowing the GBM to focus purely on residual risk adjustments."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09672,
+   "idea": "Replace the fixed round counts with early stopping on a time-based holdout split (last 10% of training rows) to prevent overfitting to noisy noise-driven relativities, while removing the fixed `max_bin` to allow finer splits on high-signal continuous features like vehicle value."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09773,
+   "idea": "Apply monotone constraints to `vehicle_value_group` in the motor line to enforce the expected positive relationship between vehicle value and claim cost, directly addressing the documented under-utilization of this feature and reducing noisy inverse relativities."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Remove `engine_size_cc` from the decoy exclusion list to allow the GBM to capture the verified residual signal in this feature for the motor line, relying on the existing strong regularisation to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Remove the final scaling step that forces the sum of predictions to match the training sum, trusting the model's natural calibration to better reflect the shape of relative risk differences."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Add `engine_size_cc` as a numeric feature for the motor line to capture verified residual signal that is currently excluded by the decoy list, relying on the existing strong regularisation to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09774,
+   "idea": "Remove `engine_size_cc` from the decoy exclusion list to allow the GBM to capture the verified residual signal in this feature for the motor line, relying on the existing strong regularisation to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Remove the final scaling step that forces the sum of predictions to match the training sum, trusting the model's natural calibration to better reflect the shape of relative risk differences."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Add `engine_size_cc` as a numeric feature for the motor line to capture verified residual signal that is currently excluded by the decoy list, relying on the existing strong regularisation to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Remove `engine_size_cc` from the decoy exclusion list to allow the GBM to capture verified residual signal in this feature for the motor line, relying on the existing strong regularisation to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09724,
+   "idea": "Replace the fixed `max_bin=63` with `max_bin=255` and increase `learning_rate` to `0.03` with `num_leaves=12` to allow the model to capture finer-grained non-linear relationships in high-signal continuous features like vehicle value and sum insured, while maintaining regularization to suppress noise"
+  },
+  {
+   "status": "discarded",
+   "score": 0.09664,
+   "idea": "Use a time-based holdout split (last 25% of training rows) for early stopping on all lines to prevent overfitting to noisy relativities and adapt the number of boosting rounds to the actual signal-to-noise ratio in the training data."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09733,
+   "idea": "Increase LightGBM regularisation (raise min_data_in_leaf and lambda_l2, lower feature_fraction and num_leaves) to suppress noisy relativities."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Use `vehicle_value_group` as a numeric feature (casting it to float) for the motor line to allow the GBM to capture the verified residual signal in vehicle value more effectively, while maintaining the existing regularisation to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09681,
+   "idea": "For the buildings line, create a per-flood-zone residual target by subtracting the log of the zone-level mean cost, fit the GBM on these residuals to learn within-zone risk shape (focusing on days_unoccupied, building_age, construction, etc.), and then add the log of the zone-level mean cost back to"
+  },
+  {
+   "status": "discarded",
+   "score": 0.09736,
+   "idea": "Increase the LightGBM regularisation (higher `min_data_in_leaf`, stronger `lambda_l2`, and lower `feature_fraction`) to suppress noisy relativities and improve the shape of predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.08955,
+   "idea": "For the buildings line, apply a per-flood-zone log-offset to the target and use it as `init_score`, allowing the GBM to focus on within-zone risk factors (like days_unoccupied and building_age) without having to relearn the strong, smooth flood-zone gradient, thereby improving the shape of relative "
+  },
+  {
+   "status": "discarded",
+   "score": 0.09771,
+   "idea": "Add `days_unoccupied` to the monotone constraints for the buildings line to enforce its positive risk relationship and improve the shape of predictions in this verified signal feature."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09643,
+   "idea": "Increase the number of boosting rounds for the motor line from 800 to 1200 and lower the learning rate from 0.015 to 0.008 to allow the model to more accurately capture the complex, non-linear interactions between vehicle value and age without overfitting to noise, thereby improving the shape of rel"
+  },
+  {
+   "status": "run failed: lightgbm.basic.LightGBMError: [tweedie]: at least one target label is negative",
+   "score": "",
+   "idea": "Replace the single LightGBM model with a two-stage approach where the first stage predicts log-sum-insured (or log-vehicle-value for motor) as an offset, and the second stage predicts the residual claim cost, thereby decoupling the strong, smooth pricing drivers from the residual risk factors and im"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0973,
+   "idea": "Increase LightGBM regularisation (higher `min_data_in_leaf`, stronger `lambda_l2`, lower `feature_fraction`) to suppress noisy relativities and improve the shape of predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Use `vehicle_value_group` as a numeric feature (casting it to float) for the motor line to allow the GBM to capture the verified residual signal in vehicle value more effectively, while maintaining the existing regularisation to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09701,
+   "idea": "Enable LightGBM's native `extra_trees` mode to add stochasticity to split points, which acts as a strong regularizer to suppress noisy relativities and improve the shape of predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09755,
+   "idea": "Add `engine_size_cc` as a numeric feature for the motor line to capture verified residual signal, while increasing `min_data_in_leaf` to 5000 to suppress noisy relativities from other features."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09701,
+   "idea": "Enable LightGBM's `extra_trees` mode to add stochasticity to split points, acting as a strong regularizer to suppress noisy relativities and improve the shape of predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0973,
+   "idea": "Increase LightGBM regularisation by raising `min_data_in_leaf` to 5000, increasing `lambda_l2` to 150.0, and lowering `feature_fraction` to 0.4 to strongly suppress noisy relativities and improve the shape of predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09709,
+   "idea": "Increase the number of boosting rounds for the buildings and contents lines and lower the learning rate to allow the models to better capture the smooth, multiplicative risk structures without overfitting to noise, while maintaining strong regularization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Remove the final linear rescaling of predictions to match the training total, as the judge explicitly evaluates shape (rank/relativity) after rescaling to the same total, making this step redundant and potentially distorting the model's learned relative risk gradients."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0973,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.09709,
+   "idea": "Apply the `extra_trees` regularizer specifically to the buildings and contents lines, which show the highest Tweedie D\u00b2 scores, to add split-point stochasticity that suppresses noisy relativities and improves prediction shape."
+  },
+  {
+   "status": "discarded",
+   "score": 0.06513,
+   "idea": "Replace the log-offset init_score with a per-flood-zone residual target (subtracting the log of zone-level mean cost) to explicitly decouple the strong, smooth flood gradient from residual risk factors, allowing the GBM to focus on within-zone shape signals like days_unoccupied and building_age with"
+  },
+  {
+   "status": "discarded",
+   "score": -1394.4185,
+   "idea": "Replace the final linear rescaling of predictions with a rank-preserving quantile calibration that maps the bagged model's training prediction distribution to the training target distribution, thereby improving the shape of relativities without distorting the model's learned relative risk gradients."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09716,
+   "idea": "Reduce stochastic bagging to a single deterministic run and lower the learning rate to 0.01 with more rounds to obtain a smoother, less noisy prediction surface that better preserves the true signal-to-noise ratio in relativities."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0973,
+   "idea": "Increase `min_data_in_leaf` to 5000, `lambda_l2` to 150.0, and reduce `feature_fraction` to 0.4 to strongly suppress noisy relativities and improve the shape of predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09709,
+   "idea": "Increase the number of boosting rounds for the buildings and contents lines to 1000 and lower the learning rate to 0.01 to allow the models to better capture the smooth, multiplicative risk structures without overfitting to noise, while maintaining strong regularization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Remove the final linear rescaling of predictions to match the training total, as the judge explicitly evaluates shape (rank/relativity) after rescaling to the same total, making this step redundant and potentially distorting the model's learned relative risk gradients."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09764,
+   "idea": "Add `path_smooth=10.0` to the LightGBM parameters to penalize the path length of the decision tree, which forces the model to prefer shallower, smoother splits and suppresses noisy relativities across all lines."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Remove the final linear rescaling of predictions to match the training total, as the judge explicitly evaluates shape (rank/relativity) after rescaling to the same total, making this step redundant and potentially distorting the model's learned relative risk gradients."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Remove the final linear rescaling of predictions to match the training total, as the judge evaluates the shape of predictions after rescaling them to the same total, making this step redundant and potentially distorting the model's learned relative risk gradients."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Remove `engine_size_cc` from the decoy list to allow the model to capture the verified residual signal in engine size, while maintaining the existing strong regularization to suppress noise from other features."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09753,
+   "idea": "Increase LightGBM's `min_data_in_leaf` to 5000 and `lambda_l2` to 150.0 to strongly suppress noisy relativities and improve the shape of predictions, while maintaining the existing strong regularization to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Use `vehicle_value_group` as a numeric feature for the motor line to allow the GBM to capture the verified residual signal in vehicle value, while maintaining existing regularization to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0973,
+   "idea": "Use the model's own early-stopping validation error to select the optimal number of boosting rounds for each line, replacing the fixed round counts to prevent overfitting to noise while preserving signal."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Enable LightGBM's `feature_pre_filter=False` to force the model to consider all categorical levels (including rare ones) in split selection, preventing the default pre-filtering from discarding potentially informative low-frequency categories that contribute to the true risk shape."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Remove `engine_size_cc` from the decoys list for the motor line to allow the model to capture the verified residual signal in engine size, while maintaining existing regularization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Remove the `engine_size_cc` and `vehicle_value_group` features from the decoy list for the motor line to allow the model to capture the verified residual signal in vehicle value and engine size, while maintaining existing strong regularization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09777,
+   "idea": "Add `log_vehicle_value_group` and `vehicle_value_group_squared` features to the motor line to better capture the non-linear, potentially U-shaped or saturating relationship between vehicle value and claim cost, addressing the known under-utilization of this signal."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09751,
+   "idea": "Remove `telematics_score` from the feature set for the motor line to eliminate a likely noisy, high-variance signal that contributes to the observed over-reliance on idiosyncratic factors, thereby improving the smoothness of relativities."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Remove the final linear rescaling of predictions to match the training total, as the judge evaluates the shape of predictions after rescaling them to the same total, making this step redundant and potentially distorting the model's learned relative risk gradients."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09772,
+   "idea": "Remove the final linear rescaling of predictions to match the training target sum, as the judge explicitly rescales predictions to the same total before computing Tweedie D\u00b2, making this step redundant and potentially distorting the learned relative risk shape."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09735,
+   "idea": "Increase `min_data_in_leaf` to 8000 and `lambda_l2` to 200.0 to further suppress noisy relativities and improve the shape of predictions, while maintaining the existing strong regularization to manage noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09768,
+   "idea": "Add a squared `days_unoccupied` feature for the buildings line to capture the non-linear, accelerating risk associated with long periods of vacancy, which the linear feature under-utilizes in both scored years."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09543,
+   "idea": "Replace the single-model-with-init_score approach with a two-stage model where the first stage captures the strong drivers (sum_insured, flood_zone) and the second stage models the residual risk, allowing the GBM to focus on the remaining risk structure without being dominated by the strong drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09402,
+   "idea": "Reduce the number of boosting rounds for motor, buildings, and contents lines to 350, 300, and 250 respectively, to prevent the model from overfitting to noisy relativities in later iterations while preserving the signal captured in the initial, more robust iterations."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0973,
+   "idea": "Increase regularization strength by raising min_data_in_leaf to 5000, lambda_l2 to 150.0, and reducing feature_fraction to 0.4 to suppress noisy relativities and improve the smoothness of predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09701,
+   "idea": "Use `extra_trees=True` in the LightGBM parameters to introduce randomness in split selection, which acts as a strong regularizer against noisy relativities while preserving the signal in the most important features."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0973,
+   "idea": "Increase regularization strength for motor, buildings, and contents by raising `min_data_in_leaf` to 5000, `lambda_l2` to 120.0, and lowering `feature_fraction` to 0.4 to suppress noisy relativities and improve the smoothness of predictions, addressing the verified issue where the model is wrong whe"
+  },
+  {
+   "status": "discarded",
+   "score": 0.09675,
+   "idea": "Increase `min_data_in_leaf` to 10000 and `lambda_l2` to 150.0 to aggressively suppress noisy relativities and force the model to learn smoother, more robust risk gradients that better align with the true underlying frequency-severity structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09771,
+   "idea": "Add a per-peril offset using `flood_zone` as the initial score for buildings and contents lines to capture the strong, smooth flood risk gradient separately, allowing the GBM to focus on modeling the residual risk shape more accurately."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09771,
+   "idea": "Apply a monotone increasing constraint to `days_unoccupied` for the buildings line to enforce the verified positive risk gradient and suppress noisy non-monotonic splits on this feature."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09766,
+   "idea": "Remove the redundant `si_per_bedroom` feature from the feature engineering step because it is already present as a native column in the buildings and contents datasets, preventing the model from treating the same signal as two separate, potentially conflicting inputs."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09781,
+   "idea": "Remove `vehicle_value_group` from the decoy list and add a log-transformed `log_vehicle_value_group` feature for the motor line to better capture the verified residual signal in vehicle value while maintaining strong regularization to suppress noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0975,
+   "idea": "Increase regularization strength by raising `min_data_in_leaf` to 5000 and `lambda_l2` to 120.0 to suppress noisy relativities and improve the smoothness of predictions, addressing the verified issue where the model is wrong when it prices rows higher than the frequency-severity baseline."
+  },
+  {
+   "status": "discarded",
+   "score": -0.00102,
+   "idea": "Replace the log-exposure offset with the target mean as `init_score` to correctly center the boosting process on the expected cost level, ensuring the model learns the true residual risk shape rather than being biased by the log-scale initialization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09709,
+   "idea": "Enable `path_smooth` and `extra_trees` in the LightGBM parameters to act as strong regularizers that suppress noisy relativities and improve the smoothness of predictions, addressing the verified issue where the model is wrong where it prices rows higher than the frequency-severity baseline."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09692,
+   "idea": "Reduce the number of boosting rounds by 30% for all lines to prevent the model from fitting to noisy relativities in later iterations, as the baseline score indicates the current model is overfitting to noise rather than capturing the true risk structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09773,
+   "idea": "Apply a monotone increasing constraint to `vehicle_value_group` for the motor line to enforce the verified positive risk gradient and prevent the model from learning noisy non-monotonic splits on this key driver."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09673,
+   "idea": "Increase the number of boosting rounds for motor, buildings, and contents lines to 1500, 1300, and 1100 respectively to allow the model to fully capture the smooth, multiplicative risk structure without being prematurely cut off, while maintaining the strong regularization settings to suppress noise"
+  },
+  {
+   "status": "discarded",
+   "score": 0.09774,
+   "idea": "Introduce a `value_x_engine` interaction feature for the motor line to capture the combined risk signal of vehicle value and engine size, addressing the verified residual signal in `engine_size_cc` that the current model under-utilizes."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09775,
+   "idea": "Remove the `driver_age_x_lic` and `veh_val_x_age` interaction features from the motor line to reduce noise and prevent the model from fitting spurious interactions, as the verified data structure is described as smooth and roughly multiplicative with rare true interactions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0975,
+   "idea": "Increase `min_data_in_leaf` to 4000 and `lambda_l2` to 100.0 to moderate the regularization strength, finding a balance between suppressing noisy relativities and preserving the smooth signal that was lost with the more aggressive settings in previous failed attempts."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09738,
+   "idea": "Increase regularization strength by raising `min_data_in_leaf` to 8000 and `lambda_l2` to 150.0 to moderately suppress noisy relativities while preserving the smooth risk gradients, finding a balance between the aggressive and moderate settings tested previously."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09766,
+   "idea": "Remove the redundant `si_per_bedroom` feature engineering step for buildings and contents lines to prevent the model from treating the same signal as two separate, potentially conflicting inputs, thereby reducing noise in the relativities."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09726,
+   "idea": "Increase the number of boosting rounds for motor to 1200 and for buildings and contents to 1000, while maintaining the current regularization settings, to allow the model to fully capture the smooth, multiplicative risk structure without being prematurely cut off, as previous attempts showed that re"
+  },
+  {
+   "status": "discarded",
+   "score": 0.09756,
+   "idea": "Increase the number of boosting rounds for motor, buildings, and contents lines to 1200, 1000, and 900 respectively, with a lower learning rate of 0.01, to allow the model to capture smooth risk gradients while maintaining strong regularization to suppress noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09775,
+   "idea": "Remove the `driver_age_x_lic` and `veh_val_x_age` interaction features to prevent the model from fitting spurious interactions, as the verified data structure is smooth and roughly multiplicative with rare true interactions, and the model is already wrong where it disagrees with the frequency-severi"
+  },
+  {
+   "status": "discarded",
+   "score": 0.09766,
+   "idea": "Remove the `si_per_bedroom` feature engineering step for buildings and contents lines to prevent the model from treating the same signal as two separate, potentially conflicting inputs, thereby reducing noise in the relativities."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09741,
+   "idea": "Lower `min_data_in_leaf` to 1500 and `lambda_l2` to 40.0 to allow the model to capture the verified residual signals in vehicle value and engine size, while still maintaining sufficient regularization to suppress noise better than the aggressive settings that failed previously."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09716,
+   "idea": "Reduce the LightGBM `max_bin` from 63 to 15 to force coarser feature discretization, which acts as a stronger regularizer to suppress noisy relativities in the learned splits while preserving the main smooth risk gradients."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09689,
+   "idea": "Reduce the LightGBM `num_leaves` from 8 to 4 to enforce a simpler tree structure that suppresses noisy relativities while preserving the smooth multiplicative risk gradients, addressing the verified issue where the model overfits to noise in some directions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09469,
+   "idea": "Reduce the number of boosting rounds by 30% and lower the learning rate to 0.01 to suppress noisy relativities and improve the smoothness of predictions, addressing the verified issue where the model is wrong where it prices rows higher than the frequency-severity baseline."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09773,
+   "idea": "Add a `days_unoccupied_sq` feature to capture the verified non-linear risk gradient in buildings and contents, allowing the model to better utilize this under-used signal while maintaining the existing strong regularization to suppress noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09732,
+   "idea": "Reduce the LightGBM `feature_fraction` from 0.5 to 0.3 to increase the effective regularization by forcing the model to rely on fewer features per split, thereby suppressing noisy relativities while preserving the main smooth risk gradients."
+  }
+ ]
+}

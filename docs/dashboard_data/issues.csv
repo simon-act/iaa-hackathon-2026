@@ -1,0 +1,10 @@
+kind,issue,found_by,resolution
+AI error caught,"Qwen's boosting model had a wrong monotone constraint on vehicle age",actuary review of the loop output,constraint fixed before the model entered the blend
+AI error caught,"Office-premium table used the risk premium of an older submission",independent recomputation (25/10),table rebuilt from the final submission
+AI error caught,"Report said contents gender effect +12%; the final model has +9%",independent recomputation (25/10),text corrected
+AI error caught,"A reused staging folder copied a stale model file to the actuary's Mac",md5 check after every copy,rule: new staging folder and md5 for every copy
+Actuary challenge,"Are there duplicate claims?",actuary question,598 exact duplicates removed; became a data check
+Actuary challenge,"Is the sum-insured fix right?",actuary question,checked on ratio gap and the same policy in other years
+Actuary challenge,"Are customer-service contacts leaking the claims?",actuary question,column excluded; automated test added
+Actuary challenge,"Should we overfit the public leaderboard?",actuary rule,decisions moved to internal judges; leaderboard used only as a check
+Actuary challenge,"Is an acquired broker portfolio worse than organic business?",actuary experience,new-business correction kept after bootstrap and variants

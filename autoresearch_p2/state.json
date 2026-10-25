@@ -1,0 +1,191 @@
+{
+ "best": {
+  "by": {
+   "motor|F2024": 0.0026,
+   "motor|F2023": 0.001649,
+   "motor|K1": 0.000648,
+   "motor|K2": 0.00713,
+   "motor|K3": 0.000717,
+   "motor|K4": 0.0006,
+   "motor|K5": 0.003443,
+   "buildings|F2024": -0.000748,
+   "buildings|F2023": 0.001423,
+   "buildings|K1": 0.003759,
+   "buildings|K2": 0.002863,
+   "buildings|K3": -0.003157,
+   "buildings|K4": 0.000441,
+   "buildings|K5": -0.001407,
+   "contents|F2024": 0.001974,
+   "contents|F2023": 0.001955,
+   "contents|K1": 0.000188,
+   "contents|K2": 0.003253,
+   "contents|K3": 0.005503,
+   "contents|K4": -0.003205,
+   "contents|K5": 0.002978
+  },
+  "own": 0.001724,
+  "forma": 0.001901,
+  "unc": 0.001728,
+  "pooled_mean": 0.001724,
+  "score": 0.001724,
+  "seconds": 0.7
+ },
+ "iter": 31,
+ "history": [
+  {
+   "status": "discarded",
+   "score": -0.000754,
+   "idea": "Refine the gender adjustment by computing credibility-weighted factors per peril (summing cost and prior expected cost across all perils), rather than a single line-level factor, to better capture peril-specific gender effects while shrinking to 1.0 for perils with sparse data."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Use the prior log-likelihood (`prior_ll_src`) as a per-row confidence weight to implement B\u00fchlmann credibility for the gender factor, so rows with higher prior confidence anchor the factor to 1.0 while low-confidence rows allow the data to shift it, applied only to motor and contents."
+  },
+  {
+   "status": "discarded",
+   "score": 0.000613,
+   "idea": "Use prior log-likelihood (`prior_ll_src`) as a confidence weight to compute credibility-weighted gender adjustment factors per peril (using `prior_f_<peril>` and `prior_s_<peril>`), then apply these factors to the prior expected cost, shrinking low-confidence perils toward 1.0."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000322,
+   "idea": "Replace the single line-level gender factor with a per-peril credibility-weighted gender adjustment, where each peril's factor is computed from the ratio of actual to prior-expected cost for that peril and shrunk toward the line-level gender factor to stabilize perils with sparse data."
+  },
+  {
+   "status": "run failed: ValueError: could not convert string to float: 'M'",
+   "score": "",
+   "idea": "Use a heavily regularised ridge regression on a small set of demographic and behavioural variables (gender, household size, tenure, prior claims) to predict the log cost ratio relative to the prior, capturing subtle interactions and continuous effects that the discrete gender factor misses."
+  },
+  {
+   "status": "discarded",
+   "score": 0.000807,
+   "idea": "Replace the single line-level gender factor with a per-peril credibility-weighted adjustment for motor and contents, computing each peril's factor from the ratio of actual cost to prior-expected cost (prior_f \u00d7 prior_s) for that gender, shrinking toward the line-level gender factor to stabilize peri"
+  },
+  {
+   "status": "discarded",
+   "score": 0.001303,
+   "idea": "Replace the single line-level gender factor with a per-peril credibility-weighted gender adjustment for motor and contents, where each peril's factor is computed from the ratio of actual cost to prior-expected cost (prior_f \u00d7 prior_s) for that gender, shrinking toward 1.0 for perils with sparse data"
+  },
+  {
+   "status": "discarded",
+   "score": 0.001379,
+   "idea": "Apply credibility-weighted per-peril gender adjustment factors to the prior expected cost for motor and contents, where each peril's factor is computed from the ratio of actual to prior-expected cost for that gender and shrunk toward 1.0 based on the expected claim count for that peril."
+  },
+  {
+   "status": "discarded",
+   "score": 0.001357,
+   "idea": "Use the log-likelihood of the prior (`prior_ll_src`) as a per-row precision weight to compute a credibility-weighted gender factor, allowing the gender effect to be estimated from the most reliable rows while shrinking the factor toward 1.0 for lines with low prior confidence."
+  },
+  {
+   "status": "discarded",
+   "score": 0.001401,
+   "idea": "Replace the single line-level gender factor with a per-peril credibility-weighted adjustment, where each peril's factor is computed from the ratio of actual to prior-expected cost for that gender and shrunk toward 1.0 based on the expected claim count for that peril."
+  },
+  {
+   "status": "discarded",
+   "score": 0.001379,
+   "idea": "Apply a credibility-weighted gender adjustment factor that is computed using the prior's per-peril expected costs (summing prior_f_x prior_s across all perils) to better capture the cost structure, while shrinking toward 1.0 for small groups."
+  },
+  {
+   "status": "discarded",
+   "score": -0.00137,
+   "idea": "Replace the single line-level gender factor with a per-peril credibility-weighted adjustment for motor and contents, where each peril's factor is computed from the ratio of actual to prior-expected cost for that gender and shrunk toward 1.0 based on the expected claim count for that peril."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.001611,
+   "idea": "Add a small, heavily regularised (B\u00fchlmann-shrunk) credibility correction for new-business severity in motor, adjusting the prior expected cost by the ratio of actual to prior new-business cost where the new-business count is large enough to be credible, to capture the excess cost driven by the few "
+  },
+  {
+   "status": "discarded",
+   "score": -0.030501,
+   "idea": "Replace the single line-level gender adjustment with a per-peril credibility-weighted factor for motor and contents, where each peril's factor is computed from the ratio of actual cost to prior-expected cost for that gender and shrunk toward the line-level gender factor to stabilize perils with spar"
+  },
+  {
+   "status": "discarded",
+   "score": 0.001171,
+   "idea": "Replace the single line-level gender factor with a per-peril credibility-weighted gender adjustment for motor and contents, where each peril's factor is estimated from the ratio of actual to prior-expected cost for that gender and shrunk toward the line-level gender factor to stabilize perils with s"
+  },
+  {
+   "status": "discarded",
+   "score": 0.001549,
+   "idea": "Apply a strong B\u00fchlmann credibility shrinkage to per-peril gender cost ratios for motor and contents, where each peril's gender factor is estimated from the ratio of actual to prior expected cost and shrunk toward 1.0 based on the expected claim count for that peril."
+  },
+  {
+   "status": "discarded",
+   "score": 0.001562,
+   "idea": "Replace the single line-level gender factor with a per-peril B\u00fchlmann credibility-weighted gender adjustment for motor and contents, where each peril's gender factor is estimated from the ratio of actual to prior-expected cost (sum of prior_f \u00d7 prior_s) and shrunk toward 1.0 based on the expected cl"
+  },
+  {
+   "status": "discarded",
+   "score": -0.000983,
+   "idea": "Apply a credibility-weighted gender-by-age-band interaction factor for motor and contents, where each cell's factor is estimated from the ratio of actual to prior-expected cost and shrunk toward the line-level gender factor to stabilize sparse age-band combinations."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000983,
+   "idea": "Apply a credibility-weighted gender-by-age-band interaction factor to the prior expected cost for motor and contents, where each cell's factor is estimated from the ratio of actual to prior-expected cost and shrunk toward the line-level gender factor to stabilize sparse age-band combinations."
+  },
+  {
+   "status": "discarded",
+   "score": -0.006714,
+   "idea": "Replace the generic line-level gender factor with a per-peril credibility-weighted gender adjustment (B\u00fchlmann shrinkage to 1.0) applied to each peril's expected cost component, allowing the prior's own frequency/severity structure to modulate the gender effect."
+  },
+  {
+   "status": "discarded",
+   "score": 0.001549,
+   "idea": "Add a small, heavily shrunk (B\u00fchlmann) credibility correction to the prior expected cost that separates the gender effect by driver_age_band for motor and policyholder_age_band for contents, using a large credibility constant so sparse cells collapse back to the line-level gender factor."
+  },
+  {
+   "status": "discarded",
+   "score": 0.001627,
+   "idea": "Replace the line-level gender factor with a per-peril gender adjustment for motor and contents, where each peril's factor is estimated from the actual-to-prior cost ratio and shrunk toward 1.0 using a B\u00fchlmann credibility constant based on the prior expected claim count for that peril."
+  },
+  {
+   "status": "discarded",
+   "score": -0.003265,
+   "idea": "Replace the single line-level gender factor with a per-peril B\u00fchlmann credibility-weighted gender adjustment for motor and contents, where each peril's gender factor is estimated from the ratio of actual to prior-expected cost for that gender and shrunk toward 1.0 based on the prior expected claim c"
+  },
+  {
+   "status": "KEPT",
+   "score": 0.001659,
+   "idea": "Add a heavily shrunk, credibility-weighted per-peril level factor (computed from cost ratios) for buildings, where the line-level prior is decomposed into peril components and each is adjusted by the actual-to-prior cost ratio for that peril with strong shrinkage to 1.0 based on expected claim count"
+  },
+  {
+   "status": "discarded",
+   "score": 0.001659,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": -0.000639,
+   "idea": "Apply a credibility-weighted (B\u00fchlmann) per-peril severity-level factor for all lines, estimating each peril's actual-to-prior cost ratio from train data and shrinking it toward 1.0 based on the prior expected claim count for that peril."
+  },
+  {
+   "status": "discarded",
+   "score": 0.001616,
+   "idea": "Apply a strongly shrunk, per-peril gender credibility factor to motor and contents (shrinking toward the line-level gender factor), and a strongly shrunk per-peril severity adjustment to buildings, both using B\u00fchlmann credibility with a large constant to prevent overfitting sparse cells."
+  },
+  {
+   "status": "discarded",
+   "score": -0.002327,
+   "idea": "Add a credibility-weighted (B\u00fchlmann) correction to the prior expected cost that estimates a gender-by-age-band interaction factor for motor and contents, shrinking each sparse cell toward the line-level gender factor to stabilize predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.001359,
+   "idea": "Apply a heavily shrunk, credibility-weighted gender adjustment to buildings (shrunk toward 1.0 based on the number of policies per gender group) to capture any modest gender effect while protecting against overfitting, while keeping the existing gender, new-business, and per-peril adjustments for ot"
+  },
+  {
+   "status": "KEPT",
+   "score": 0.001724,
+   "idea": "Add a small, heavily shrunk weather adjustment for buildings that scales storm and fire peril components by a linear function of hail_days and wind_exposure_index (with strong shrinkage toward 1.0) while keeping the existing gender, new-business, and per-peril level adjustments."
+  },
+  {
+   "status": "discarded",
+   "score": 0.00165,
+   "idea": "Replace the fixed 0.5 shrinkage for the buildings weather adjustment with a data-driven, heavy B\u00fchlmann shrinkage factor based on the effective sample size of the storm and fire peril components relative to a large credibility constant."
+  }
+ ]
+}

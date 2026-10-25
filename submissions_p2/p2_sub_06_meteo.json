@@ -1,0 +1,17 @@
+{
+ "motor": {
+  "glm": "{'alpha': 0.01, 'coef': {'gender[F]': np.float64(-0.094), 'gender[M]': np.float64(0.094)}, 'intercept': -0.195}",
+  "tasso": 590.2971152338465,
+  "target_train_tasso": 514.0366233681399
+ },
+ "buildings": {
+  "k": 0.8456335288235177,
+  "tasso": 486.3961433252411,
+  "target_train_tasso": 447.8753622369147
+ },
+ "contents": {
+  "glm": "{'alpha': 1.0, 'coef': {'gender[F]': np.float64(0.041), 'gender[M]': np.float64(-0.041)}, 'intercept': -0.105}",
+  "tasso": 106.3925064268877,
+  "target_train_tasso": 98.00145042053927
+ }
+}

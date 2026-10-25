@@ -67,6 +67,17 @@ def main(interim: str) -> None:
     interim = Path(interim)
     c = pd.read_parquet(interim / "claims_clean.parquet")
     out_rows, curves, rel_curves, notes = [], {}, {}, {}
+    # Parte 2 (23/10): mercato con pochi anni (nessun AY maturo) -> severità dei tardivi, inflazione e IBNER per età di
+    # sviluppo presi dal mercato di partenza (config "development": {"source_interim": ...}); il ritardo di denuncia resta
+    # stimato sul mercato nuovo (lo stimatore a tempo inverso gestisce la troncatura).
+    src_dir = CFG.get("development", {}).get("source_interim")
+    src = None
+    if src_dir:
+        sd = Path(src_dir) if Path(src_dir).is_absolute() else Path(__file__).resolve().parents[1] / src_dir
+        src = {"claims": pd.read_parquet(sd / "claims_clean.parquet"), "dev": pd.read_parquet(sd / "development.parquet"),
+               "report": json.loads((sd / "report_development.json").read_text())}
+        src["last"] = int(src["dev"]["ay"].max())
+        notes["source_market"] = str(sd)
 
     for line in LINES:   # era una tupla fissa (revisione Qwen 19/10: Parte 2 con linee diverse)
         pol = pd.read_parquet(interim / f"train_{line}.parquet",
@@ -78,12 +89,22 @@ def main(interim: str) -> None:
             # 1. ritardo di denuncia
             F = reporting_cdf(g["report_lag_days"].clip(0, MAX_LAG).to_numpy(),
                               g["days_to_valuation"].clip(0, MAX_LAG + 1).to_numpy())
+            if src is not None and CFG.get("development", {}).get("reporting_from_source"):
+                # Parte 2: curve di denuncia del mercato nuovo uguali a quelle di partenza (docs/30 §2) -> si usa la curva
+                # stimata sui 160 mila sinistri di partenza (coda oltre i 2 anni osservabili, meno rumore sui perili piccoli)
+                gs = src["claims"][(src["claims"]["line"] == line) & (src["claims"]["peril"] == peril)]
+                curves[f"{line}|{peril}|nuovo"] = F[[0, 7, 14, 30, 60, 90, 180, 365, 730]].round(5).tolist()
+                F = reporting_cdf(gs["report_lag_days"].clip(0, MAX_LAG).to_numpy(),
+                                  gs["days_to_valuation"].clip(0, MAX_LAG + 1).to_numpy())
             curves[f"{line}|{peril}"] = F[[0, 7, 14, 30, 60, 90, 180, 365, 730, 1095, 1460]].round(5).tolist()
             comp_day = completeness_by_day(F)
             comp_cols[peril] = row_completeness(pol["period_start"], pol["period_end"], comp_day)
 
             # 4. severità dei tardivi
             mat = g[g["ay"] <= YEARS[-1] - 2]   # AY maturi: era "<= 2022" fisso (revisione Qwen 19/10)
+            if len(mat) < 30 and src is not None:   # Parte 2: relatività dei tardivi dal mercato di partenza
+                sc = src["claims"]
+                mat = sc[(sc["line"] == line) & (sc["peril"] == peril) & (sc["ay"] <= src["last"] - 2)]
             s = mat.sort_values("report_lag_days")
             lag_s, sev_s = s["report_lag_days"].to_numpy(), s["net_capped"].to_numpy()
             tail_sum = np.cumsum(sev_s[::-1])[::-1]; tail_n = np.arange(len(sev_s), 0, -1)
@@ -138,6 +159,8 @@ def main(interim: str) -> None:
         own = [v[0] for (l, p), v in infl.items() if l == line]
         pooled = float(np.median(own)) if own else 0.05
         for peril in d.loc[d["line"] == line, "peril"].unique():
+            if src is not None and f"{line}|{peril}" in src["report"].get("inflation", {}):
+                infl.setdefault((line, peril), (float(src["report"]["inflation"][f"{line}|{peril}"][0]), "mercato di partenza (nessun AY maturo)"))
             infl.setdefault((line, peril), (pooled, "mediana della linea (perilo senza 3 AY maturi)"))
     # 18/10 — S3: per i perili senza 3 AY maturi la mediana della linea può essere sbagliata (lesioni: +6,4% della
     # linea contro +1,9% stimato sul perilo); la config permette un valore per perilo, documentato
@@ -161,6 +184,13 @@ def main(interim: str) -> None:
     # severità ultimate dei denunciati (IBNER) e degli IBNR (relatività dei tardivi)
     d["sev_rep_ult"] = d["Z"] * d["sev_rep"] + (1 - d["Z"]) * d["sev_prior"]
     d["ibner_factor"] = d["sev_rep_ult"] / d["sev_rep"]
+    if src is not None:
+        # Parte 2: nessun AY maturo -> fattore IBNER del mercato di partenza alla stessa età di sviluppo (stesso perilo)
+        sdv = src["dev"].set_index(["line", "peril", "ay"])["ibner_factor"]
+        fac = [float(sdv.get((l, p_, src["last"] - (YEARS[-1] - ay)), 1.0)) for l, p_, ay in zip(d["line"], d["peril"], d["ay"])]
+        d["ibner_factor"] = fac
+        d["sev_rep_ult"] = d["sev_rep"] * d["ibner_factor"]
+        notes["ibner"] = "fattori del mercato di partenza per età di sviluppo"
     d["n_ibnr"] = d["n_ult"] - d["n_rep"]
     d["cost_ult"] = d["n_rep"] * d["sev_rep_ult"] + d["n_ibnr"] * d["sev_rep_ult"] * d["rel_ibnr"]
     d["sev_ult"] = d["cost_ult"] / d["n_ult"]

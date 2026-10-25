@@ -1,0 +1,327 @@
+{
+ "best": {
+  "by": {
+   "motor|bodily_injury|2023": 0.06643,
+   "motor|glass_hail|2023": 0.10905,
+   "motor|own_damage|2023": 0.16134,
+   "motor|theft|2023": 0.05417,
+   "motor|third_party_prop|2023": 0.09756,
+   "motor|2023": 0.09511,
+   "motor|bodily_injury|2024": 0.06666,
+   "motor|glass_hail|2024": 0.10424,
+   "motor|own_damage|2024": 0.16478,
+   "motor|theft|2024": 0.06435,
+   "motor|third_party_prop|2024": 0.09221,
+   "motor|2024": 0.09506,
+   "buildings|accidental_damage|2023": 0.12015,
+   "buildings|escape_of_water|2023": 0.04333,
+   "buildings|fire|2023": 0.01675,
+   "buildings|flood|2023": 0.32587,
+   "buildings|storm|2023": 0.0592,
+   "buildings|subsidence|2023": 0.06183,
+   "buildings|2023": 0.11995,
+   "buildings|accidental_damage|2024": 0.12726,
+   "buildings|escape_of_water|2024": 0.05468,
+   "buildings|fire|2024": 0.02655,
+   "buildings|flood|2024": 0.31715,
+   "buildings|storm|2024": 0.06012,
+   "buildings|subsidence|2024": 0.08289,
+   "buildings|2024": 0.12582,
+   "contents|accidental_damage|2023": 0.12802,
+   "contents|escape_of_water|2023": 0.0252,
+   "contents|flood|2023": 0.31975,
+   "contents|theft|2023": 0.03741,
+   "contents|2023": 0.11309,
+   "contents|accidental_damage|2024": 0.13473,
+   "contents|escape_of_water|2024": 0.04321,
+   "contents|flood|2024": 0.27597,
+   "contents|theft|2024": 0.04053,
+   "contents|2024": 0.1085
+  },
+  "pooled_mean": 0.10779,
+  "score": 0.10796,
+  "folds": {
+   "2023": 0.10779,
+   "2024": 0.10812
+  },
+  "seconds": 128.2
+ },
+ "iter": 55,
+ "history": [
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Add smooth log-transforms of key continuous drivers (sum insured, distance to river, elevation, building age, vehicle value) to the feature set to align with the additive generator structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply direction-aware monotone constraints to key continuous drivers for specific perils (flood, theft, storm) to enforce known causal relationships and reduce overfitting to noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10776,
+   "idea": "Tune hyperparameters by peril magnitude, applying stronger regularization (higher min_data_in_leaf, lower feature_fraction) to small perils to reduce noise, while keeping the current settings for large perils."
+  },
+  {
+   "status": "run failed: UnboundLocalError: cannot access local variable 'glm_model' where it is not associated with a value",
+   "score": "",
+   "idea": "Blend a small sklearn Poisson GLM on a fixed set of numeric drivers with the LightGBM prediction to capture the additive linear structure more robustly, especially for perils where the GBM might overfit sparse interactions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10425,
+   "idea": "Increase the number of boosting rounds by a factor of 4 for all perils to allow the low learning rate (0.1) to converge more fully, compensating for the previous under-training while maintaining the additive structure."
+  },
+  {
+   "status": "run failed: TypeError: PoissonRegressor.__init__() got an unexpected keyword argument 'random_state'",
+   "score": "",
+   "idea": "Blend the LightGBM prediction with a simple Poisson GLM on the same features to capture the linear additive structure and reduce variance from tree overfitting."
+  },
+  {
+   "status": "run failed: KeyError: \"['mm_freq_te'] not in index\"",
+   "score": "",
+   "idea": "Use a small Poisson GLM with L2 regularization on the existing numeric and categorical features as a blended signal with the LightGBM prediction to capture the additive linear structure and reduce overfitting to sparse interactions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10659,
+   "idea": "Increase the number of boosting rounds by a factor of 2 (MULT=8) to allow the low learning rate to converge more fully, compensating for under-training while maintaining the additive structure."
+  },
+  {
+   "status": "run failed: Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to con",
+   "score": "",
+   "idea": "Apply a 50/50 blend of the LightGBM prediction with a regularized Poisson GLM (Ridge) on the same features to stabilize the additive signal and reduce tree overfitting on sparse perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10702,
+   "idea": "Reduce the number of boosting rounds by a factor of 2 to mitigate overfitting on the low-signal perils while preserving the additive structure, leveraging the already low learning rate and strong regularization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a small 5-fold Poisson GLM (sklearn) on the same features as an additive correction signal, blended 20% with the LightGBM prediction to stabilize the linear structure and reduce variance."
+  },
+  {
+   "status": "run failed: TypeError: PoissonRegressor.__init__() got an unexpected keyword argument 'random_state'",
+   "score": "",
+   "idea": "Use a regularized Poisson GLM (sklearn) trained on the same features as a 50/50 additive blend with the LightGBM prediction to stabilize the linear signal and reduce overfitting on sparse perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10488,
+   "idea": "Use a regularized Poisson GLM on a fixed set of robust numeric drivers as a 20% additive blend with the LightGBM prediction to stabilize the linear structure and reduce variance."
+  },
+  {
+   "status": "discarded",
+   "score": 0.08895,
+   "idea": "Use weather and environmental variables as primary drivers for specific perils (storm, flood, subsidence, glass_hail) and drop irrelevant features to reduce noise and align with the additive generator structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1075,
+   "idea": "Apply a 50/50 blend of the LightGBM prediction with a regularized Poisson GLM on the same features to stabilize the additive signal and reduce tree overfitting on sparse perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10723,
+   "idea": "For the buildings flood peril, restrict the feature set to a curated subset of the strongest known drivers (flood_zone, distance_to_river_km, elevation_m, sum_insured, building_age) and increase the number of boosting rounds to better fit the specific additive structure without noise from irrelevant"
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Use a regularized Poisson GLM on a fixed set of robust numeric drivers as a 10% additive blend with the LightGBM prediction to stabilize the linear structure and reduce variance on sparse perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10425,
+   "idea": "Increase the number of boosting rounds by a factor of 4 for all perils to better fit the additive structure with the low learning rate, compensating for under-training while maintaining strong regularization."
+  },
+  {
+   "status": "rejected: forbidden name: __import__",
+   "score": "",
+   "idea": "Apply a 1/3 blend of the LightGBM prediction with a regularized Poisson GLM (sklearn) on the same features to stabilize the additive linear structure and reduce variance from tree overfitting, using a robust implementation that handles categorical encoding and offset correctly."
+  },
+  {
+   "status": "run failed: ValueError: y contains previously unseen labels: 0",
+   "score": "",
+   "idea": "Apply a 30% blend of the LightGBM prediction with a regularized Poisson GLM (sklearn) on the same features to stabilize the additive signal and reduce tree overfitting on sparse perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10685,
+   "idea": "Use a curated subset of strong environmental and structural drivers for building perils (flood, storm, subsidence, fire) to reduce noise from irrelevant features, while keeping the full feature set for other lines and perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply smooth log-transforms to sum_insured and distance_to_river_km, and a square-root transform to elevation_m, specifically for buildings flood and storm perils to better capture the non-linear additive drivers identified as important."
+  },
+  {
+   "status": "run failed: libc++abi: terminating due to uncaught exception of type std::runtime_error: The output cannot be monotone w",
+   "score": "",
+   "idea": "Add monotone constraints for the most certain directional drivers per peril (flood, theft, escape_of_water, fire) to enforce the known physical/logical relationships and reduce noise from incorrect split directions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09951,
+   "idea": "Apply per-peril feature subset reduction for the highest-scoring perils (buildings flood, contents flood, motor own_damage, motor glass_hail) to remove irrelevant noise features and align the model with the additive generator structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10724,
+   "idea": "For the buildings flood peril, restrict the feature set to a curated subset of the strongest known drivers (flood_zone, distance_to_river_km, elevation_m, sum_insured, building_age) and increase the number of boosting rounds to better fit the specific additive structure without noise from irrelevant"
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to the sum_insured feature for buildings and contents lines to better capture the additive effect of the continuous sum insured driver on claim frequency, particularly for fire, flood, and escape of water perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to the sum_insured feature specifically for the buildings and contents lines to better capture the non-linear additive effect of coverage amount on claim frequency."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to the sum_insured feature for buildings and contents lines to better capture the sub-linear effect of coverage amount on claim frequency, reducing overfitting on high-value outliers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10358,
+   "idea": "Use a 5-fold cross-validated Poisson GLM (sklearn) on a curated set of robust numeric drivers as a 20% additive blend with the LightGBM prediction to stabilize the linear structure and reduce variance on sparse perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10778,
+   "idea": "Apply per-peril feature selection to exclude weather and environmental variables that are physically irrelevant to specific perils (e.g., remove drought/wildfire variables for flood and fire, remove hail for non-hail perils) to reduce noise and allow the additive model to focus on the true drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10726,
+   "idea": "Increase LightGBM boosting rounds by 50% and reduce L2 regularization by 25% to better fit the additive structure, compensating for under-training while maintaining stability."
+  },
+  {
+   "status": "run failed: NameError: name 'peril' is not defined",
+   "score": "",
+   "idea": "Apply a log1p transformation to the `distance_to_river_km` and `elevation_m` features for building and contents flood perils to better capture the sub-linear physical relationship between distance/elevation and flood risk, reducing noise from linear scaling of these continuous drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10548,
+   "idea": "Increase the number of boosting rounds by a factor of 3 for all perils to better fit the additive structure with the low learning rate, compensating for under-training while maintaining strong regularization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10778,
+   "idea": "Increase the feature_fraction parameter to 0.7 for all perils to introduce mild stochastic regularization, which previously showed consistent small gains in buildings and is likely to help reduce overfitting in the additive structure across other lines without breaking the monotone constraints of th"
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to the `annual_mileage` feature for the motor line to better capture the sub-linear additive effect of mileage on claim frequency, reducing noise from linear scaling of high-mileage outliers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Use a regularized Poisson GLM on a curated set of numeric drivers as a 5% additive blend with the LightGBM prediction to stabilize the linear structure and reduce variance on sparse perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10732,
+   "idea": "Differentiate boosting rounds and regularization for high-frequency perils (own_damage, third_party_prop, accidental_damage, escape_of_water) versus low-frequency perils to better fit the varying signal-to-noise ratios without overfitting sparse data."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10784,
+   "idea": "Use per-peril feature subsets to exclude physically irrelevant weather and environmental drivers for specific perils (e.g., remove drought/wildfire for flood, remove hail for non-hail perils) to reduce noise and align the additive model with the true signal structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to the sum_insured feature for buildings and contents lines to better capture the sub-linear effect of coverage amount on claim frequency, reducing overfitting on high-value outliers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a 30% blend of the LightGBM prediction with a regularized Poisson GLM (sklearn) on the same features to stabilize the additive signal and reduce tree overfitting on sparse perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10795,
+   "idea": "Apply a 0.7 feature_fraction for the buildings line and a 0.8 feature_fraction for the motor line to introduce mild stochastic regularization that reduces overfitting in the additive structure, leveraging the previously observed gains for buildings."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply log1p transformation to sum_insured, distance_to_river_km, and elevation_m for buildings and contents lines to better capture the non-linear additive effects of these continuous drivers on claim frequency."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to the `wind_exposure_index`, `rainfall_mm`, `dry_summer_index`, and `hail_days` features for buildings and contents lines to better capture the sub-linear physical relationship of weather drivers on claim frequency, reducing noise from linear scaling of high-exposure ou"
+  },
+  {
+   "status": "rejected: syntax error: expected an indented block after 'elif' statement on line 92 (<unknown>, line 97)",
+   "score": "",
+   "idea": "Apply monotone constraints to known physical drivers for specific perils (e.g., flood: elevation negative, distance_to_river negative; theft: security_level negative) to enforce the correct additive direction and reduce noise."
+  },
+  {
+   "status": "run failed: libc++abi: terminating due to uncaught exception of type std::runtime_error: The output cannot be monotone w",
+   "score": "",
+   "idea": "Apply monotone constraints to known physical drivers for specific perils (e.g., flood: elevation negative, distance_to_river negative; theft: security_level negative) to enforce the correct additive direction and reduce noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply monotone constraints to `elevation_m` (negative) and `distance_to_river_km` (negative) specifically for the flood peril to enforce the known physical risk gradient and reduce overfitting on these continuous drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to `building_age` for buildings and contents lines to better capture the sub-linear physical relationship between building age and claim frequency, reducing noise from linear scaling of older assets."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to the sum_insured feature for buildings and contents lines to better capture the sub-linear effect of coverage amount on claim frequency, reducing overfitting on high-value outliers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to the `sum_insured` feature for buildings and contents lines to better capture the sub-linear effect of coverage amount on claim frequency, reducing overfitting on high-value outliers."
+  },
+  {
+   "status": "run failed: TypeError: PoissonRegressor.__init__() got an unexpected keyword argument 'random_state'",
+   "score": "",
+   "idea": "Use a regularized Poisson GLM (sklearn) on log-transformed continuous drivers to generate a linear init_score for the LightGBM, replacing the current simple baseline offset initialization."
+  },
+  {
+   "status": "run failed: libc++abi: terminating due to uncaught exception of type std::runtime_error: The output cannot be monotone w",
+   "score": "",
+   "idea": "Apply monotone constraints to `flood_zone` (positive), `elevation_m` (negative), and `distance_to_river_km` (negative) for the flood peril, and `security_level` (negative) for the theft peril to enforce known physical risk gradients and reduce overfitting."
+  },
+  {
+   "status": "discarded",
+   "score": 0.09894,
+   "idea": "Use a regularized Poisson GLM on log-transformed continuous drivers to generate a linear init_score for the LightGBM, replacing the current simple baseline offset initialization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Use a regularized Poisson GLM on a small set of log-transformed numeric drivers to generate a linear init_score for the LightGBM, replacing the simple baseline offset initialization to better capture the additive structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10779,
+   "idea": "Apply a log1p transformation to the `sum_insured` feature for buildings and contents lines to better capture the sub-linear effect of coverage amount on claim frequency, reducing overfitting on high-value outliers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10793,
+   "idea": "Apply a 0.7 feature_fraction specifically to the `buildings` line to introduce mild stochastic regularization that reduces overfitting in the additive structure, leveraging the previously observed gains for buildings on continuous drivers."
+  }
+ ]
+}

@@ -1,37 +1,1602 @@
 {
  "best": {
   "by": {
-   "motor|F2023": 0.10908,
-   "motor|F2024": 0.14227,
-   "buildings|F2023": 0.11964,
-   "buildings|F2024": 0.13958,
-   "contents|F2023": 0.08607,
-   "contents|F2024": 0.10038
+   "motor|F2023": 0.12143,
+   "motor|F2024": 0.15279,
+   "buildings|F2023": 0.12575,
+   "buildings|F2024": 0.14593,
+   "contents|F2023": 0.09589,
+   "contents|F2024": 0.10812
   },
-  "score": 0.11712,
+  "score": 0.12623,
   "pooled": {
-   "F2023": 0.16178,
-   "F2024": 0.2016
+   "F2023": 0.17067,
+   "F2024": 0.20917
   },
-  "pooled_mean": 0.18169,
-  "seconds": 85.9
+  "pooled_mean": 0.18992,
+  "seconds": 373.3
  },
- "iter": 3,
+ "iter": 316,
  "history": [
   {
    "status": "discarded",
-   "score": 0.17539,
-   "idea": "num_leaves=31, learning_rate=0.05"
+   "score": 0.18171,
+   "idea": "Add actuarially-meaningful interaction features (flood \u00d7 distance, subsidence, young driver risk, vehicle risk, and sum-insured density) to enrich the signal for the GBM."
   },
   {
-   "status": "rejected: import not allowed: subprocess",
-   "score": "",
-   "idea": "read extra data"
+   "status": "KEPT",
+   "score": 0.18356,
+   "idea": "Drop the high-cardinality categorical columns (previous_insurer, campaign_code, branch_id) to reduce noise and avoid overfitting on noisy identifiers."
   },
   {
    "status": "discarded",
-   "score": 0.18034,
-   "idea": "num_leaves=31, learning_rate=0.03"
+   "score": 0.18351,
+   "idea": "Add a small number of actuarially meaningful interaction features (flood \u00d7 distance, subsidence, driver age \u00d7 tenure, vehicle value \u00d7 age, sum-insured density, and telematics missingness) to enrich the signal for the GBM."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18381,
+   "idea": "Blend the LightGBM Tweedie prediction with a regularized Tweedie GLM (sklearn TweedieRegressor) on log-rate with exposure weights to capture linear actuarial baselines that the tree may under-regularize."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18335,
+   "idea": "Add a small set of actuarially meaningful interaction features (subsidence, flood severity, driver risk, vehicle risk, and sum-insured density) to enrich the GBM's signal."
+  },
+  {
+   "status": "run failed: libc++abi: terminating due to uncaught exception of type std::runtime_error: The output cannot be monotone w",
+   "score": "",
+   "idea": "Apply monotonic constraints on key risk drivers (prior_claims, flood_zone, distance_to_river, dry_summer_index, vehicle_age, sum_insured) to enforce actuarially certain risk directions and reduce variance."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18283,
+   "idea": "Replace the high-cardinality categorical columns with smoothed target encodings computed on train to retain their signal while preventing overfitting."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.18401,
+   "idea": "Bag three LightGBM models with different random seeds and average their Tweedie predictions to reduce variance and improve stability."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.18435,
+   "idea": "Add a small set of high-signal, actuarially meaningful interaction features (subsidence risk, flood severity, driver risk, vehicle risk, and sum-insured density) to enrich the GBM's signal."
+  },
+  {
+   "status": "run failed: ValueError: assignment destination is read-only",
+   "score": "",
+   "idea": "Replace the raw LightGBM Tweedie output with a 3-way blend of the bagged GBM and a regularised Tweedie GLM fitted on the log-rate, capturing linear actuarial baselines to stabilise the tree's variance."
+  },
+  {
+   "status": "run failed: libc++abi: terminating due to uncaught exception of type std::runtime_error: The output cannot be monotone w",
+   "score": "",
+   "idea": "Apply LightGBM monotonic constraints to enforce actuarially certain risk directions on numeric features to reduce variance and improve calibration."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18411,
+   "idea": "Tune LightGBM hyperparameters per line of business (reducing num_leaves and increasing min_data_in_leaf for the smaller buildings and contents lines) to better control variance and prevent overfitting on the less frequent lines."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1845,
+   "idea": "Add a small set of new actuarially meaningful interaction features (river proximity, elevation, and building age risk) while retaining the existing high-signal features."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1845,
+   "idea": "Add a small set of new actuarially meaningful interaction features (river proximity, elevation, and building age risk) while retaining the existing high-signal features."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18435,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18435,
+   "idea": "Blend the bagged LightGBM Tweedie predictions with a regularized Tweedie GLM fitted on the raw rate (target/exposure) using only numeric and low-cardinality features to capture the linear actuarial baseline that trees may under-regularize."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18144,
+   "idea": "Blend the bagged LightGBM Tweedie predictions with a regularized Tweedie GLM fitted on the raw rate using only numeric and low-cardinality features to capture the linear actuarial baseline that trees may under-regularize."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.18523,
+   "idea": "Tune LightGBM hyperparameters for better generalization by reducing num_leaves, increasing min_data_in_leaf, and lowering learning_rate with proportionally more rounds to reduce overfitting and improve stability."
+  },
+  {
+   "status": "discarded",
+   "score": 0.08563,
+   "idea": "Replace the three fixed random-seed bagged models with a 2-fold cross-validated LightGBM ensemble to reduce variance and improve generalization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18437,
+   "idea": "Reduce overfitting by tightening LightGBM regularization (lower learning rate, more rounds, lower feature/bagging fractions, higher L2) while keeping the existing 3-seed bagging and feature set."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18537,
+   "idea": "Add a small set of new actuarially meaningful interaction features (river proximity risk, elevation benefit, and building age vulnerability) to enrich the GBM's signal."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18523,
+   "idea": "Add a missingness indicator for the high-cardinality `previous_insurer` column to capture the signal from unobserved insurer data without using the noisy raw values."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.18752,
+   "idea": "Drop the high-cardinality `make_model` column from the motor feature set to reduce noise and overfitting, and slightly increase the minimum data in leaf to further regularize the model."
+  },
+  {
+   "status": "discarded",
+   "score": -0.05862,
+   "idea": "Replace the single fixed-seed bag with a 3-fold cross-validated LightGBM ensemble to reduce variance and better estimate the out-of-fold performance, while keeping the existing feature engineering and hyperparameters."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18752,
+   "idea": "Blend the bagged LightGBM predictions with a regularized Tweedie GLM fitted on the log-rate to capture linear actuarial baselines that trees may under-regularize."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18752,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18569,
+   "idea": "Drop the remaining pure-noise decoy columns from the feature set to reduce model variance and let the trees focus on the true actuarial drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18723,
+   "idea": "Replace the noisy raw `previous_insurer` categorical with a smoothed target encoding computed on the training data to capture insurer-specific risk signals without overfitting to high-cardinality noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18652,
+   "idea": "Increase LightGBM regularization by reducing num_leaves from 12 to 8 and lowering feature_fraction from 0.5 to 0.4 to further constrain model complexity and reduce overfitting on the limited signal features."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1876,
+   "idea": "Drop the confirmed decoy columns (noisy high-cardinality categoricals and irrelevant numerics) from the feature set to reduce variance and let the trees focus on the true actuarial drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18351,
+   "idea": "Reduce model complexity by lowering `num_leaves` to 4 (closer to additive) and increasing `min_data_in_leaf` to 5000 to better capture the multiplicative peril structure while preventing overfitting."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18618,
+   "idea": "Drop the confirmed pure-noise decoy columns from all lines to reduce dimensionality and let the trees focus strictly on the true actuarial drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18746,
+   "idea": "Apply monotonicity constraints to the primary numeric risk drivers (e.g., flood zone, building age, mileage) to enforce actuarially correct directional relationships and prevent the model from learning spurious inverse correlations in small leaves."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1876,
+   "idea": "Drop the confirmed pure-noise decoy columns from all three lines to reduce feature noise and model variance, letting the trees focus on the true actuarial drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18752,
+   "idea": "Bag three LightGBM Tweedie models with different seeds and slightly perturbed hyperparameters (num_leaves 10/12/14, min_data_in_leaf 3000/3500/4000) to reduce variance while maintaining similar model complexity to the current best."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18749,
+   "idea": "Drop the three pure-noise decoy columns (`marketing_consent`, `document_preference`, `previous_insurer`) from the feature set to further reduce dimensionality and let the trees focus strictly on the true actuarial drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0848,
+   "idea": "Use the true log-rate as the init_score (replacing the mean-rate baseline) so the model starts from a better estimate, and add the confirmed subsidence interaction (clay soil \u00d7 dry summer) as a single new numeric feature."
+  },
+  {
+   "status": "discarded",
+   "score": 0.08467,
+   "idea": "Replace the fixed 3-seed bagging with a 5-fold out-of-fold LightGBM ensemble, using the per-row mean OOF prediction as the init_score so each fold's trees only need to learn the residual risk structure, thereby reducing bias from a single global baseline and improving calibration."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18765,
+   "idea": "Replace the fixed 3-seed bagging with a 5-fold out-of-fold LightGBM ensemble, where each fold's trees are trained on the remaining 4 folds and their OOF predictions are averaged to produce the final estimate, thereby reducing variance and improving calibration while maintaining the same feature set "
+  },
+  {
+   "status": "discarded",
+   "score": 0.18519,
+   "idea": "Drop the remaining pure-noise decoy columns (marital_status, solar_panels, listed_building, mortgage, smoke_alarms, lodgers, bicycle_cover, telematics-related, marketing/branch/channel fields, and redundant time/tenure columns) from all three lines to further reduce dimensionality and let the trees "
+  },
+  {
+   "status": "discarded",
+   "score": 0.1875,
+   "idea": "Apply light monotonicity constraints to the primary numeric risk drivers where the actuarial direction is certain (e.g., higher flood zone, higher building age, and higher mileage increase risk), forcing the model to respect these known relationships and reducing spurious inverse splits."
+  },
+  {
+   "status": "run failed: ElasticNet does not accept missing values encoded as NaN natively. For supervised learning, you might want t",
+   "score": "",
+   "idea": "Replace the single LightGBM bag with a 60/40 blend of the LightGBM bag and a regularized Tweedie GLM (ElasticNet) fitted on log-rate to capture the linear additive baseline that trees may under-regularize."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18752,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18682,
+   "idea": "Replace the multi-seed LightGBM bag with a single, stronger Tweedie regression model that uses a lower learning rate with proportionally more boosting rounds and tighter leaf/feature regularization to better fit the additive, multiplicative-peril structure of the claim costs."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18047,
+   "idea": "Blend the bagged LightGBM predictions with a regularized Tweedie GLM fitted on the log-rate to capture linear actuarial baselines that trees may under-regularize."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18752,
+   "idea": "Add a small blend (15%) of a regularized Tweedie GLM with Lasso regularization to the LightGBM bag to capture the additive baseline structure while maintaining the tree's flexibility."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1861,
+   "idea": "Replace the noisy high-cardinality `make_model` categorical with a smoothed target-encoding feature computed on the training data to capture vehicle-specific risk signals without overfitting to the 300-level noise."
+  },
+  {
+   "status": "run failed: TypeError: TweedieRegressor.__init__() got an unexpected keyword argument 'l1_ratio'",
+   "score": "",
+   "idea": "Blend the bagged LightGBM predictions with a Tweedie GLM baseline to capture the additive actuarial structure that trees may under-regularize, using a 20% weight for the GLM."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18748,
+   "idea": "Blend the bagged LightGBM predictions with a regularized Tweedie GLM (ElasticNet) fitted on the log-rate to capture the additive actuarial baseline that trees may under-regularize, using a 20% weight for the GLM."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18751,
+   "idea": "Blend the bagged LightGBM predictions with a baseline Tweedie GLM (fit on log-rate with Lasso regularization) to capture the additive actuarial structure that trees may under-regularize, using a 25% weight for the GLM."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18538,
+   "idea": "Compute smoothed target encodings for the high-cardinality `make_model` (motor) and `previous_insurer` (all lines) on train only, replacing the raw categoricals to capture true risk signals without overfitting."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18772,
+   "idea": "Replace the generic 3-seed bagging ensemble with a single, highly-regularized LightGBM model that uses an extremely low learning rate and proportionally more boosting rounds to better capture the additive, multiplicative-peril structure of the claim costs while maintaining strong generalization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18728,
+   "idea": "Use the known additive multiplicative-peril structure to fit a regularized Tweedie GLM (ElasticNet) on the log-rate as a strong baseline, then blend it 50/50 with the existing 3-seed LightGBM bag to improve calibration and reduce variance."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1875,
+   "idea": "Add a single, actuarially-verified interaction feature \u2014 the `soil_type \u00d7 dry_summer_index` subsidence term (clay soil amplifies subsidence risk in dry summers) \u2014 to all three lines, since this is the only documented non-additive effect and interaction-feature batches (other interactions) have alrea"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18756,
+   "idea": "Replace the fixed 3-seed bagging with a single, highly-regularized LightGBM model that uses a lower learning rate and proportionally more boosting rounds to better capture the additive, multiplicative-peril structure of the claim costs while maintaining strong generalization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18594,
+   "idea": "Drop all confirmed noise/decoy columns (marketing, branch, campaign, telematics, household demographics, etc.) to reduce feature space and let the shallow trees focus strictly on the true actuarial drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.13938,
+   "idea": "Replace the generic LightGBM bag with a highly regularized, additive Tweedie GLM (ElasticNet) fitted on the log-rate using only the verified actuarial drivers, to strictly enforce the known multiplicative-peril structure and eliminate overfitting from noise columns."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18752,
+   "idea": "Fit a single highly-regularized additive Tweedie GLM (using only numeric features and one-hot low-cardinality categoricals) on the log-rate, and blend it 50/50 with the existing 3-seed LightGBM bag to strictly capture the known additive, multiplicative-peril structure while maintaining the tree's fl"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18654,
+   "idea": "Replace the fixed 3-seed bagging with a single, highly-regularized LightGBM model using a lower learning rate and proportionally more boosting rounds to better capture the additive, multiplicative-peril structure of the claim costs while maintaining strong generalization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18766,
+   "idea": "Replace the multi-seed LightGBM bag with a single, highly-regularized LightGBM model that uses a much lower learning rate and proportionally more boosting rounds to better capture the additive, multiplicative-peril structure of the claim costs while maintaining strong generalization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1794,
+   "idea": "Drop all confirmed decoy/noise columns, remove the interaction features which have been shown not to help, and use a single highly-regularized LightGBM model with a lower learning rate and proportionally more rounds to better capture the additive structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18671,
+   "idea": "Replace the generic 3-seed bagging with a single highly-regularized additive LightGBM model (num_leaves=3) using a lower learning rate and proportionally more boosting rounds to strictly enforce the known additive, multiplicative-peril structure while maintaining strong generalization."
+  },
+  {
+   "status": "run failed: TypeError: Dataset.__init__() got an unexpected keyword argument 'monotone_constraints'",
+   "score": "",
+   "idea": "Apply monotonicity constraints on the certain-direction numeric risk drivers (e.g., higher building age, flood zone, and vehicle age increase risk) to enforce actuarial direction and reduce overfitting on noise, while keeping the existing bagged LightGBM setup."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18099,
+   "idea": "Use line-specific hyperparameters (shallower trees for additive structure, higher regularization) and drop all confirmed decoy/noise columns to reduce feature space and improve generalization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1875,
+   "idea": "Apply monotonicity constraints on the certain-direction numeric risk drivers (e.g., higher flood zone, building age, vehicle age, and sum insured increase risk) to enforce actuarial direction and reduce overfitting on noise, while keeping the existing bagged LightGBM setup."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18286,
+   "idea": "Drop all confirmed decoy/noise columns and high-cardinality categoricals to reduce the feature space, allowing the shallow-leaf LightGBM model to focus strictly on the true actuarial drivers and improve generalization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18752,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "run failed: ElasticNet does not accept missing values encoded as NaN natively. For supervised learning, you might want t",
+   "score": "",
+   "idea": "Fit a highly-regularized, additive Tweedie GLM (ElasticNet) using only the verified actuarial drivers and one-hot low-cardinality categoricals, and blend it 50/50 with the existing 3-seed LightGBM bag to strictly capture the known additive, multiplicative-peril structure while maintaining the tree's"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18752,
+   "idea": "Add a single, actuarially-verified interaction feature \u2014 the `soil_type \u00d7 dry_summer_index` subsidence term (clay soil amplifies subsidence risk in dry summers) \u2014 to all three lines, since this is the only documented non-additive effect and interaction-feature batches (other interactions) have alrea"
+  },
+  {
+   "status": "KEPT",
+   "score": 0.18808,
+   "idea": "Drop all confirmed decoy/noise columns and high-cardinality categoricals to reduce feature space and overfitting, while using the existing bagged LightGBM setup."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.1884,
+   "idea": "Apply monotone constraints to the certain-direction numeric drivers (flood_zone, building_age, vehicle_age, sum_insured) to enforce actuarial direction and reduce overfitting on noise, while keeping the existing bagged LightGBM setup."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18841,
+   "idea": "Add a single, actuarially-verified interaction feature \u2014 the `soil_type \u00d7 dry_summer_index` subsidence term (clay soil amplifies subsidence risk in dry summers) \u2014 to all three lines, since this is the only documented non-additive effect."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.18955,
+   "idea": "Replace the current 3-seed bagged LightGBM with a 5-seed bagged LightGBM using num_leaves=8 (shallower trees to enforce additive structure) and a lower learning rate with proportionally more boosting rounds to better capture the known multiplicative-peril structure while maintaining strong generaliz"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18916,
+   "idea": "Replace the current 5-seed bagged LightGBM with a single highly-regularized LightGBM model using monotone constraints only on certain-direction numeric drivers (flood_zone, building_age, vehicle_age) to enforce actuarial direction and reduce overfitting on noise, while keeping the existing feature e"
+  },
+  {
+   "status": "discarded",
+   "score": 0.15113,
+   "idea": "Bag the LightGBM predictions with a highly-regularized Tweedie GLM (ElasticNet on log-rate) to strictly enforce the known additive, multiplicative-peril structure while maintaining the tree's flexibility."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1891,
+   "idea": "Replace the 5-seed bagged LightGBM with a single, highly-regularized LightGBM model using a much lower learning rate (0.005) and proportionally more boosting rounds (1500-2000) to better capture the additive, multiplicative-peril structure while reducing variance from bagging."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10973,
+   "idea": "Blend the 5-seed LightGBM bag with a single highly-regularized Tweedie GLM (ElasticNet) fitted on the log-rate using only numeric features and one-hot low-cardinality categoricals, to strictly enforce the known additive, multiplicative-peril structure while maintaining the tree's flexibility."
+  },
+  {
+   "status": "discarded",
+   "score": 0.10959,
+   "idea": "Remove the monotonicity constraints (which were found to be incompatible with the current feature set and previously failed/did not help) and add a single, highly-regularized Tweedie GLM (ElasticNet) fitted on the log-rate using only numeric features and one-hot low-cardinality categoricals, blendin"
+  },
+  {
+   "status": "discarded",
+   "score": -3.93354,
+   "idea": "Replace the LightGBM bag with a Tweedie GLM (ElasticNet) fitted on log-rate using only the verified actuarial drivers (numeric + low-cardinality categoricals), strictly enforcing the additive structure in log-space without any tree-based overfitting to noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18488,
+   "idea": "Replace the 5-seed LightGBM bag with a single highly-regularized LightGBM model that uses only the verified actuarial drivers and low-cardinality categoricals, dropping all decoy and high-cardinality columns to strictly enforce the additive structure and reduce overfitting."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18915,
+   "idea": "Replace the 5-seed bagged LightGBM with a single highly-regularized LightGBM model (learning_rate=0.008, num_leaves=8, 1200-1500 rounds) to better capture the additive structure with lower variance, while keeping the current feature set and monotone constraints."
+  },
+  {
+   "status": "timeout after 900s",
+   "score": "",
+   "idea": "Replace the monotone-constraint LightGBM with a 6-seed bagged ensemble of two distinct models: a highly-regularized additive model (num_leaves=3) and a flexible model (num_leaves=8), both with lower learning rates and proportionally more boosting rounds to better capture the known additive structure"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18851,
+   "idea": "Replace the 5-seed LightGBM bag with a 6-seed bagged ensemble that blends a highly-regularized additive model (num_leaves=4) with a slightly more flexible model (num_leaves=8) to better capture the known additive, multiplicative-peril structure while maintaining strong generalizability."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18944,
+   "idea": "Replace the current 5-seed bagged LightGBM with a single highly-regularized LightGBM model using a much lower learning rate (0.008) and proportionally more boosting rounds (1200-1500) to better capture the additive structure with lower variance, while keeping the current feature set and monotone con"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18944,
+   "idea": "Remove the monotone constraints that previously failed or did not improve the score and instead use a 4-seed bagged LightGBM ensemble with two complementary configurations (a highly regularized additive model with num_leaves=4 and a slightly more flexible model with num_leaves=8) to better capture t"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18311,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18906,
+   "idea": "Remove the previously added interaction features and monotone constraints (which were found to be incompatible or not helpful), and instead use a 5-seed bagged LightGBM with a lower learning rate (0.01) and proportionally more rounds to better capture the additive structure while maintaining general"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18606,
+   "idea": "Drop the low-signal interaction features (driver_age_x_lic, veh_val_x_age, flood_severity) and the subsidence_risk term to strictly enforce the additive structure, and replace the 5-seed bag with a 3-seed bag of highly regularized additive models (num_leaves=4, lower learning rate, higher L2) to red"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18596,
+   "idea": "Replace the 5-seed LightGBM bag with a 4-seed bagged ensemble of highly-regularized additive models (num_leaves=3) using a lower learning rate (0.008) and proportionally more boosting rounds to strictly enforce the known multiplicative-peril additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18764,
+   "idea": "Replace the 5-seed LightGBM bag with a single highly-regularized LightGBM model that uses only the verified actuarial drivers and low-cardinality categoricals, dropping all decoy and high-cardinality columns to strictly enforce the additive structure and reduce overfitting."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18919,
+   "idea": "Replace the 5-seed bagged LightGBM with a 3-seed bagged ensemble of two distinct model configurations\u2014a highly regularized additive model (num_leaves=4) and a slightly more flexible model (num_leaves=8)\u2014to better capture the known additive, multiplicative-peril structure while maintaining strong gen"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18907,
+   "idea": "Drop the previously added interaction features and monotone constraints (which were found to be incompatible or not helpful) and instead use a 5-seed bagged LightGBM with a lower learning rate (0.01) and proportionally more rounds to better capture the additive structure while maintaining generaliza"
+  },
+  {
+   "status": "discarded",
+   "score": 0.1891,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18734,
+   "idea": "Drop the previously added interaction features (which were shown to be low-signal/noisy) and high-cardinality categoricals, and instead use a 3-seed bagged ensemble of highly-regularized additive models (num_leaves=3, min_data_in_leaf=5000) with a lower learning rate (0.008) and proportionally more "
+  },
+  {
+   "status": "discarded",
+   "score": 0.18918,
+   "idea": "Replace the 5-seed bag with a single highly-regularized LightGBM model using a much lower learning rate (0.008) and proportionally more boosting rounds (1200-1500) to better capture the additive structure with lower variance, while keeping the current feature set and monotone constraints."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18931,
+   "idea": "Replace the 5-seed LightGBM bag with a 4-seed bagged ensemble that blends a highly regularized additive model (num_leaves=4) with a slightly more flexible model (num_leaves=8), using a lower learning rate (0.008) and proportionally more boosting rounds to better capture the known additive, multiplic"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18946,
+   "idea": "Drop the noisy interaction features and high-cardinality categoricals to strictly enforce the additive structure, and replace the 5-seed bag with a 4-seed bagged ensemble that blends a highly regularized additive model (num_leaves=4) with a slightly more flexible model (num_leaves=8) to better captu"
+  },
+  {
+   "status": "discarded",
+   "score": 0.12199,
+   "idea": "Switch the LightGBM objective from Tweedie regression to Binomial classification (log-odds of a claim) with a constant severity multiplier, leveraging the verified finding that claim frequency follows an additive structure in log-space while severity is nearly constant per peril."
+  },
+  {
+   "status": "discarded",
+   "score": 0.17946,
+   "idea": "Replace the 5-seed LightGBM bag with a blend of a single highly-regularized additive LightGBM model (num_leaves=4, lr=0.01) and a Tweedie GLM (ElasticNet) fitted on log-rate using only verified numeric drivers, enforcing the multiplicative-peril structure with two complementary model families."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18894,
+   "idea": "Drop high-cardinality categorical columns (make_model, previous_insurer, campaign_code, branch_id) and replace them with smoothed target encodings computed on train, while removing the previously failed interaction features to strictly enforce the additive structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18772,
+   "idea": "Replace the current 5-seed bagged LightGBM with a single highly-regularized additive model (num_leaves=3) using a lower learning rate (0.008) and proportionally more boosting rounds (1500) to strictly enforce the known multiplicative-peril additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18773,
+   "idea": "Drop all high-cardinality categorical columns (make_model, previous_insurer, campaign_code, branch_id) to strictly enforce the additive structure, and replace the 5-seed bag with a 3-seed bagged ensemble of highly-regularized additive models (num_leaves=3, min_data_in_leaf=5000) using a lower learni"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18859,
+   "idea": "Replace the 5-seed LightGBM bag with a 4-seed bagged ensemble that blends a highly regularized additive model (num_leaves=4) with a slightly more flexible model (num_leaves=8), using a lower learning rate (0.008) and proportionally more boosting rounds to better capture the known additive, multiplic"
+  },
+  {
+   "status": "run failed: ValueError: could not convert string to float: 'driveway'",
+   "score": "",
+   "idea": "Blend the LightGBM ensemble with a regularized Tweedie GLM (ElasticNet) fitted on log-rate using only verified numeric drivers to enforce the multiplicative-peril structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1896,
+   "idea": "Blend the regularized LightGBM ensemble with a Tweedie GLM (ElasticNet) fitted on log-rate using only verified numeric drivers to enforce the multiplicative-peril structure and reduce overfitting on noise."
+  },
+  {
+   "status": "run failed: AttributeError: 'DataFrame' object has no attribute 'dtype'. Did you mean: 'dtypes'?",
+   "score": "",
+   "idea": "Replace the 5-seed bagged LightGBM with a single highly-regularized additive LightGBM model (num_leaves=4, min_data_in_leaf=5000, lr=0.008) using only verified actuarial drivers and dropping all decoy and high-cardinality columns, to strictly enforce the known multiplicative-peril additive structure"
+  },
+  {
+   "status": "discarded",
+   "score": 0.1881,
+   "idea": "Drop the previously added interaction features and high-cardinality categorical columns (make_model, previous_insurer, campaign_code, branch_id) to strictly enforce the additive structure, and replace the 5-seed bag with a single highly regularized additive LightGBM model (num_leaves=4, min_data_in_"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18776,
+   "idea": "Use smoothed target encoding computed on the training set to replace high-cardinality categorical variables (like make_model) with low-cardinality numeric features, thereby avoiding LightGBM's categorical handling overhead and allowing the model to capture their signal in a more robust, additive man"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18835,
+   "idea": "Replace the 5-seed bagged LightGBM with a 3-seed bagged ensemble that blends a highly regularized additive model (num_leaves=3) with a slightly more flexible model (num_leaves=6), using a lower learning rate (0.01) and proportionally more boosting rounds to better capture the known additive, multipl"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18948,
+   "idea": "Add a single, well-motivated interaction feature (soil_type \u00d7 dry_summer_index) to the additive model, as this is the one verified exception to the additive structure that the current model cannot capture."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18951,
+   "idea": "Use a single LightGBM model with monotone constraints applied only to numeric features (setting 0 for categoricals to avoid crashes), using a 3-seed bag with a lower learning rate (0.01) and proportionally more rounds (1200) to better capture the additive structure while maintaining generalizability"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18761,
+   "idea": "Drop the high-cardinality `make_model` and `previous_insurer` columns (since they are noisy and high-cardinality) and replace them with smoothed target encodings computed on the training set only, while keeping the 5-seed bagged additive LightGBM structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18832,
+   "idea": "Use a 2-seed bagged ensemble that blends a highly regularized additive model (num_leaves=3) with a slightly more flexible model (num_leaves=6) using a lower learning rate (0.01) and proportionally more boosting rounds to better capture the known additive, multiplicative-peril structure while reducin"
+  },
+  {
+   "status": "run failed: Fields with bad pandas dtypes: cover_type: str, overnight_parking: string, vehicle_use: str, channel: str, p",
+   "score": "",
+   "idea": "Replace the 5-seed LightGBM bag with a blend of a highly-regularized additive LightGBM model and a Tweedie GLM (ElasticNet) fitted on log-rate using only verified numeric drivers to enforce the multiplicative-peril structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18763,
+   "idea": "Remove the previously added interaction features (which are known to hurt due to the additive data structure) and use a single highly regularized additive LightGBM model (num_leaves=4, lr=0.01) with a 3-seed bag to strictly enforce the multiplicative-peril structure while maintaining generalizabilit"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18768,
+   "idea": "Use a single highly-regularized additive LightGBM model (num_leaves=3, min_data_in_leaf=8000) with a very low learning rate and 1500 rounds, retaining the critical `soil_type \u00d7 dry_summer_index` interaction for the verified subsidence exception while strictly enforcing the multiplicative-peril struc"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18942,
+   "idea": "Apply line-specific hyperparameters (reducing num_leaves to 6 for the additive structure, increasing min_data_in_leaf to 5000 for stronger regularization, and tuning rounds/lambda_l2 per line) to better match the known data generation process and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18889,
+   "idea": "Drop all decoy columns, high-cardinality categoricals, and previously failed interaction features to strictly enforce the additive structure, and use a 3-seed bagged ensemble that blends a highly regularized additive model (num_leaves=3) with a slightly more flexible model (num_leaves=6) using a low"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18938,
+   "idea": "Remove the `max_bin` parameter from the LightGBM configuration to eliminate the high-cardinality categorical encoding bottleneck (which caused dtype errors in prior runs), and replace the 5-seed bag with a single highly regularized additive model using `min_data_in_leaf=5000` and `num_leaves=4` to s"
+  },
+  {
+   "status": "rejected: forbidden call: .remove",
+   "score": "",
+   "idea": "Drop the `make_model` column (which is a verified severity driver for motor but a high-cardinality decoy for home lines) and replace it with a smoothed target encoding computed on the training set to robustly capture its signal without overfitting to noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18955,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18206,
+   "idea": "Replace the 5-seed LightGBM bag with a 2-seed blend of a highly regularized additive model (num_leaves=3) and a moderately flexible model (num_leaves=6), while dropping all decoy and high-cardinality columns to strictly enforce the multiplicative-peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18776,
+   "idea": "Replace the high-cardinality `make_model` column with a smoothed target encoding computed on the training set to capture its verified severity signal without overfitting to noise, while retaining the 5-seed additive LightGBM structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18863,
+   "idea": "Use a 2-seed ensemble that blends a highly regularized additive LightGBM model (num_leaves=3) with a slightly more flexible model (num_leaves=6) using a lower learning rate (0.01) and proportionally more rounds to better capture the known additive structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18532,
+   "idea": "Replace the 5-seed LightGBM bag with a single highly-regularized additive LightGBM model (num_leaves=4, min_data_in_leaf=5000) that strictly enforces the known multiplicative-peril additive structure by dropping all decoy and high-cardinality columns, and applying monotone constraints only to the ce"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18895,
+   "idea": "Use a 3-seed bagged ensemble that blends a highly regularized additive model (num_leaves=4, lr=0.008) with a moderately flexible model (num_leaves=8, lr=0.012) to better capture the known additive, multiplicative-peril structure while reducing overfitting on noise, and apply monotone constraints onl"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18467,
+   "idea": "Blend the LightGBM predictions with a regularized Tweedie GLM (ElasticNet) fitted on log-rate using only verified numeric drivers to enforce the multiplicative-peril structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18904,
+   "idea": "Use a 3-seed bagged ensemble that blends a highly regularized additive model (num_leaves=4) with a moderately flexible model (num_leaves=8) to better capture the known additive, multiplicative-peril structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18771,
+   "idea": "Use a single, highly regularized additive LightGBM model (num_leaves=3) with a very low learning rate (0.008) and 1500 rounds, retaining only the verified `soil_type \u00d7 dry_summer_index` interaction and dropping all other interaction features and decoys to strictly enforce the multiplicative-peril st"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18479,
+   "idea": "Blend the 5-seed additive LightGBM model with a regularized Tweedie GLM (Lasso) fitted on the log-rate using only verified numeric drivers to enforce the multiplicative-peril structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.14691,
+   "idea": "Replace the 5-seed LightGBM bag with a 2-seed LightGBM bag blended with a Tweedie GLM (ElasticNet) fitted on log-rate using only verified numeric drivers to enforce the multiplicative-peril structure and reduce overfitting on noise."
+  },
+  {
+   "status": "run failed: libc++abi: terminating due to uncaught exception of type std::runtime_error: The output cannot be monotone w",
+   "score": "",
+   "idea": "Apply monotone constraints to verified high-cardinality severity drivers (make_model, vehicle_value_group, sum_insured, high_value_items) in addition to existing drivers to enforce actuarial directionality and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18902,
+   "idea": "Drop the `make_model` column (a 300-level decoy for home lines) and add a single verified actuarial interaction feature (soil_type \u00d7 dry_summer_index) to strictly enforce the additive structure while capturing the known subsidence exception."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18974,
+   "idea": "Apply a log1p transformation to severity drivers and add a squared term for building_age to capture the known non-linear severity scaling and quadratic aging effect while maintaining the additive model structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.12696,
+   "idea": "Replace the 5-seed LightGBM bag with a single regularized Tweedie GLM (ElasticNet) fitted on the log-rate of the target using only verified numeric drivers, strictly enforcing the multiplicative-peril additive structure and eliminating overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18646,
+   "idea": "Replace the 5-seed additive LightGBM bag with a 3-seed blend of a highly regularized additive model (num_leaves=3) and a moderately flexible model (num_leaves=6) to better capture the known additive, multiplicative-peril structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18549,
+   "idea": "Replace the 5-seed LightGBM bag with a single, highly regularized additive model (num_leaves=4, min_data_in_leaf=8000) that strictly enforces the known multiplicative-peril additive structure by dropping all decoy and high-cardinality columns and applying monotone constraints only to the certain-dir"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18937,
+   "idea": "Replace the 5-seed LightGBM bag with a single, highly regularized additive model (num_leaves=4, min_data_in_leaf=5000, 1000 rounds) that strictly enforces the known multiplicative-peril structure by dropping all decoy and high-cardinality columns."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1866,
+   "idea": "Use a single, highly regularized additive LightGBM model with a very low learning rate (0.005), 1500 rounds, and strict monotone constraints only on the verified directional numeric drivers (flood_zone, building_age, vehicle_age, sum_insured) to enforce the multiplicative-peril structure while allow"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18939,
+   "idea": "Add a verified actuarial interaction feature `flood_zone / distance_to_river_km` to capture the non-linear, non-monotonic flood severity (peaking at low river distances) while strictly maintaining the additive model structure with the existing 5-seed LightGBM ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18952,
+   "idea": "Add a log1p transformation to `sum_insured` to better capture its non-linear severity scaling while maintaining the additive model structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18754,
+   "idea": "Add line-specific feature transformations for known severity drivers (log1p for sum_insured and annual_mileage) and replace the high-cardinality `make_model` column with a smoothed target encoding computed on the training set to capture its verified signal without overfitting."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18955,
+   "idea": "Use the `pol_prev_rate` (previous year's claim count) and `pol_prev_cost_rate` (previous year's cost) columns as strong direct predictors of prior experience, which are currently being underutilized, while retaining the existing 5-seed additive LightGBM structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.141,
+   "idea": "Replace the LightGBM model with a regularized Tweedie GLM (Ridge) fitted on the log-rate using only verified numeric drivers to strictly enforce the multiplicative-peril structure and eliminate overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18933,
+   "idea": "Replace the 5-seed LightGBM bag with a single, highly regularized additive LightGBM model (num_leaves=4, min_data_in_leaf=5000) that strictly enforces the known multiplicative-peril additive structure by dropping all decoy and high-cardinality columns, and applying monotone constraints only to the c"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18955,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.1876,
+   "idea": "Add smoothed target encodings (computed on train only) for the high-cardinality `make_model` column to capture its verified severity signal without overfitting, while keeping the existing 5-seed additive LightGBM ensemble and dropping the raw column."
+  },
+  {
+   "status": "run failed: TypeError: TweedieRegressor.__init__() got an unexpected keyword argument 'variance_power'",
+   "score": "",
+   "idea": "Remove the post-hoc train-mean rescaling (which distorts the Tweedie log-link predictions) and instead use a small, well-tuned Tweedie GLM with only the verified numeric drivers as a blend partner, combined with a 3-seed LightGBM bag, to balance the additive structure with a stable baseline."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18955,
+   "idea": "Apply a log1p transformation to `sum_insured` to better capture its non-linear severity scaling while maintaining the additive model structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18761,
+   "idea": "Replace the multi-seed LightGBM bag with a single, highly regularized additive LightGBM model (num_leaves=3, min_data_in_leaf=8000, 1200 rounds, learning rate 0.01) that strictly enforces the known multiplicative-peril additive structure by dropping all decoy and high-cardinality columns, and applyi"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18702,
+   "idea": "Add a smoothed target encoding for the `make_model` column (computed on train only with a global prior) to capture its verified severity signal without overfitting, while keeping the existing 5-seed additive LightGBM ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18238,
+   "idea": "Replace the 5-seed LightGBM ensemble with a 3-seed blend of a highly regularized additive LightGBM model and a Tweedie GLM (Ridge) fitted on log-transformed severity drivers to better capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18785,
+   "idea": "Bag a single highly regularized additive LightGBM model (num_leaves=3) across 7 seeds with a lower learning rate and more boosting rounds to better fit the known additive, multiplicative-peril structure while reducing overfitting on decoy columns."
+  },
+  {
+   "status": "run failed: Fields with bad pandas dtypes: cover_type: str, overnight_parking: str, vehicle_use: str, channel: str, paym",
+   "score": "",
+   "idea": "Use a Tweedie GLM with ElasticNet regularization as the primary model (strictly enforcing the additive/multiplicative structure) and blend it with a highly regularized LightGBM model to capture residual non-linearity, while dropping all decoy and high-cardinality columns."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18959,
+   "idea": "Increase the ensemble size to 7 seeds with a lower learning rate (0.01) and proportionally more boosting rounds to improve stability and reduce overfitting on the additive signal, while retaining the verified feature set and monotone constraints."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18762,
+   "idea": "Bag 7 seeds of the additive LightGBM model to reduce variance, while adding a smoothed target encoding for `make_model` (computed on train) to capture verified severity signal without overfitting."
+  },
+  {
+   "status": "run failed: ValueError: operands could not be broadcast together with shapes (229021,) (423519,)",
+   "score": "",
+   "idea": "Blend the existing 5-seed LightGBM ensemble with a regularized Tweedie GLM (Ridge) fitted on log-transformed numeric drivers to capture the additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1865,
+   "idea": "Replace the 5-seed LightGBM ensemble with a single, highly regularized additive LightGBM model (num_leaves=4, 1200 rounds) that strictly enforces the known multiplicative-peril structure by dropping all decoy and high-cardinality columns, and applying monotone constraints only to the verified direct"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18915,
+   "idea": "Drop the unverified actuarial interaction features (driver_age_x_lic, veh_val_x_age, flood_severity) and add line-specific Tweedie GLM baselines blended with the LightGBM ensemble to stabilize predictions using the known additive structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18806,
+   "idea": "Replace the 5-seed LightGBM ensemble with a 7-seed blend of a highly regularized additive LightGBM model and a Tweedie GLM (Ridge) fitted on log-transformed severity drivers to better capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.12798,
+   "idea": "Replace the 5-seed bag with a single LightGBM model using a higher learning rate (0.05) and many more rounds (4000-5000) to better fit the additive structure, while dropping the `si_per_bedroom` feature (which was already present in the data and likely caused redundancy/overfitting in previous attem"
+  },
+  {
+   "status": "run failed: ValueError: operands could not be broadcast together with shapes (423519,) (229021,)",
+   "score": "",
+   "idea": "Replace the 5-seed LightGBM bag with a 3-seed blend (weight 0.7) of the additive LightGBM model and a regularized Tweedie GLM (weight 0.3) fitted on binned verified drivers to better capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18935,
+   "idea": "Add the known actuarial interaction `soil_type == 'clay' AND dry_summer_index > 0.5` as a binary flag for subsidence risk, which is the only verified interaction in the data generation process."
+  },
+  {
+   "status": "rejected: forbidden name: __import__",
+   "score": "",
+   "idea": "Replace the additive LightGBM model with a single Tweedie GLM (Ridge) fitted on a curated, log-transformed set of verified numeric drivers to strictly enforce the known multiplicative-peril structure and eliminate overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18896,
+   "idea": "Drop the 3 unverified interaction features (driver_age_x_lic, veh_val_x_age, flood_severity) that previous attempts showed to be harmful, and apply monotone constraints to the verified severity drivers (sum_insured, vehicle_value_group, make_model) in addition to the existing ones."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18934,
+   "idea": "Add a single verified interaction feature `soil_dry` (soil_type == \"clay\" * dry_summer_index) for the subsidence peril, which is the only confirmed interaction in the data generation process."
+  },
+  {
+   "status": "run failed: AttributeError: 'list' object has no attribute 'replace'",
+   "score": "",
+   "idea": "Add a smoothed target encoding for the `make_model` column (computed on train only with a global prior) to capture its verified severity signal without overfitting, while keeping the existing 5-seed additive LightGBM ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18955,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18673,
+   "idea": "Remove the unverified interaction features and use a single, highly regularized additive LightGBM model with monotone constraints on the verified severity drivers to strictly enforce the multiplicative-peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18761,
+   "idea": "Add a smoothed target encoding for the high-cardinality `make_model` column (computed on train only with a global prior) to capture its verified severity signal without overfitting, while keeping the existing 5-seed additive LightGBM ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18952,
+   "idea": "Replace the 5-seed LightGBM bag with a blend of the 5-seed LightGBM model and a Tweedie GLM (Ridge) fitted on binned verified drivers, using a 0.8/0.2 weight to capture the additive structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18902,
+   "idea": "Drop the unverified interaction features and the redundant `si_per_bedroom` (which is already a column in the data for home lines), keeping only the verified `subsidence_risk` interaction and the `telematics_missing` indicator, to strictly enforce the additive structure and eliminate noise from redu"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18882,
+   "idea": "Replace the 5-seed bagged LightGBM ensemble with a single highly regularized additive LightGBM model (num_leaves=4) using the verified subsidence interaction and telematics missing indicator, strictly dropping decoys and high-cardinality noisy features to better fit the known multiplicative-peril st"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18959,
+   "idea": "Increase the LightGBM ensemble from 5 to 7 seeds to reduce variance and improve stability of the additive model, keeping the same hyperparameters and feature set."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18569,
+   "idea": "Replace the 5-seed bag with a single, highly regularized additive LightGBM model (num_leaves=4) that strictly enforces the known multiplicative-peril structure by dropping all decoy and high-cardinality columns, and applying monotone constraints only to the verified direct drivers."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18806,
+   "idea": "Replace the 5-seed LightGBM bag with a single LightGBM model using a lower learning rate (0.01) and 3x more rounds (2400/2100/1800) to better fit the additive structure, while dropping the `si_per_bedroom` feature (which was already present in the data and likely caused redundancy/overfitting in pre"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18904,
+   "idea": "Apply the verified subsidence interaction and telematics missing indicator to the home lines (buildings and contents) as well as motor, while removing the previously unverified interaction features that degraded performance."
+  },
+  {
+   "status": "run failed: TypeError: train() got an unexpected keyword argument 'init_score'",
+   "score": "",
+   "idea": "Switch the LightGBM objective from Tweedie regression to a log-link Poisson regression (log link with exposure offset) to better handle the zero-inflated cost data and the multiplicative exposure structure, while removing the unverified interaction features that have been shown to hurt performance."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18894,
+   "idea": "Replace the 5-seed LightGBM bag with a single, highly regularized additive LightGBM model using a lower learning rate and more rounds, strictly dropping decoys and high-cardinality noisy features to better fit the known multiplicative-peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.17345,
+   "idea": "Replace the 5-seed bag with a 3-seed blend of a highly regularized additive LightGBM model and a Tweedie GLM (Ridge) fitted on binned verified drivers to better capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18904,
+   "idea": "Remove the unverified interaction features (driver_age_x_lic, veh_val_x_age, flood_severity) and use a single LightGBM model with monotone constraints on the verified severity drivers (sum_insured, vehicle_value_group, make_model) to better align with the known additive structure."
+  },
+  {
+   "status": "run failed: could not convert string to float: 'driveway'",
+   "score": "",
+   "idea": "Replace the 5-seed LightGBM ensemble with a 3-model blend (0.80 LightGBM bag + 0.20 Tweedie GLM via sklearn Ridge on log-transformed verified drivers) to capture additive structure while reducing overfitting on noise."
+  },
+  {
+   "status": "run failed: RuntimeError: predictions must be finite and >= 0",
+   "score": "",
+   "idea": "Blend the LightGBM bag with a Tweedie GLM fitted on log-transformed verified numeric drivers to capture the additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "rejected: forbidden call: .remove",
+   "score": "",
+   "idea": "Use a single highly regularized additive LightGBM model with 5-seed bagging, strict monotone constraints on verified severity drivers, and smoothed target encoding for high-cardinality categoricals to capture their signal without overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18841,
+   "idea": "Replace the 5-seed bag with a single highly regularized additive LightGBM model (num_leaves=4) using the verified subsidence interaction and telematics missing indicator, strictly dropping decoys and high-cardinality noisy features to better fit the known multiplicative-peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18902,
+   "idea": "Drop the redundant `si_per_bedroom` feature (already present in the data for home lines) and the unverified interaction features `flood_severity` and `driver_age_x_lic`/`veh_val_x_age`, keeping only the verified `subsidence_risk` and `telematics_missing` indicators to strictly align with the additiv"
+  },
+  {
+   "status": "discarded",
+   "score": 0.14383,
+   "idea": "Replace the Tweedie objective with a Tweedie GLM (Ridge regression) on log-transformed verified drivers, using a 0.8/0.2 blend with the existing LightGBM bag to better capture the additive structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18851,
+   "idea": "Use a single highly regularized additive LightGBM model (num_leaves=4) with a lower learning rate and more rounds, keeping only the verified subsidence interaction and telematics missing indicator while strictly dropping all decoys, high-cardinality noisy categoricals, and unverified interaction fea"
+  },
+  {
+   "status": "rejected: syntax error: closing parenthesis ')' does not match opening parenthesis '[' (<unknown>, line 71)",
+   "score": "",
+   "idea": "Remove the unverified interaction features (driver_age_x_lic, veh_val_x_age, flood_severity, si_per_bedroom) and replace the 5-seed LightGBM bag with a 3-seed average of a highly regularized LightGBM model (num_leaves=4) and a Tweedie Ridge GLM fitted on the same features to better capture the addit"
+  },
+  {
+   "status": "run failed: ValueError: Cannot cast str dtype to float64",
+   "score": "",
+   "idea": "Add a small Tweedie GLM (TweedieRegressor) fitted on the same features as a second model and blend its predictions with the LightGBM bag at a 0.8/0.2 ratio to capture the additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18945,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18831,
+   "idea": "Drop the `make_model` high-cardinality categorical to strictly enforce the additive structure, and add a smoothed target encoding for the high-cardinality `previous_insurer` and `campaign_code` columns to capture their signal without overfitting."
+  },
+  {
+   "status": "run failed: TypeError: TweedieRegressor.__init__() got an unexpected keyword argument 'random_state'",
+   "score": "",
+   "idea": "Replace the 5-seed LightGBM bag with a 3-model ensemble (0.85 LightGBM additive model + 0.15 Tweedie GLM on log-transformed verified drivers) to capture the known additive structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18901,
+   "idea": "Drop the high-cardinality `make_model` feature and all other unverified interaction features to strictly enforce the additive structure, replacing the 5-seed bag with a 3-seed average of a highly regularized additive LightGBM model (num_leaves=4) and a Tweedie GLM (Ridge) fitted on the same features"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18893,
+   "idea": "Replace the 5-seed bagged ensemble with a single, highly regularized additive LightGBM model (num_leaves=4) using a lower learning rate and more rounds, strictly dropping decoys and high-cardinality noisy features to better fit the known multiplicative-peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18904,
+   "idea": "Apply monotone constraints to verified severity drivers (sum_insured, vehicle_value_group, high_value_items) with categorical features set to 0, and drop unverified interaction features to strictly enforce the known additive structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18914,
+   "idea": "Use a single highly regularized additive LightGBM model with monotone constraints on verified severity drivers (sum_insured, vehicle_value_group, vehicle_age, building_age, high_value_items) and drop all unverified interaction features and high-cardinality noisy categoricals to strictly enforce the "
+  },
+  {
+   "status": "discarded",
+   "score": 0.18955,
+   "idea": "Drop high-cardinality noisy categoricals (previous_insurer, campaign_code, branch_id, make_model) and use smoothed target encoding on the remaining categorical features to capture their signal without overfitting, while keeping the 5-seed LightGBM ensemble with monotone constraints."
+  },
+  {
+   "status": "run failed: UnboundLocalError: cannot access local variable 'cats' where it is not associated with a value",
+   "score": "",
+   "idea": "Replace the 5-seed LightGBM bag with a single highly regularized additive LightGBM model (num_leaves=2) using a lower learning rate and more rounds, strictly dropping decoys and high-cardinality noisy features, and adding a smoothed target encoding for `make_model` to capture its severity signal wit"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18584,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18368,
+   "idea": "Remove all unverified interaction features and drop the `si_per_bedroom` column (which duplicates `sum_insured`), then replace the 5-seed bag with a single highly regularized additive LightGBM model (num_leaves=2, increased rounds) to strictly match the known additive peril structure."
+  },
+  {
+   "status": "run failed: TypeError: Invalid comparison between dtype=str and float",
+   "score": "",
+   "idea": "Blend the LightGBM bag with a Tweedie GLM (Ridge on log-transformed verified drivers) at a 0.8/0.2 ratio to capture the additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "run failed: You can drop duplicate edges by setting the 'duplicates' kwarg",
+   "score": "",
+   "idea": "Replace the 5-seed LightGBM bag with a 2-seed ensemble of highly regularized additive LightGBM models (num_leaves=2) and a Tweedie GLM fitted on binned features to capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "run failed: Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to con",
+   "score": "",
+   "idea": "Replace the 5-seed LightGBM bag with a 0.85/0.15 blend of the additive LightGBM model and a Tweedie GLM (Ridge) fitted on binarized, binned, and target-encoded features to capture the known additive peril structure and reduce overfitting on noise."
+  },
+  {
+   "status": "run failed: ValueError: operands could not be broadcast together with shapes (229021,) (423519,)",
+   "score": "",
+   "idea": "Replace the 5-seed LightGBM bag with a 2-seed average of a highly regularized additive LightGBM model (num_leaves=4) and a Tweedie Ridge GLM fitted on the same features to capture the additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18857,
+   "idea": "Replace the 5-seed bagged ensemble with a single highly regularized additive LightGBM model (num_leaves=4) using a lower learning rate and more rounds, strictly dropping decoys and high-cardinality noisy features to better fit the known multiplicative-peril structure."
+  },
+  {
+   "status": "run failed: ValueError: operands could not be broadcast together with shapes (73,) (2,)",
+   "score": "",
+   "idea": "Blend the existing LightGBM bag with a Tweedie Ridge GLM fitted on the same features using a 0.85/0.15 ratio to capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18904,
+   "idea": "Drop the unverified interaction features (driver_age_x_lic, veh_val_x_age, si_per_bedroom, flood_severity) and add a single, actuarially-verified interaction (soil_type \u00d7 dry_summer_index for subsidence) to strictly align with the known data generation process."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18961,
+   "idea": "Apply monotone constraints to the verified severity drivers (sum_insured, vehicle_value_group, vehicle_age, building_age, high_value_items, dry_summer_index) with a zero value for every categorical column to enforce the known positive-direction relationships without crashing the LightGBM engine."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18934,
+   "idea": "Replace the 5-seed bag with a single highly regularized additive LightGBM model (num_leaves=4, lower learning rate, more rounds) to strictly match the known additive peril structure and reduce overfitting on noise."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.18992,
+   "idea": "Replace the 5-seed bag with a 3-model ensemble that blends the additive LightGBM model with a Tweedie GLM fitted on the same features to capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18993,
+   "idea": "Replace the 5-seed LightGBM bag with a 3-seed average of a highly regularized additive LightGBM model (num_leaves=4) and a Tweedie GLM (Ridge) fitted on the same features, strictly dropping decoys and high-cardinality noisy features to better fit the known multiplicative-peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18822,
+   "idea": "Replace the 5-seed LightGBM bag with a 3-seed average of a highly regularized additive LightGBM model (num_leaves=4) and a Tweedie GLM (Ridge) fitted on the same features, strictly dropping decoys and high-cardinality noisy features to better fit the known multiplicative-peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "Replace the 5-seed LightGBM bag with a 3-seed ensemble that blends the additive LightGBM model with a Tweedie GLM fitted on the same features to capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18866,
+   "idea": "Drop all unverified interaction features, drop noisy high-cardinality categoricals, and use a single highly regularized additive LightGBM model (num_leaves=3, low learning rate, more rounds) with monotone constraints on certain-direction drivers to strictly match the known additive peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "Replace the 5-seed bag with a 3-model ensemble that blends the additive LightGBM model with a Tweedie GLM fitted on the same features to capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "Add a single actuarially-verified interaction feature (soil_type \u00d7 dry_summer_index for subsidence) to capture the only known multiplicative peril relationship in the data generation process."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "Replace the 5-seed bag with a 3-seed ensemble that blends the additive LightGBM model with a Tweedie GLM fitted on the same features to capture the known additive structure and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18938,
+   "idea": "Replace the unverified interaction features with a single actuarially-verified subsidence interaction (soil_type \u00d7 dry_summer_index) and tune the LightGBM hyperparameters per line to better capture the known additive peril structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18982,
+   "idea": "Reduce the LightGBM ensemble to a single seed, lower the learning rate, and increase the number of boosting rounds to better fit the known additive peril structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18923,
+   "idea": "Reduce the LightGBM ensemble to a single seed with a lower learning rate and proportionally more boosting rounds to improve convergence on the additive structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18982,
+   "idea": "Use a two-stage frequency-severity model where a Poisson LightGBM estimates claim frequency and a Tweedie GLM estimates severity, blending this product with the existing Tweedie LightGBM to better capture the multiplicative claim structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18976,
+   "idea": "Apply per-line Tweedie variance powers (1.2 for motor, 1.6 for buildings, 1.8 for contents) and line-specific min_data_in_leaf values to better match the differing claim count distributions across lines of business."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18981,
+   "idea": "Add a claim-history ratio feature (pol_prev_n_last / (pol_years_seen + 1)) with a positive monotone constraint, as it is the strongest non-rating signal and an untried direction."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": -4349.00398,
+   "idea": "Replace the single Tweedie GLM blend component with a two-stage Poisson LightGBM frequency model (offset log exposure) multiplied by a line-level severity constant, and blend this product with the existing LightGBM Tweedie ensemble at a 0.70/0.30 ratio to better capture the multiplicative claim stru"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18756,
+   "idea": "Replace the unverified interaction features with a single actuarially-verified subsidence interaction (soil_type \u00d7 dry_summer_index) and tune the LightGBM hyperparameters per line to better capture the known additive peril structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18989,
+   "idea": "Increase the LightGBM ensemble bag from 5 seeds to 10 seeds and tune the blending weights to 0.80/0.20 (LightGBM/GLM) to reduce estimation noise and better balance the additive structure capture against overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": -10.40055,
+   "idea": "Use a Poisson LightGBM model with `log(exposure)` as offset for the frequency component, combined with a line-level severity multiplier, and blend this frequency-severity approach with the existing Tweedie LightGBM ensemble to better capture the multiplicative claim structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18998,
+   "idea": "Increase the LightGBM ensemble bag from 5 to 10 seeds to reduce estimation noise and better balance the additive structure capture against overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1899,
+   "idea": "Increase the LightGBM ensemble bag from 5 to 10 seeds to reduce estimation noise and better balance the additive structure capture against overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18923,
+   "idea": "Tune the LightGBM ensemble for stability by enabling `extra_trees` and shifting the `feature_fraction` and `bagging_fraction` ranges to reduce variance while maintaining the additive structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18857,
+   "idea": "Replace the noisy GLM blend with a highly regularized additive LightGBM model (num_leaves=2, low LR, high regularization) blended at 0.70/0.30 to better capture the known additive peril structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18991,
+   "idea": "Add a single actuarially-verified interaction feature (soil_type \u00d7 dry_summer_index) for subsidence to capture the only known multiplicative peril relationship in the data generation process."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18921,
+   "idea": "Blend a regularized highly-additive LightGBM model (num_leaves=2, low learning rate, high regularization, many rounds) with the existing 8-leaf model at a 0.50/0.50 ratio, leveraging the known additive structure of the data generation process while maintaining the benefits of the more flexible model"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18916,
+   "idea": "Use a highly-regularized additive LightGBM model (num_leaves=2, low learning rate, high regularization, many rounds) blended with the existing 8-leaf model at a 0.50/0.50 ratio, leveraging the known additive structure of the data generation process while maintaining the benefits of the more flexible"
+  },
+  {
+   "status": "rejected: syntax error: closing parenthesis ')' does not match opening parenthesis '[' (<unknown>, line 68)",
+   "score": "",
+   "idea": "Replace the noisy one-hot encoded GLM blend with a smoothed target-encoding of the high-cardinality `make_model` and `previous_insurer` columns computed on the training data, while also removing the previously added interaction features that were found to be unhelpful."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18932,
+   "idea": "Replace the noisy one-hot encoded GLM blend with a smoothed target-encoding of the high-cardinality `make_model` and `previous_insurer` columns computed on the training data, while also removing the previously added interaction features that were found to be unhelpful."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18931,
+   "idea": "Replace the noisy one-hot encoded GLM blend with a smoothed target-encoding of the high-cardinality `make_model` and `previous_insurer` columns computed on the training data, while also removing the previously added interaction features that were found to be unhelpful."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18828,
+   "idea": "Replace the standard Tweedie GLM blend component with a simple Bayesian smoothing model (prior mean + prior variance) to provide a stable, regularized baseline that reduces overfitting on noise compared to the one-hot encoded GLM."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18901,
+   "idea": "Enable `extra_trees` mode in the LightGBM ensemble to reduce variance and improve generalization stability, while maintaining the existing 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18885,
+   "idea": "Replace the one-hot encoded Tweedie GLM blend component with a highly regularized, highly additive LightGBM model (num_leaves=2, low learning rate, high regularization, many rounds) blended at a 0.70/0.30 ratio, leveraging the known additive peril structure of the data generation process while maint"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18983,
+   "idea": "Apply per-line Tweedie variance powers (1.3 for motor, 1.5 for buildings, 1.7 for contents) and adjust min_data_in_leaf values to better match the differing claim count distributions across lines of business."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18857,
+   "idea": "Replace the unstable one-hot encoded Tweedie GLM blend component with a highly regularized additive LightGBM model (num_leaves=2, low learning rate, high regularization) blended at a 0.75/0.25 ratio to better capture the known additive peril structure while reducing overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18718,
+   "idea": "Replace the unstable one-hot encoded Tweedie GLM blend component with a stable Bayesian shrinkage baseline that maps each row to its line-level expected cost rate (sum target / sum exposure), blended at 0.80/0.20 with the LightGBM ensemble to provide a robust prior without overfitting to noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18902,
+   "idea": "Replace the generic GLM blend with a highly regularized additive LightGBM model (num_leaves=2) blended at 0.70/0.30 to leverage the known additive peril structure while maintaining the benefits of the more flexible 8-leaf model."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "Use a Poisson LightGBM model with `log(exposure)` as offset for the frequency component, combined with a line-level severity multiplier, and blend this frequency-severity approach with the existing Tweedie LightGBM ensemble to better capture the multiplicative claim structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18988,
+   "idea": "Add a claim-history ratio feature (pol_prev_n_last / (pol_years_seen + 1)) with a positive monotone constraint to explicitly capture the strongest non-rating signal identified in the data generation notes."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18718,
+   "idea": "Replace the noisy one-hot encoded Tweedie GLM blend with a stable Bayesian shrinkage baseline that maps each row to its line-level expected cost rate (sum target / sum exposure), blended at 0.80/0.20 with the LightGBM ensemble to provide a robust prior without overfitting to noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18983,
+   "idea": "Introduce a per-line Tweedie variance power (1.3 for motor, 1.5 for buildings, 1.7 for contents) to better match the differing claim count distributions and severity skew across lines of business."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18954,
+   "idea": "Implement a two-stage frequency-severity model for buildings and contents by replacing the single Tweedie GBM with a Poisson frequency model (with log-exposure offset) multiplied by a smoothed severity model, then blending this composite with the Tweedie GBM to better capture the multiplicative clai"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18912,
+   "idea": "Tune the LightGBM ensemble with `extra_trees=True` and a higher `feature_fraction` (0.8) to improve stability and feature utilization, while keeping the existing 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18715,
+   "idea": "Reintroduce the high-cardinality `make_model` and `previous_insurer` features by replacing them with smoothed target encodings computed on the training data, leveraging their signal while avoiding the noise of raw high-cardinality categoricals that were previously dropped."
+  },
+  {
+   "status": "timeout after 900s",
+   "score": "",
+   "idea": "Replace the noisy one-hot GLM blend and interaction features with a single Tweedie LightGBM ensemble using an internal 5-fold cross-validation to optimally weight the blend between the 8-leaf model and a highly-regularized additive (num_leaves=2) model."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18718,
+   "idea": "Replace the unstable one-hot encoded Tweedie GLM blend with a stable Bayesian shrinkage baseline (line-level cost rate) to provide a robust prior that reduces overfitting on noise compared to the high-dimensional GLM."
+  },
+  {
+   "status": "run failed: KeyError: 'sum_y'",
+   "score": "",
+   "idea": "Replace the noisy one-hot encoded Tweedie GLM blend component with a smooth Bayesian target-encoding of the high-cardinality `make_model` and `previous_insurer` features, then blend this new stable encoded model at a 0.50/0.50 ratio with the existing LightGBM ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18932,
+   "idea": "Replace the noisy one-hot Tweedie GLM blend with a highly regularized additive LightGBM model (num_leaves=2, low learning rate, high regularization, many rounds) blended at a 0.70/0.30 ratio to leverage the known additive peril structure while maintaining the benefits of the more flexible 8-leaf mod"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18983,
+   "idea": "Apply per-line Tweedie variance powers (1.3 for motor, 1.5 for buildings, 1.7 for contents) to better match the differing claim count distributions and severity skew across lines of business."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1893,
+   "idea": "Reduce overfitting by switching the LightGBM ensemble to a highly regularized, near-additive configuration (num_leaves=4, stricter leaf constraints, and higher L2 regularization) to better align with the additive peril structure of the generated data."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18981,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18904,
+   "idea": "Replace the one-hot encoded Tweedie GLM blend component with a highly regularized additive LightGBM model (num_leaves=2, low learning rate, high regularization, many rounds) blended at a 0.70/0.30 ratio to leverage the known additive peril structure while maintaining the benefits of the more flexibl"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18718,
+   "idea": "Replace the noisy one-hot encoded Tweedie GLM blend component with a stable Bayesian shrinkage baseline (line-level cost rate) blended at a 0.80/0.20 ratio to reduce overfitting on noise while maintaining the benefits of the LightGBM ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1899,
+   "idea": "Implement a two-stage frequency-severity model for all lines using a Poisson LightGBM for claim frequency (offset log(exposure)) and a separate Tweedie LightGBM for severity (offset log(n_claims)), blended with the existing single-stage Tweedie ensemble to better capture the multiplicative claim str"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "Replace the noisy one-hot Tweedie GLM blend component with a stable Bayesian-shrinkage target-encoded additive model (using only the 3 strongest verified drivers with monotone constraints) to provide a robust prior without overfitting to noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "Drop the high-cardinality `make_model` feature for motor to reduce overfitting and noise, as severity is driven by make_model but the high cardinality is causing instability."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18921,
+   "idea": "Introduce a highly regularized additive LightGBM model (num_leaves=2, low learning rate, high regularization, many rounds) that captures the known additive peril structure, then blend it with the existing 8-leaf ensemble and GLM baseline."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18906,
+   "idea": "Blend the LightGBM ensemble with a highly regularized, additive LightGBM model (num_leaves=2, low learning rate) to leverage the known additive peril structure of the generated data while maintaining the flexibility of the 8-leaf model."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18985,
+   "idea": "Add a claim-history ratio feature (`pol_prev_n_last / (pol_years_seen + 1)`) to both motor and home lines to capture the density of prior claims, which is the strongest non-rating signal, while preserving the existing LightGBM ensemble and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18988,
+   "idea": "Add a claim-history ratio feature (pol_prev_n_last / (pol_years_seen + 1)) to capture claim density, as it is the strongest non-rating signal and was not yet added to the existing model."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18989,
+   "idea": "Blend the LightGBM ensemble with an extra-trees LightGBM model (extra_trees=True, feature_fraction=0.8) to improve stability and feature utilization while maintaining the existing 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18992,
+   "idea": "Apply per-line `min_data_in_leaf` and `min_sum_hessian_in_leaf` constraints (stricter for contents, looser for motor) to better match the differing claim count distributions and severity skew across lines of business, while keeping the existing 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18977,
+   "idea": "Increase the GLM blend weight to 0.25 and increase LightGBM regularization (lower feature_fraction, higher lambda_l2) to improve stability and reduce overfitting, leveraging the GLM's robustness as a prior."
+  },
+  {
+   "status": "run failed: lightgbm.basic.LightGBMError: Check failed: (static_cast<size_t>(train_data_->num_total_features())) == (con",
+   "score": "",
+   "idea": "Add a smoothed target-encoding feature for `pol_prev_n_last` (the strongest non-rating signal) and a smoothed target-encoding for `cust_other_prev_n_last`, computed on train only with heavy regularization, to provide a stable, low-variance prior that complements the existing LightGBM ensemble and GL"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18761,
+   "idea": "Add a smoothed target-encoded feature for the high-cardinality `make_model` (motor) and `previous_insurer` (all lines), computed on train with heavy regularization, to provide a stable, low-variance prior that complements the existing LightGBM ensemble and GLM blend."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1899,
+   "idea": "Apply per-line `min_data_in_leaf` and `min_sum_hessian_in_leaf` constraints (stricter for contents, looser for motor) to better match the differing claim count distributions and severity skew across lines of business, while keeping the existing 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18929,
+   "idea": "Use LightGBM's `scale_pos_weight` parameter to properly apply exposure offsets (replacing the log-sum init_score hack) and introduce a claim-history ratio feature (pol_prev_n_last / (pol_years_seen + 1)) with a monotone + constraint to capture the strongest non-rating signal."
+  },
+  {
+   "status": "rejected: forbidden call: .remove",
+   "score": "",
+   "idea": "Add a smoothed target-encoded feature for the high-cardinality `make_model` (motor) computed on train with heavy shrinkage, to provide a stable, low-variance prior for the known severity driver while maintaining the existing LightGBM ensemble and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18828,
+   "idea": "Replace the high-variance one-hot encoded Tweedie GLM blend component with a stable Bayesian shrinkage baseline (line-level cost rate) blended at a 0.85/0.15 ratio to reduce overfitting on noise while maintaining the benefits of the LightGBM ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1891,
+   "idea": "Use LightGBM's `extra_trees=True` and increase `feature_fraction` to 0.7 to improve stability and feature utilization while maintaining the existing 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18994,
+   "idea": "Use LightGBM's native categorical handling (removing manual one-hot encoding) to eliminate the crash-prone constraint vector mismatch and improve model stability, while retaining the existing 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18985,
+   "idea": "Tune the Tweedie variance power per line (motor=1.6, buildings=1.4, contents=1.3) to better match the claim count distributions and severity skew across lines of business, while keeping the existing 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18967,
+   "idea": "Increase the Tweedie GLM blend weight to 0.25 and apply stronger regularization to the LightGBM ensemble (higher L2, lower feature/bagging fractions) to improve stability and reduce overfitting on noise, leveraging the GLM's robustness as a prior."
+  },
+  {
+   "status": "discarded",
+   "score": 0.1887,
+   "idea": "Implement a two-stage frequency-severity model for motor (Poisson GBM on claim counts with log(exposure) offset multiplied by a Tweedie GLM severity estimate) and blend it with the existing Tweedie GBM ensemble to better capture the multiplicative peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18964,
+   "idea": "Tune the Tweedie variance power per line of business (motor=1.8, buildings=1.4, contents=1.3) to better match the differing claim count distributions and severity skew, while keeping the existing 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18943,
+   "idea": "Replace the generic additive feature engineering (which was tried and discarded) with a single, specific, verified actuarial interaction: `soil_type == 'clay'` \u00d7 `dry_summer_index`, as the known exception to the additive peril structure for subsidence."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18999,
+   "idea": "Blend the existing LightGBM ensemble with a highly regularized, additive LightGBM model (num_leaves=2, low learning rate) to leverage the known additive peril structure of the generated data while maintaining the flexibility of the 8-leaf model."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18959,
+   "idea": "Replace the noisy Tweedie GLM blend component with a highly regularized, additive LightGBM model (num_leaves=2, high lambda_l2, more rounds) to better match the known additive peril structure of the data and reduce variance without introducing categorical feature mismatch risks."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18953,
+   "idea": "Blend the existing LightGBM ensemble with a highly regularized, additive LightGBM model (num_leaves=2, low learning rate) to leverage the known additive peril structure of the generated data while maintaining the flexibility of the 8-leaf model."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18955,
+   "idea": "Remove the Tweedie GLM blend component entirely (since increasing its weight and replacing it with other baselines were both discarded) and rely solely on the 5-seed bagged LightGBM ensemble with a sum-rebalancing constraint."
+  },
+  {
+   "status": "run failed: KeyError: 'mean'",
+   "score": "",
+   "idea": "Replace the noisy, high-cardinality `make_model` column with a smoothed target-encoded numeric proxy computed on the training set with heavy shrinkage, and add a claim-history ratio feature (`pol_prev_n_last / (pol_years_seen + 1)`) with a positive monotone constraint to capture the strongest non-ra"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18985,
+   "idea": "Apply line-specific LightGBM hyperparameters (lower num_leaves and higher regularization for contents; lower min_data_in_leaf for motor) to better match the severity skew and claim frequency distribution of each line of business, while retaining the 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18891,
+   "idea": "Replace the fragile one-hot Tweedie GLM blend component with a highly regularized, additive LightGBM model (num_leaves=2, low learning rate, high L2) to better capture the verified additive peril structure without categorical mismatch risks, blended with the existing 5-seed ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18958,
+   "idea": "Replace the StandardScaler-based Tweedie GLM blend component with a highly regularized additive LightGBM model (num_leaves=2, high L2, more rounds) to better capture the known additive peril structure without categorical mismatch risks, blended with the existing 5-seed ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18942,
+   "idea": "Replace the noisy Tweedie GLM blend component with a highly regularized, additive LightGBM model (num_leaves=2, high lambda_l2, more rounds) to better capture the verified additive peril structure of the generated data without categorical feature mismatch risks."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18935,
+   "idea": "Add a single, actuarially-motivated interaction feature (`flood_zone * distance_to_river_km`) to capture the non-additive flood risk component, which is a known exception to the general additive structure of the data."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18976,
+   "idea": "Add a claim-history intensity feature (`pol_prev_n_last / (pol_years_seen + 1)`) with a positive monotone constraint to explicitly capture the strongest non-rating signal, replacing the discarded `pol_years_seen` from the feature set."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18792,
+   "idea": "Add a smoothed target-encoded feature for the high-cardinality `make_model` (motor) computed on the training set with heavy shrinkage, to provide a stable, low-variance prior for the known severity driver while maintaining the existing LightGBM ensemble and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18977,
+   "idea": "Increase the regularized Tweedie GLM blend weight to 0.25 and apply stronger L2 regularization (lambda_l2=200) to the LightGBM ensemble to better anchor predictions to the stable prior and reduce overfitting on noise."
+  },
+  {
+   "status": "rejected: forbidden call: .remove",
+   "score": "",
+   "idea": "Add a smoothed target-encoded feature for `make_model` (motor) computed on train with heavy shrinkage and a claim-history intensity ratio feature (`pol_prev_n_last / (pol_years_seen + 1)`) with a positive monotone constraint, to capture the strongest severity driver and the strongest non-rating sign"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18784,
+   "idea": "Replace the noisy, high-cardinality `make_model` column with a smoothed target-encoded numeric proxy computed on the training set with heavy shrinkage, and add a claim-history ratio feature (`pol_prev_n_last / (pol_years_seen + 1)`) with a positive monotone constraint to capture the strongest non-ra"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18906,
+   "idea": "Replace the noisy StandardScaler-based Tweedie GLM blend with a robust median-imputed Tweedie GLM (no StandardScaler) and lower its blend weight to 0.10 to reduce the instability of the baseline component while preserving the regularization benefit."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18924,
+   "idea": "Replace the current 0.85/0.15 GBM/GLM blend with a per-line dynamic blend weight derived from a validation-set holdout, and increase the LightGBM ensemble diversity by adding extra trees with `extra_trees=True` and tuned `feature_fraction` to improve stability and capture of the additive structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18962,
+   "idea": "Replace the fragile StandardScaler-based Tweedie GLM blend component with a highly regularized additive LightGBM model (num_leaves=2, low learning rate, high L2) to better capture the verified additive peril structure without categorical mismatch risks, blended with the existing 5-seed ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18971,
+   "idea": "Replace the fragile StandardScaler-based Tweedie GLM blend component with a robust, feature-fraction bagged additive LightGBM model (num_leaves=2, high L2) to better capture the verified additive peril structure without categorical mismatch risks, blended with the existing 5-seed ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18988,
+   "idea": "Add a single, actuarially-motivated claim history intensity feature (pol_prev_n_last / (pol_years_seen + 1)) with a positive monotone constraint to capture the strongest non-rating signal for all lines of business."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18948,
+   "idea": "Replace the fragile StandardScaler-based Tweedie GLM blend component with a highly regularized, additive LightGBM model (num_leaves=2, high L2, more rounds) to better capture the verified additive peril structure of the generated data without categorical mismatch risks, blended with the existing 5-s"
+  },
+  {
+   "status": "discarded",
+   "score": 0.18949,
+   "idea": "Replace the noisy StandardScaler-based Tweedie GLM blend component with a highly regularized, additive LightGBM model (num_leaves=2, high L2) to better capture the verified additive peril structure without categorical mismatch risks, blended with the existing 5-seed ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18822,
+   "idea": "Replace the fragile StandardScaler-based Tweedie GLM blend with a robust, median-imputed Tweedie GLM (no StandardScaler) and tune the LightGBM ensemble hyperparameters (lower learning rate, more rounds, stronger L2) to improve stability and reduce overfitting on noise."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18971,
+   "idea": "Apply line-specific Tweedie variance power (1.7 for motor, 1.3 for buildings, 1.2 for contents) and lower min_data_in_leaf for motor to better match the severity skew and claim frequency distribution of each line of business."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18973,
+   "idea": "Apply line-specific Tweedie variance power and min_data_in_leaf parameters to better match the claim frequency and severity distributions of each line of business, while retaining the 5-seed bagging and GLM blend structure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.18949,
+   "idea": "Replace the fragile StandardScaler-based Tweedie GLM blend component with a highly regularized, additive LightGBM model (num_leaves=2, high L2, more rounds) to better capture the verified additive peril structure without categorical mismatch risks, blended with the existing 5-seed ensemble."
+  },
+  {
+   "status": "run failed: lightgbm.basic.LightGBMError: Parameter num_iterations should be of type int, got \"1200.0\"",
+   "score": "",
+   "idea": "Replace the fragile StandardScaler-based Tweedie GLM blend component with a robust, median-imputed LightGBM Tweedie model using a single stable seed to provide a low-variance, structurally consistent prior that captures the additive peril structure without categorical mismatch risks, blended with th"
+  },
+  {
+   "status": "discarded",
+   "score": 0.189,
+   "idea": "Replace the fragile StandardScaler-based Tweedie GLM blend component with a highly regularized, additive LightGBM model (num_leaves=2, high L2, more rounds) to better capture the verified additive peril structure without categorical mismatch risks, blended with the existing 5-seed ensemble."
   }
  ]
 }

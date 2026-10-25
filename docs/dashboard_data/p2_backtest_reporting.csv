@@ -1,0 +1,16 @@
+line,peril,seen_end_2023,predicted_end_2024,actual_end_2024,actual_vs_predicted,same_test_on_developed
+buildings,accidental_damage,55,56.8,55,0.969,0.995
+buildings,escape_of_water,119,124.6,131,1.051,1.025
+buildings,fire,48,48.8,49,1.005,1.013
+buildings,flood,42,43.3,42,0.969,1.012
+buildings,storm,193,199.4,210,1.053,1.028
+buildings,subsidence,22,31.7,32,1.01,0.977
+contents,accidental_damage,161,166.3,166,0.998,1.001
+contents,escape_of_water,77,80.7,86,1.065,1.024
+contents,flood,50,52.2,51,0.978,1.008
+contents,theft,182,185.3,188,1.015,0.997
+motor,bodily_injury,161,270.3,266,0.984,0.989
+motor,glass_hail,586,601.0,601,1.0,1.009
+motor,own_damage,1326,1368.7,1377,1.006,1.001
+motor,theft,191,194.7,194,0.997,1.0
+motor,third_party_prop,1059,1127.2,1119,0.993,1.002

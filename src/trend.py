@@ -78,6 +78,17 @@ def main(interim: str) -> None:
     t["sev_trend"] = np.where(t["sev_p"] <= P_MAX, np.expm1(t["sev_slope"]), alt)
     t["sev_rule"] = np.where(t["sev_p"] <= P_MAX, "stimato", lab)
 
+    # Parte 2 (23/10): con 2 soli AY la regressione non ha gradi di libertà (p = NaN) e la pendenza su 2 punti è rumore
+    # (es. furto auto +20%/anno, incendio −22%) -> trend di frequenza e severità del mercato di partenza per perilo
+    if CFG.get("trend", {}).get("from_source"):
+        import market_config as MC
+        st = pd.read_parquet(Path(MC.load(CFG["transfer"]["source_market"])["interim"]) / "trend.parquet").set_index(["line", "peril"])
+        for i, r in t.iterrows():
+            if (r["line"], r["peril"]) in st.index:
+                sr = st.loc[(r["line"], r["peril"])]
+                if not ((r["line"], r["peril"]) in WEATHER_PERILS):
+                    t.loc[i, "freq_trend"] = float(sr["freq_trend"]); t.loc[i, "freq_rule"] = "mercato di partenza"
+                t.loc[i, "sev_trend"] = float(sr["sev_trend"]); t.loc[i, "sev_rule"] = "mercato di partenza"
     d = d.merge(t[["line", "peril", "freq_trend", "sev_trend"]], on=["line", "peril"])
     h = TARGET_YEAR - d["ay"]
     d["freq_onlevel"] = d["freq_ult"] * (1 + d["freq_trend"]) ** h
@@ -112,7 +123,39 @@ def main(interim: str) -> None:
         n_large = cl.groupby("line")["is_large"].sum().reindex(line_bc.index).fillna(0)
         K = float(CFG["transfer"].get("ll_credibility_k", 50))
         Z = n_large / (n_large + K)
-        prior = src["ll_load_2025"].reindex(line_bc.index) * line_bc["bc_2025_capped"] / src["bc_2025_capped"].reindex(line_bc.index)
+        src_load = src["ll_load_2025"].reindex(line_bc.index).copy()
+        # 25/10 — prior dal developed con la coda di Pareto (come L2) invece della media empirica: nel developed la media auto
+        # è gonfiata da un sinistro da 11,9 M; nella Parte 1 la versione Pareto (sub_19) era meglio sul privato (+0,00024).
+        lp = CFG["transfer"].get("ll_prior_pareto", {})
+        if lp:
+            scfg = MC.load(src_cfg); sint = Path(scfg["interim"])
+            scl = pd.read_parquet(sint / "claims_clean.parquet", columns=["line", "net_incurred"])
+            sll = pd.read_parquet(sint / "large_loss.parquet")
+            for line, u0 in lp.items():
+                x = scl.loc[(scl["line"] == line) & (scl["net_incurred"] > float(u0)), "net_incurred"].to_numpy()
+                a = len(x) / np.log(x / float(u0)).sum()
+                capv = float(scfg["cap"][line]); E = float(sll.loc[sll["line"] == line, "exposure"].sum())
+                raw = len(x) / E * (float(u0) / capv) ** a * capv / (a - 1)
+                emp_raw = float(sll.loc[sll["line"] == line, "excess"].sum()) / E
+                line_bc.loc[line, "ll_prior_alpha"] = a
+                src_load[line] = raw * float(src.loc[line, "ll_load_2025"]) / emp_raw   # stesso riporto al 2025 della media empirica
+        prior = src_load * line_bc["bc_2025_capped"] / src["bc_2025_capped"].reindex(line_bc.index)
+        # 25/10 — riscalatura del prior col rapporto delle frequenze di sinistri "grandi ma non estremi" (sopra f × soglia), dove
+        # l'emerging ha abbastanza sinistri, invece che col livello del costo tagliato: auto 26 sinistri > 30k contro 73,5 attesi col
+        # tasso del developed (0,35), fabbricato 15 > 125k contro 6,9 (2,17), contenuto 45 > 10k contro 64,4 (0,70).
+        cr = CFG["transfer"].get("ll_prior_count_ratio", {})
+        if cr:
+            scfg = MC.load(src_cfg); sint = Path(scfg["interim"])
+            scl2 = pd.read_parquet(sint / "claims_clean.parquet", columns=["line", "net_incurred"])
+            sll2 = pd.read_parquet(sint / "large_loss.parquet")
+            ecl = pd.read_parquet(interim / "claims_clean.parquet", columns=["line", "net_incurred"])
+            for line, f in cr.items():
+                thr = float(f) * float(CFG["cap"][line])
+                ne = int((ecl.loc[ecl["line"] == line, "net_incurred"] > thr).sum()); Ee = float(ll.loc[ll["line"] == line, "exposure"].sum())
+                nd = int((scl2.loc[scl2["line"] == line, "net_incurred"] > thr).sum()); Ed = float(sll2.loc[sll2["line"] == line, "exposure"].sum())
+                ratio = (ne / Ee) / (nd / Ed)
+                line_bc.loc[line, "ll_count_ratio"] = ratio; line_bc.loc[line, "ll_count_n"] = ne
+                prior[line] = src_load[line] * ratio
         line_bc["ll_load_prior_src"] = prior; line_bc["ll_Z"] = Z; line_bc["n_large"] = n_large
         line_bc["ll_load_2025"] = Z * line_bc["ll_load_own"] + (1 - Z) * prior
     # 18/10 — L2: carico grandi sinistri da una coda di Pareto invece che dalla media empirica. In auto la media empirica

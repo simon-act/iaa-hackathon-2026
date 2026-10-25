@@ -22,6 +22,42 @@ Current best is shown below. Improvements are small: +0.001 is a real gain; most
 - Use `exposure` as an offset/scale (cost is proportional to time on cover). Predictions must be >= 0.
 - Each run must finish within the time limit (about 10 minutes on this machine): keep models modest.
 
+- LightGBM monotone constraints work only on NUMERIC columns and are incompatible with categorical features in the same
+  model unless the constraint vector has 0 for every categorical: a wrong constraint vector crashes the process (attempt 6).
+- Do not repeat ideas already discarded in "Recent attempts" (interaction batches were tried 3 times): try something different.
+
+## What we know about how the data were generated (verified 17/10 by Claude, docs/04_generatore_e_modelli.md)
+- Claim FREQUENCY is multiplicative per peril with no interactions (an additive model in log space beats one with
+  interactions in 14 of 15 perils). Only exception: subsidence = soil_type x dry_summer_index.
+- SEVERITY is almost constant per peril; real drivers only: sum_insured (home), make_model / vehicle_age /
+  vehicle_value_group (motor), high_value_items (contents theft). Everything else on severity is noise.
+- About 30 DECOY columns have no effect at all: engine_size_cc, body_type, seats, driver_assist, fuel_type, vehicle_colour,
+  transmission, telematics_opt_in, marital_status, solar_panels, document_preference, customer_tenure, listed_building,
+  marketing_consent, mortgage, smoke_alarms, lodgers, bicycle_cover, previous_insurer, campaign_code, branch_id,
+  marketing_segment, start_month, starts_jan1, ends_dec, mileage_k, licence_age, pol_years_seen, cust_has_*.
+  Dropping them helps (a model without them scored +0.002).
+- Main drivers: flood = flood_zone + elevation_m; escape of water = building_age + freezing_days + days_unoccupied;
+  storm = building_age + property_type + wind_exposure_index; fire = wildfire_index; accidental damage =
+  accidental_damage_cover; motor theft = make_model + overnight_parking + urban_density; motor injury/third party =
+  ncb_years, years_licensed, driver/customer age, annual_mileage; glass = cover_type, voluntary_excess, hail_days.
+- Promising direction: shallow trees (num_leaves 2-4, i.e. close to additive) with many more rounds; ensembling with a
+  shallow model. Interaction-feature batches were tried many times and did not help.
+
+## Update 18/10 (what 222 iterations taught us — read before proposing)
+- Already tried MANY times, do NOT repeat: batches of interaction features; single seed + lower learning rate +
+  more rounds; dropping/adding the same decoys; generic "tune hyperparameters". Iterations 74–222 found only one
+  improvement (it. 211: blend with a Tweedie GLM).
+- Current best (it. 211) = 5-seed bagged LightGBM, num_leaves 8, monotone constraints, decoys dropped, + GLM blend.
+- Untried directions, one at a time:
+  1. Per-line Tweedie variance power (tweedie_variance_power 1.2–1.8 by line) and per-line min_data_in_leaf.
+  2. Two-stage per line: a Poisson GBM on claim counts (n_total, offset log(exposure)) times a line-level severity,
+     instead of one Tweedie GBM on cost.
+  3. Claim-history ratio feature: pol_prev_n / (pol_years_seen + 1) and cust_other_prev_n / years, with monotone +.
+  4. Extra trees / colsample tuned for stability (feature_fraction 0.5–0.8, extra_trees=True).
+  5. Blend weight between the 8-leaf model and an additive model (num_leaves=2, many rounds) chosen per line.
+- Known from the main model (Claude): annual_mileage = 0 is a REAL low value, not missing (do not set it to NaN);
+  history of claims of the policy is the strongest non-rating signal.
+
 ## Ideas worth trying (one at a time)
 - Feature engineering in `add_features`: interactions with clear actuarial meaning
   (e.g. soil_type × dry_summer_index for subsidence, flood_zone × distance_to_river_km, driver age × years licensed,

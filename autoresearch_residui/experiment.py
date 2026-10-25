@@ -56,7 +56,64 @@ def power_calibration(train, valid):
 
 def fit_predict(train, valid, line):
     if ROUNDS == 0:
-        return valid["base_pred"].to_numpy(float)   # baseline = best model unchanged (gain 0)
+        base_valid = valid["base_pred"].to_numpy(float)
+        
+        # Check if we are in motor line and have the specific feature
+        if line == "motor" and "vehicle_value_group" in train.columns and "vehicle_value_group" in valid.columns:
+            # Define bands for vehicle_value_group (assuming it's an ordinal/int or categorical)
+            # We will use quantiles on the training set to create stable bands
+            try:
+                # Create 5 bands based on quantiles of the training data
+                q = train["vehicle_value_group"].quantile([0.2, 0.4, 0.6, 0.8])
+                cuts = [train["vehicle_value_group"].min() - 1, q[0.2], q[0.4], q[0.6], q[0.8], train["vehicle_value_group"].max() + 1]
+                
+                train["vvg_band"] = pd.cut(train["vehicle_value_group"], bins=cuts, labels=False, include_lowest=True)
+                valid["vvg_band"] = pd.cut(valid["vehicle_value_group"], bins=cuts, labels=False, include_lowest=True)
+                
+                # Calculate A/E for each band
+                # A = Actual Cost, E = Expected Cost (base_pred * exposure? No, base_pred is the prediction for the row)
+                # The target_b is the "real ultimate cost of the row".
+                # base_pred is the prediction for the row.
+                # So A/E = target_b / base_pred.
+                
+                agg = train.groupby("vvg_band").agg(
+                    actual=("target_b", "sum"),
+                    expected=("base_pred", "sum"),
+                    count=("target_b", "count")
+                )
+                
+                agg["ae"] = agg["actual"] / agg["expected"]
+                
+                # Credibility weighting
+                # Z = n / (n + k)
+                # We want to shrink towards 1 (A/E = 1)
+                # We need to estimate the variance or use a fixed k.
+                # A common heuristic for claims frequency/severity is k ~ 100-500 depending on granularity.
+                # Let's use a fixed k=200 for the band credibility, assuming ~200 claims per band is the "fully credible" level.
+                k = 200
+                agg["z"] = agg["count"] / (agg["count"] + k)
+                
+                # Smoother factor
+                # If A/E is 1.2 and Z is 0.5, factor = 0.5*1.2 + 0.5*1.0 = 1.1
+                agg["factor"] = agg["z"] * agg["ae"] + (1 - agg["z"]) * 1.0
+                
+                # Map factors back to valid
+                # Reindex to ensure all valid bands exist (fill NaNs with 1.0)
+                valid["vvg_factor"] = valid["vvg_band"].map(agg["factor"])
+                valid["vvg_factor"] = valid["vvg_factor"].fillna(1.0)
+                
+                # Apply correction
+                corrected = base_valid * valid["vvg_factor"].to_numpy(float)
+                
+                # Rescale to keep the total level unchanged (sum of predictions = sum of base_pred)
+                if corrected.sum() > 0:
+                    corrected = corrected * (base_valid.sum() / corrected.sum())
+                
+                return corrected
+            except Exception:
+                pass
+        
+        return base_valid
     cols = [c for c in train.columns if c not in SKIP and c not in DECOYS]
     Xtr, cats = _frame(train, cols)
     Xva, _ = _frame(valid, cols, cats)

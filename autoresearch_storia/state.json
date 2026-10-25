@@ -1,0 +1,496 @@
+{
+ "best": {
+  "by": {
+   "motor|F2024": 0.0,
+   "motor|F2023": 0.0,
+   "buildings|F2024": -0.0,
+   "buildings|F2023": -0.0,
+   "contents|F2024": -0.0,
+   "contents|F2023": 0.0
+  },
+  "pooled": {
+   "F2023": 0.0,
+   "F2024": 0.0
+  },
+  "official": {
+   "F2023": 0.0,
+   "F2024": 0.0
+  },
+  "pooled_mean": 0.0,
+  "score": 0.0,
+  "seconds": 106.6
+ },
+ "iter": 94,
+ "history": [
+  {
+   "status": "discarded",
+   "score": -0.002995,
+   "idea": "Recompute the credibility factor using per-peril expected counts (N_p / E_p) derived from base_nocred, while keeping the global k=8, to allow perils with different expected frequencies to contribute appropriately to the experience rating."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000196,
+   "idea": "Recency-weight the experience rating by giving last year's claims 2x weight in the credibility numerator and denominator to better capture recent risk shifts."
+  },
+  {
+   "status": "discarded",
+   "score": -0.003239,
+   "idea": "Blend the policy's own past claim cost per past exposure (severity history) with the base model using a credibility weight derived from past expected claims, to capture latent risk not seen by rating factors."
+  },
+  {
+   "status": "discarded",
+   "score": -0.002268,
+   "idea": "Blend the policy's own past claim count with the customer's cross-line and same-address claim counts using a fixed credibility weight on the external counts (a=0.3) to capture correlated risk signals not fully reflected in the policy's own history."
+  },
+  {
+   "status": "discarded",
+   "score": 4e-06,
+   "idea": "Combine the policy's own past claim count with the customer's cross-line and same-address claim counts using a small fixed credibility weight (a=0.2) on the external counts to capture correlated risk signals, while preserving the base model's per-peril structure."
+  },
+  {
+   "status": "discarded",
+   "score": -6e-05,
+   "idea": "Re-weight the experience rating numerator and denominator by giving last-year claims 1.5x weight (recency decay) to better capture recent risk shifts, while keeping the same global k=8."
+  },
+  {
+   "status": "run failed: RuntimeError: wrong prediction shape () for 229174 rows",
+   "score": "",
+   "idea": "Refine the credibility factor by fitting a single multiplicative correction on the log-ratio of the base experience rating to a per-peril recalculated factor (using per-peril expected counts derived from base_nocred) to correct for systematic bias in the global k=8 denominator."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000168,
+   "idea": "Blend the policy's own past claim cost per past exposure (severity history) with the base model using a credibility weight derived from past expected claims, to capture latent risk not seen by rating factors."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000411,
+   "idea": "Fit a single multiplicative correction on the log of the base experience rating factor, using the policy's severity history (past cost per claim vs expected severity) as the sole signal, to capture latent severity risk that the frequency-based rating misses."
+  },
+  {
+   "status": "discarded",
+   "score": -0.186837,
+   "idea": "Fit a small multiplicative correction on the log of the policy's past severity ratio (past cost per claim vs expected severity) using a single ridge coefficient on the training year, applied to the validation year to capture latent severity risk missed by the frequency-based rating."
+  },
+  {
+   "status": "run failed: RuntimeError: predictions must be finite and >= 0",
+   "score": "",
+   "idea": "Use the policy's own past claim cost per past exposure (severity history) as a credibility-weighted multiplicative factor on base_nocred, with a fitted intercept and slope to capture latent severity risk not seen by the frequency-based rating."
+  },
+  {
+   "status": "run failed: pandas.errors.IndexingError: Unalignable boolean Series provided as indexer (index of the boolean Series and",
+   "score": "",
+   "idea": "Fit a single multiplicative correction on the log of the past claim severity ratio (past cost per claim vs expected severity) using a ridge coefficient on the training year, applied to the validation year to capture latent severity risk missed by the frequency-based rating."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Fit a small multiplicative correction on the log of the base experience rating factor using a ridge coefficient on the training year, applied to the validation year to capture latent risk not fully recovered by the global k=8."
+  },
+  {
+   "status": "discarded",
+   "score": -0.0005,
+   "idea": "Recompute the credibility factor using per-peril N and E (derived from base_nocred) with separate k for frequent (>=2) and rare (<2) expected counts, fitted on train to optimize D2."
+  },
+  {
+   "status": "discarded",
+   "score": -6.5e-05,
+   "idea": "Fit a small multiplicative correction on the log of the policy's own past claim count (N) using a single regularized coefficient on the training year, to capture the residual latent frequency risk that the global k=8 credibility factor under-corrects."
+  },
+  {
+   "status": "discarded",
+   "score": -2.2e-05,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": -0.003707,
+   "idea": "Use the policy's own past claim count (N) as a single risk signal to fit a small, regularized multiplicative correction on the log of the credibility factor, correcting for the systematic bias of the global k=8 in the residual latent frequency risk."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000192,
+   "idea": "Fit a single small regularized slope on the past claim frequency ratio (N/E) to adjust the experience rating factor, correcting for the systematic residual latent frequency risk that the global k=8 credibility factor under-corrects."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Fit a small, sign-constrained multiplicative correction on the log of the base experience rating factor using the policy's past claim count (N) as the sole signal to correct for the systematic residual latent frequency risk that the global k=8 credibility factor under-corrects."
+  },
+  {
+   "status": "discarded",
+   "score": -6.8e-05,
+   "idea": "Increase the credibility of the past-claim count (lower k to 5) to strengthen the experience rating signal for policies with observed history, which is known to be slightly too weak in buildings and may help other lines."
+  },
+  {
+   "status": "discarded",
+   "score": -6.8e-05,
+   "idea": "Increase the credibility of the past-claim count (lower k to 5) to strengthen the experience rating signal for policies with observed history, which is known to be slightly too weak in buildings and may help other lines."
+  },
+  {
+   "status": "discarded",
+   "score": -8e-06,
+   "idea": "Recompute the credibility factor using per-peril numerator and denominator (with subsidence excluded for buildings) and a small multiplicative correction on the log-ratio of the new factor to the base factor, fit on train to correct for systematic bias in the global k=8."
+  },
+  {
+   "status": "discarded",
+   "score": -2.5e-05,
+   "idea": "Recalibrate the global credibility parameter k by fitting a single coefficient on the log-credibility ratio (N/E) using the training year's reported cost versus the no-credibility baseline, to correct for the systematic bias of the fixed k=8 in recovering latent frequency risk."
+  },
+  {
+   "status": "discarded",
+   "score": -0.006299,
+   "idea": "Apply a small, regularized multiplicative correction on the log of the base experience rating factor using the policy's past claim frequency ratio (N/E) as the sole signal to capture residual latent frequency risk that the global k=8 under-corrects."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000382,
+   "idea": "Recompute the credibility factor using per-peril N and E (with subsidence excluded for buildings) and a smaller k=6 for frequent perils (E>=2) versus k=10 for rare perils (E<2), to better calibrate the frequency signal by peril severity."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Combine the policy's own past claims with the customer's past claims on other lines into a single credibility-weighted experience rating factor, fitting the cross-line weight on the training year to capture correlated latent risk (e.g., shared weather events) missed by the single-line rating."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Weight recency by giving the most recent year of claims twice the weight of older years in the numerator and denominator of the credibility factor, fit on train to optimize D2."
+  },
+  {
+   "status": "discarded",
+   "score": -0.00168,
+   "idea": "Recast the experience rating as a credibility-weighted blend of the policy's own latent risk (inferred from the past claim cost per unit of expected cost) and the base model's prediction, with the credibility weight derived from past expected claims and the latent-risk estimate calibrated on the tra"
+  },
+  {
+   "status": "discarded",
+   "score": -0.000132,
+   "idea": "Recompute the credibility factor with per-peril claim counts (N) and per-peril expected counts (E derived from base_nocred share), excluding subsidence for buildings, using a fixed k=8 per peril, then apply as a multiplicative correction to base_nocred."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000409,
+   "idea": "Recast the experience rating as a credibility-weighted blend of the policy's observed past claim cost (past cost / past expected cost) and the base model's latent risk prediction, with credibility derived from past expected claims to better capture the unobserved frailty."
+  },
+  {
+   "status": "discarded",
+   "score": -8e-05,
+   "idea": "Use the customer's past claims on other insurance lines as an additional frequency signal in the credibility numerator, fitting a small regularized weight on the training year to capture correlated latent risk (e.g., shared weather events) that the single-line rating misses."
+  },
+  {
+   "status": "discarded",
+   "score": -1.2e-05,
+   "idea": "Use the customer's past claims on other insurance lines as a negative frequency signal (shared weather event double-counting), fitting a small regularized coefficient on the training year to adjust the base prediction multiplicatively."
+  },
+  {
+   "status": "discarded",
+   "score": -0.004295,
+   "idea": "Use the policy's past reported claim cost as a severity/frequency signal to fit a single small, sign-constrained regularized multiplicative correction on the log of the base prediction, capturing residual latent risk that the frequency-only credibility factor misses."
+  },
+  {
+   "status": "discarded",
+   "score": -73.486663,
+   "idea": "Fit a single, strictly positive small multiplicative correction on the log of the past claim count (N) using the train year's reported cost versus the no-credibility baseline, with a strong L2 penalty to capture the residual latent frequency risk that the global k=8 credibility factor under-corrects"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": -2.9e-05,
+   "idea": "Recompute the experience rating factor with per-peril numerator and denominator (subsidence excluded for buildings) and a smaller credibility parameter k=6 for frequent perils (E>=2) versus k=10 for rare perils, then apply as a multiplicative correction to base_nocred."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000134,
+   "idea": "Fit a single small, sign-constrained, L2-regularized slope on the log-likelihood ratio of the observed past claims versus the expected past claims to calibrate the credibility strength of the experience rating against the base model's latent risk prediction."
+  },
+  {
+   "status": "discarded",
+   "score": -0.02651,
+   "idea": "Recast the experience rating as a credibility-weighted blend of the policy's observed past claim cost per unit of expected cost and the base model's latent risk prediction, with credibility derived from past expected claims to better capture the unobserved frailty"
+  },
+  {
+   "status": "run failed: KeyError: \"None of [Index([1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,\\n       ...\\n       0.0, 0.0, 0",
+   "score": "",
+   "idea": "Recast the experience rating as a credibility-weighted blend of the policy's observed past claim severity (past reported cost / past expected cost) and the base no-credibility prediction, where the credibility weight is derived from the square root of the past expected claim count (E) to better capt"
+  },
+  {
+   "status": "discarded",
+   "score": -90.888986,
+   "idea": "Add a credibility-weighted severity signal by fitting a small regularized multiplicative correction on the log of the policy's past cost-to-expected-cost ratio, using only policies with at least one past claim to avoid noise."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000198,
+   "idea": "Recompute the credibility factor M using per-peril claim counts (excluding subsidence for buildings) and per-peril expected counts derived from the base_nocred ratio, then fit a small L2-regularized multiplicative correction on the log-ratio of this new factor to the base factor to capture residual "
+  },
+  {
+   "status": "discarded",
+   "score": -0.000536,
+   "idea": "Adjust the experience rating credibility strength by fitting a single small L2-regularized slope on the log-credibility ratio (N/E) using the training year's reported cost versus the no-credibility baseline, with a strict penalty to avoid overfitting the residual latent frequency risk."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000347,
+   "idea": "Recompute the experience rating factor using per-peril claim counts (excluding subsidence for buildings) and per-peril expected counts derived from the base model's relative peril weights, then apply the resulting factor to base_nocred to better calibrate the frequency signal by peril."
+  },
+  {
+   "status": "discarded",
+   "score": -3.2e-05,
+   "idea": "Recompute the credibility factor with a single global k=8 (matching the known best) but using per-peril numerators (excluding subsidence for buildings) and per-peril denominators derived from the base_nocred prediction shares, to better align the frequency signal with the underlying peril-specific r"
+  },
+  {
+   "status": "run failed: TypeError: only 0-dimensional arrays can be converted to Python scalars",
+   "score": "",
+   "idea": "Add a small L2-regularized multiplicative correction on the log of the policy's past claim severity ratio (past cost / expected past cost), using only policies with at least one past claim to capture residual severity risk that the frequency-only credibility factor misses."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a small, L2-regularized multiplicative correction on the log of the policy's past claim severity ratio (past cost / expected past cost) using all policies with positive past exposure, to capture residual latent severity risk missed by the frequency-only credibility factor."
+  },
+  {
+   "status": "discarded",
+   "score": -190.837336,
+   "idea": "Fit a single small, L2-regularized multiplicative correction on the log-likelihood ratio of observed past claims versus expected past claims (using the base credibility factor), calibrated on the training year to capture residual latent frequency risk that the fixed k=8 factor under-corrects."
+  },
+  {
+   "status": "discarded",
+   "score": -1.6e-05,
+   "idea": "Apply a recency-weighted credibility correction by fitting a small L2-regularized slope on the log of the weighted past claim count ratio (N_w/E_w) versus the log of the base credibility factor, using a decay factor of 0.6 for older claims to better capture the temporal persistence of latent risk."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000132,
+   "idea": "Apply a recency-weighted credibility factor by computing a decayed claim count (N_w) and expected count (E_w) using a 0.6 lag decay, then multiply base_nocred by M_w = (N_w + k) / (E_w + k) to better capture the temporal persistence of latent risk."
+  },
+  {
+   "status": "discarded",
+   "score": -0.001166,
+   "idea": "Compute a recency-weighted credibility factor M_w = (N_w + k) / (E_w + k) using a geometric lag decay of 0.5 for past claims and exposure, and return base_nocred * M_w to better capture the temporal persistence of latent risk."
+  },
+  {
+   "status": "discarded",
+   "score": 9e-06,
+   "idea": "Recompute the experience rating factor using per-peril claim counts (excluding subsidence for buildings) and per-peril expected counts derived from the base model's relative peril weights, then apply this refined factor to base_nocred to better align the frequency signal with peril-specific risk."
+  },
+  {
+   "status": "run failed: UnboundLocalError: cannot access local variable 'perils_n' where it is not associated with a value",
+   "score": "",
+   "idea": "Recompute the experience rating credibility factor using per-peril claim counts and expected counts (derived from the base model's relative peril weights), apply it to the no-credibility baseline, and clip the multiplicative correction to [0.9, 1.1] to prevent extreme over-corrections while capturin"
+  },
+  {
+   "status": "discarded",
+   "score": -170.606912,
+   "idea": "Combine the policy's own claim history with the customer's cross-line claim history by fitting a single small, L2-regularized additive correction on the log of the combined credibility signal (own past claims plus a small positive weight on the customer's other-line claims) relative to the expected "
+  },
+  {
+   "status": "discarded",
+   "score": -0.002298,
+   "idea": "Combine the policy's own past claims with the customer's cross-line claims history by fitting a small L2-regularized weight on the customer's other-line claims (relative to the policy's own exposure) to adjust the credibility numerator, capturing correlated risk that the policy-only history misses."
+  },
+  {
+   "status": "discarded",
+   "score": 9e-06,
+   "idea": "Combine the policy's own claim history with the customer's cross-line claim history by adding a small fitted weight (a) on the customer's other-line claims to the credibility numerator, using the customer's other-line frequency to approximate the expected exposure in the denominator."
+  },
+  {
+   "status": "run failed: RuntimeError: predictions must be finite and >= 0",
+   "score": "",
+   "idea": "Apply a small L2-regularized multiplicative correction on the log of the recency-weighted claim count ratio (N_w/E_w) relative to the base credibility factor, using a 0.6 lag decay to better capture the temporal persistence of latent risk."
+  },
+  {
+   "status": "run failed: AttributeError: module 'pandas' has no attribute 'zeros'",
+   "score": "",
+   "idea": "Adjust the credibility strength of the experience rating by fitting a single small, L2-regularized slope on the log-odds of the policy's past claim count (N) to correct for the known under- or over-correction of latent risk, while strictly constraining the adjustment to a small multiplicative range "
+  },
+  {
+   "status": "discarded",
+   "score": -0.080955,
+   "idea": "Fit one L2-regularized slope on the log of the policy's past claim severity ratio (reported past cost divided by expected past cost) to apply a small multiplicative correction that captures residual latent severity risk missed by the frequency-only credibility factor."
+  },
+  {
+   "status": "discarded",
+   "score": -4.3e-05,
+   "idea": "Apply a recency-weighted credibility factor using a 0.7 lag decay on past claims and exposure to better capture the temporal persistence of latent risk, replacing the flat historical count with a weighted sum that emphasizes recent claims."
+  },
+  {
+   "status": "discarded",
+   "score": 2.1e-05,
+   "idea": "Use the policy's own past claim cost per past claim versus the line's mean severity as a credibility-weighted severity multiplier (with a small L2-regularized fit on the log severity ratio for policies with at least one past claim) to capture residual latent severity risk that the frequency-only bas"
+  },
+  {
+   "status": "discarded",
+   "score": -1.4e-05,
+   "idea": "Combine the policy's own claim history with the customer's cross-line claim history by adding a small fitted weight on the customer's other-line claims to the credibility numerator, using the customer's other-line expected frequency to approximate the expected exposure in the denominator, to capture"
+  },
+  {
+   "status": "discarded",
+   "score": -173.515762,
+   "idea": "Use the policy's own past claim severity (past cost per past claim relative to the line's average severity) as a small, L2-regularized multiplicative correction to the base prediction, capturing residual latent severity risk that the frequency-only experience rating misses."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000761,
+   "idea": "Fit a single L2-regularized slope on the log of the policy's past claim count relative to its expected count (N/E) to capture the residual latent risk that the fixed k=8 credibility factor under-corrects."
+  },
+  {
+   "status": "discarded",
+   "score": -0.00018,
+   "idea": "Recompute the credibility factor from base_nocred using per-peril claim counts (excluding subsidence for buildings) and per-peril expected counts derived from the base model's relative peril weights, then apply this refined factor to base_nocred to better align the frequency signal with peril-specif"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Use the policy's own past claim cost per past claim relative to the line's mean severity as a simple, bounded severity multiplier on the base prediction, capturing residual latent severity risk that the frequency-only credibility factor misses."
+  },
+  {
+   "status": "discarded",
+   "score": 9e-06,
+   "idea": "Recompute the credibility factor by splitting the claim count into a recency-weighted numerator and denominator (decay 0.6 for lags > 1 year) to better weight recent claim history relative to the flat historical count used in the baseline."
+  },
+  {
+   "status": "discarded",
+   "score": -0.002446,
+   "idea": "Use the policy's past claim severity history (actual past cost per past claim relative to the line's mean severity) as a credibility-weighted multiplicative correction, combining it with the frequency credibility factor to capture latent severity risk that the frequency-only base rating misses."
+  },
+  {
+   "status": "discarded",
+   "score": -1e-05,
+   "idea": "Increase the experience-rating credibility by reducing the smoothing constant k from 8 to 6, which strengthens the signal from a policy's own claim history relative to the base rate."
+  },
+  {
+   "status": "discarded",
+   "score": 1.6e-05,
+   "idea": "Fit a small, L2-regularized multiplicative correction on the log of the policy's past claim severity ratio (actual past cost per past claim relative to the line's expected severity) to capture latent severity risk that the frequency-only credibility factor misses, applying it to base_pred."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000869,
+   "idea": "Apply a small L2-regularized multiplicative correction on the log of the policy's past claim count relative to its expected count (N/E) to capture the residual latent risk that the fixed k=8 credibility factor under-corrects."
+  },
+  {
+   "status": "discarded",
+   "score": -0.02344,
+   "idea": "Recast the credibility factor by fitting two small L2-regularized slopes on the log of the policy's own past claim count (N) and log of its past exposure (E) to capture the residual latent risk that the fixed k=8 factor under- or over-corrects, applying this refined multiplicative adjustment to base"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Recast the experience rating by fitting two small L2-regularized slopes on the log of the policy's own past claim count (N) and log of its past exposure (E) to capture the residual latent risk that the fixed k=8 factor under- or over-corrects, applying this refined multiplicative adjustment to base_"
+  },
+  {
+   "status": "discarded",
+   "score": 2.7e-05,
+   "idea": "Recompute the experience-rating credibility factor from `base_nocred` by summing per-peril claim counts and expected counts (excluding subsidence for buildings), which allows each peril's contribution to be weighted by its own expected frequency rather than treating all claims as equivalent."
+  },
+  {
+   "status": "discarded",
+   "score": -1.4e-05,
+   "idea": "Recompute the credibility factor from `base_nocred` using per-peril claim counts and expected counts (derived from the base model's implied relative peril weights), excluding subsidence for buildings, to better align the frequency signal with peril-specific risk."
+  },
+  {
+   "status": "discarded",
+   "score": -0.003369,
+   "idea": "Apply a small L2-regularized multiplicative correction on the log of the policy's past claim count relative to its expected exposure (N/E) to capture the residual latent risk that the fixed k=8 credibility factor under-corrects, constraining the adjustment to a small multiplicative range."
+  },
+  {
+   "status": "discarded",
+   "score": -0.001139,
+   "idea": "Recast the experience-rating multiplier by estimating a single L2-regularized slope on the log of the policy's past claim count (N) that corrects for the fixed k=8 factor, and apply that slope as a small multiplicative adjustment to base_pred."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000311,
+   "idea": "Apply a small, L2-regularized multiplicative correction on the log of the policy's past claim count (N) to capture the residual latent risk that the fixed k=8 credibility factor under- or over-corrects, while strictly constraining the adjustment to a small multiplicative range."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000304,
+   "idea": "Recompute the experience-rating multiplier from `base_nocred` using a per-peril credibility factor where the expected count for each peril is derived from the base model's implied relative peril weights (so frequent perils contribute more to the denominator), excluding subsidence for buildings, to b"
+  },
+  {
+   "status": "discarded",
+   "score": -1e-05,
+   "idea": "Reduce the credibility smoothing constant k from 8 to 6 to strengthen the experience-rating signal, thereby improving the recovery of latent per-policy risk (frailty) that the fixed k=8 factor under-corrects."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000235,
+   "idea": "Recast the experience-rating multiplier by fitting a single small L2-regularized slope on the log of the policy's past claim count (N) relative to its expected exposure (E) to correct the fixed k=8 credibility factor, applying the resulting adjustment as a bounded multiplicative factor to base_pred."
+  },
+  {
+   "status": "discarded",
+   "score": -0.044433,
+   "idea": "Recast the experience-rating multiplier by estimating a single small L2-regularized slope on the log of the policy's past claim count (N) that corrects for the fixed k=8 factor, and apply that slope as a small multiplicative adjustment to base_pred."
+  },
+  {
+   "status": "discarded",
+   "score": -0.001389,
+   "idea": "Combine the policy's own claim history with the customer's and address's other-line claim histories into a single, L2-regularized credibility factor (fitting the weights on the train year's target) to capture shared latent risk that the policy-only factor misses."
+  },
+  {
+   "status": "run failed: ValueError: operands could not be broadcast together with shapes (37738,) (229021,)",
+   "score": "",
+   "idea": "Combine the policy's own claim history with the customer's and address's other-line claim histories into a single credibility factor by fitting the weights on the train year's target to capture shared latent risk that the policy-only factor misses."
+  },
+  {
+   "status": "run failed: ValueError: operands could not be broadcast together with shapes (4,) (229174,)",
+   "score": "",
+   "idea": "Combine the policy's own claim history with the customer's and address's other-line claim histories into a single credibility factor by fitting the weights on the train year's target to capture shared latent risk that the policy-only factor misses."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Combine the policy's own claim history with the customer's and address's other-line claim histories into a single credibility factor by fitting the weights on the train year's target to capture shared latent risk that the policy-only factor misses."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000233,
+   "idea": "Apply a small, L2-regularized multiplicative correction on the log of the policy's past claim count relative to its expected exposure (N/E) to capture the residual latent risk that the fixed k=8 credibility factor under-corrects, constraining the adjustment to a small multiplicative range."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000253,
+   "idea": "Recompute the experience-rating credibility factor from `base_nocred` using a recency-weighted sum of per-peril claims (excluding subsidence for buildings) where the numerator is weighted by $0.5^{\\text{lag}}$ (previous year claims weighted 0.5, older claims 0.25) and the denominator is the correspo"
+  },
+  {
+   "status": "discarded",
+   "score": -0.002595,
+   "idea": "Recency-weight the experience-rating numerator (previous-year claims weighted 1.0, older claims 0.5) while keeping the denominator as the full past exposure, to better capture the transient risk signal that recent claims indicate relative to long-run average."
+  },
+  {
+   "status": "discarded",
+   "score": -7.5e-05,
+   "idea": "Apply a small, L2-regularized, bounded multiplicative correction on the log of the policy's past claim count relative to its expected exposure (N/E) to capture the residual latent risk that the fixed k=8 credibility factor under-corrects, constraining the adjustment to a small multiplicative range."
+  },
+  {
+   "status": "discarded",
+   "score": -0.00056,
+   "idea": "Fit a single L2-regularized slope on the log of the policy's past claim count (N) to capture the residual latent risk that the fixed k=8 credibility factor under-corrects, applying this as a bounded multiplicative adjustment to base_pred."
+  },
+  {
+   "status": "discarded",
+   "score": -0.002175,
+   "idea": "Recast the experience-rating credibility factor by fitting a single L2-regularized slope on the log-odds of the policy's past claim count (N/E) to capture the residual latent risk that the fixed k=8 factor under-corrects, applying this as a small multiplicative adjustment to base_pred."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000635,
+   "idea": "Recompute the experience-rating credibility factor from `base_nocred` using a recency-weighted numerator (last-year claims weighted 1.0, older claims 0.5) and a recency-weighted denominator (last-year exposure 1.0, older exposure 0.5), excluding subsidence for buildings, to better capture the transi"
+  },
+  {
+   "status": "discarded",
+   "score": -0.002695,
+   "idea": "Use the policy's past claim cost relative to expected severity as a credibility-weighted severity multiplier, fitted on train to capture the residual latent risk that the frequency-only experience rating misses."
+  },
+  {
+   "status": "discarded",
+   "score": -0.005881,
+   "idea": "Use the policy's past claim cost per past claim (severity history) as a credibility-weighted severity multiplier, with the credibility weight chosen via a small grid on train to capture the residual latent risk that the frequency-only experience rating misses."
+  }
+ ]
+}

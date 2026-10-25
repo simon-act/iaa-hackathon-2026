@@ -1,0 +1,17 @@
+{
+ "motor": {
+  "glm": "{'alpha': 0.01, 'coef': {'new_business[False]': np.float64(-0.09), 'new_business[True]': np.float64(0.09), 'gender[F]': np.float64(-0.096), 'gender[M]': np.float64(0.096)}, 'intercept': -0.144}",
+  "tasso": 662.4530474847107,
+  "target_train_tasso": 504.43361915095915
+ },
+ "buildings": {
+  "k": 0.8456547439523362,
+  "tasso": 482.2121153312468,
+  "target_train_tasso": 447.8753622369147
+ },
+ "contents": {
+  "glm": "{'alpha': 1.0, 'coef': {'gender[F]': np.float64(0.041), 'gender[M]': np.float64(-0.041)}, 'intercept': -0.105}",
+  "tasso": 106.3925064268877,
+  "target_train_tasso": 98.00145042053927
+ }
+}

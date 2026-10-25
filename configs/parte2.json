@@ -1,0 +1,41 @@
+{
+ "name": "parte2",
+ "_nota": "Parte 2, mercato emerging (dati in data/raw_p2, mai nel repo). Differenze trovate dall'audit (docs/30_parte2_audit_auto.md): codici locali del tipo di costruzione, età solo a fasce, niente credit_band / chilometraggio / telematica, genere nuovo, professione a testo libero, 2 anni di polizze.",
+ "raw": "data/raw_p2",
+ "interim": "data/interim_p2",
+ "model_dir": "data/model_p2",
+ "results": "results_p2",
+ "train_years": [
+  2023,
+  2024
+ ],
+ "folds": {
+  "F2024": [
+   [
+    2023
+   ],
+   2024
+  ]
+ },
+ "holdout_share": 0.0,
+ "fixes": {
+  "construction_map": {
+   "brk": "brick",
+   "stn": "stone",
+   "wod": "timber",
+   "mix": "non_standard"
+  },
+  "occupation_normalize": true
+ },
+ "trend": {
+  "from_source": true
+ },
+ "transfer": {
+  "source_market": "configs/parte1_s3.json",
+  "mode": "offset_credibility"
+ },
+ "development": {
+  "source_interim": "data/interim_s3",
+  "reporting_from_source": true
+ }
+}

@@ -1,0 +1,619 @@
+{
+ "best": {
+  "by": {
+   "motor|bodily_injury|2023": -0.00247,
+   "motor|glass_hail|2023": 0.01172,
+   "motor|own_damage|2023": 0.03722,
+   "motor|theft|2023": 0.02585,
+   "motor|third_party_prop|2023": 0.00251,
+   "motor|bodily_injury|2024": -0.00078,
+   "motor|glass_hail|2024": 0.00804,
+   "motor|own_damage|2024": 0.03215,
+   "motor|theft|2024": 0.03354,
+   "motor|third_party_prop|2024": 0.00061,
+   "buildings|accidental_damage|2023": -0.00203,
+   "buildings|escape_of_water|2023": 0.05256,
+   "buildings|fire|2023": 0.04271,
+   "buildings|flood|2023": 0.06184,
+   "buildings|storm|2023": 0.03505,
+   "buildings|subsidence|2023": 0.03303,
+   "buildings|accidental_damage|2024": 0.00894,
+   "buildings|escape_of_water|2024": 0.04144,
+   "buildings|fire|2024": 0.05629,
+   "buildings|flood|2024": 0.03756,
+   "buildings|storm|2024": 0.02795,
+   "buildings|subsidence|2024": 0.02039,
+   "contents|accidental_damage|2023": 0.02426,
+   "contents|escape_of_water|2023": 0.06309,
+   "contents|flood|2023": 0.08876,
+   "contents|theft|2023": 0.102,
+   "contents|accidental_damage|2024": 0.01998,
+   "contents|escape_of_water|2024": 0.10029,
+   "contents|flood|2024": 0.06877,
+   "contents|theft|2024": 0.10673
+  },
+  "by_line": {
+   "motor|2023": 0.01079,
+   "motor|2024": 0.012,
+   "buildings|2023": 0.04752,
+   "buildings|2024": 0.03873,
+   "contents|2023": 0.08206,
+   "contents|2024": 0.08752
+  },
+  "pooled": {
+   "F2023": 0.04291,
+   "F2024": 0.04245
+  },
+  "pooled_mean": 0.04245,
+  "score": 0.04268,
+  "seconds": 2.1
+ },
+ "iter": 113,
+ "history": [
+  {
+   "status": "rejected: fit_predict(train, valid, line) missing or changed",
+   "score": "",
+   "idea": "Increase model flexibility by allowing 3-leaf trees (num_leaves=3) and reducing the L2 regularization penalty (lambda_l2=10) to better capture the under-predicted severity effect for expensive vehicles."
+  },
+  {
+   "status": "rejected: fit_predict(train, valid, line) missing or changed",
+   "score": "",
+   "idea": "Switch from a 1-split Gamma GBM to a Gamma GLM (IRLS) on log-transformed numeric drivers to better capture the multiplicative severity effects of vehicle value and sum insured that the regularized tree model misses."
+  },
+  {
+   "status": "rejected: fit_predict(train, valid, line) missing or changed",
+   "score": "",
+   "idea": "Replace the LightGBM model with a numerically stable Gamma GLM (log link) using IRLS on the same driver set to better capture the multiplicative severity effects that the heavily regularized 1-split GBM misses."
+  },
+  {
+   "status": "run failed: TypeError: Must provide 'func' or tuples of '(column, aggfunc).",
+   "score": "",
+   "idea": "Add a credibility-weighted target encoding for `make_model` (motor) and `high_value_items` (contents) to the feature set to capture the under-predicted severity effects of expensive vehicles and high-value items that the simple split-based model misses."
+  },
+  {
+   "status": "discarded",
+   "score": 0.02674,
+   "idea": "Reduce the L2 regularization penalty from 50 to 10 to allow the model to capture stronger severity gradients (e.g., vehicle value, sum insured) that are currently smoothed out, while keeping the conservative 1-split tree structure to avoid overfitting on noisy columns."
+  },
+  {
+   "status": "discarded",
+   "score": 0.01531,
+   "idea": "Add a credibility-weighted target encoding for `make_model` (motor) and `high_value_items` (contents) to the feature set to capture the under-predicted severity effects of expensive vehicles and high-value items that the simple split-based model misses."
+  },
+  {
+   "status": "run failed: RuntimeError: predictions must be finite and > 0",
+   "score": "",
+   "idea": "Blend the existing LightGBM predictions with a simple Gamma GLM (log link) fit via IRLS on the same drivers to capture the multiplicative severity gradients (vehicle value, sum insured) that the heavily regularized 1-split GBM smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.02673,
+   "idea": "Reduce the L2 regularization penalty from 50 to 5 and increase boosting rounds to 300 with a lower learning rate to allow the 1-split Gamma GBM to capture stronger severity gradients for vehicle value and sum insured that are currently over-smoothed."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.04245,
+   "idea": "Lower the minimum claim threshold for small perils and switch to a stronger L2 penalty with fewer boosting rounds to reduce overfitting on noisy features and improve generalization for heavy-tailed perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Use a Gamma GLM with a log link and L2 regularization (ridge) to capture the multiplicative severity effects of vehicle value and sum insured that the heavily regularized 1-split GBM smooths out, providing a more flexible and stable alternative to the tree-based model."
+  },
+  {
+   "status": "run failed: RuntimeError: wrong prediction shape (4285,) for 2049 rows (motor/bodily_injury)",
+   "score": "",
+   "idea": "Replace the LightGBM model with a Gamma GLM (log link) fit via IRLS on a short set of numeric drivers (log-transformed continuous variables and one-hot categorical variables) to capture multiplicative severity effects that the 1-split GBM misses, while keeping the minimum claim threshold and fallbac"
+  },
+  {
+   "status": "discarded",
+   "score": 0.00915,
+   "idea": "Use a Gamma GLM (log link) fit via IRLS on a short set of numeric drivers (log-transformed continuous variables and one-hot categorical variables) to capture multiplicative severity effects that the 1-split GBM misses, while keeping the minimum claim threshold and fallback to the mean for small peri"
+  },
+  {
+   "status": "run failed: ValueError: operands could not be broadcast together with shapes (4285,3) (4285,)",
+   "score": "",
+   "idea": "Replace the LightGBM model with a closed-form Gamma GLM (log-link) using a ridge-regularized Newton-Raphson solver to capture multiplicative severity drivers while strictly adhering to the correct function signature and ensuring finite, positive predictions."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03255,
+   "idea": "Add a credibility-weighted target encoding for the high-cardinality `make_model` (motor) and `high_value_items` (contents) drivers to explicitly inject the multiplicative severity gradients for expensive vehicles and high-value items that the regularized 1-split GBM smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04281,
+   "idea": "Add log-transformed excess columns (voluntary_excess, compulsory_excess) as numeric features to capture the multiplicative reduction in net claim severity, which the current 1-split GBM on categorical/integer drivers fails to model."
+  },
+  {
+   "status": "run failed: RuntimeError: predictions must be finite and > 0",
+   "score": "",
+   "idea": "Replace the LightGBM model with a closed-form Gamma GLM (log-link) fit via regularized IRLS on log-transformed numeric drivers to capture multiplicative severity effects that the 1-split GBM misses."
+  },
+  {
+   "status": "run failed: TypeError: Must provide 'func' or tuples of '(column, aggfunc).",
+   "score": "",
+   "idea": "Add an empirical Bayes credibility-weighted target encoding for `make_model` (motor) and `high_value_items` (contents) as a numeric feature to explicitly inject the multiplicative severity gradients that the regularized 1-split GBM smooths out."
+  },
+  {
+   "status": "rejected: reads a target column of valid",
+   "score": "",
+   "idea": "Add a shrinkage-weighted target encoding for `make_model` (motor) and `high_value_items` (contents) as a numeric feature to capture the under-predicted severity effects of expensive vehicles and high-value items that the 1-split GBM misses."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03264,
+   "idea": "Blend the LightGBM predictions with a credibility-weighted target encoding for high-cardinality categorical drivers (`make_model`, `high_value_items`) to explicitly capture the under-predicted severity gradients for expensive vehicles and high-value items that the regularized 1-split GBM smooths out"
+  },
+  {
+   "status": "discarded",
+   "score": 0.03263,
+   "idea": "Add a credibility-weighted target encoding for `make_model` (motor) and `high_value_items` (contents) as a numeric feature to capture the under-predicted severity gradients that the regularized GBM smooths out."
+  },
+  {
+   "status": "run failed: ValueError: could not convert string to float: 'suburban'",
+   "score": "",
+   "idea": "Replace the LightGBM model with a closed-form Gamma GLM (log-link) using a ridge-regularized Newton-Raphson solver to capture multiplicative severity drivers while strictly adhering to the correct function signature and ensuring finite, positive predictions."
+  },
+  {
+   "status": "run failed: TypeError: loop of ufunc does not support argument 0 of type float which has no callable exp method",
+   "score": "",
+   "idea": "Replace the 1-split LightGBM with a closed-form Gamma GLM (log-link) using ridge-regularized Newton-Raphson IRLS on a short set of numeric drivers (log-transformed continuous variables and one-hot categorical variables) to capture multiplicative severity effects that the 1-split GBM misses."
+  },
+  {
+   "status": "run failed: RuntimeError: predictions must be finite and > 0",
+   "score": "",
+   "idea": "Replace the LightGBM model with a Gamma GLM (log link) fit via IRLS on a short set of numeric drivers to capture multiplicative severity effects that the 1-split GBM misses."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Replace the 1-split LightGBM model with a closed-form Gamma GLM (log-link) using ridge-regularized Newton-Raphson IRLS on a short set of numeric drivers (log-transformed continuous variables and one-hot categorical variables) to capture multiplicative severity effects that the 1-split GBM misses."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04091,
+   "idea": "Increase the LightGBM boosting rounds from 100 to 300 to allow the model to accumulate stronger signal for high-cardinality drivers like `make_model` and `vehicle_value_group` that the current short training horizon with high L2 regularization smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04245,
+   "idea": "Add log-transformed excess columns (voluntary_excess and compulsory_excess) as numeric features to capture the multiplicative reduction in net claim severity that the current 1-split GBM on categorical/integer drivers fails to model."
+  },
+  {
+   "status": "run failed: RuntimeError: predictions must be finite and > 0",
+   "score": "",
+   "idea": "Replace the LightGBM model with a regularized Gamma GLM (log-link) fit via IRLS on the same driver columns to capture multiplicative severity gradients more directly and stably than the 1-split tree ensemble."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0417,
+   "idea": "Increase the LightGBM boosting rounds to 200 and reduce the L2 regularization penalty to 10 to allow the model to learn stronger, less smoothed severity gradients for high-value drivers like vehicle_value_group and sum_insured while maintaining stability."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04179,
+   "idea": "Reduce LightGBM L2 regularization to 5.0 and increase boosting rounds to 300 with a lower learning rate of 0.03 to allow the model to capture stronger severity gradients for high-value drivers like vehicle_value_group and sum_insured without overfitting, while keeping the same driver set and fallbac"
+  },
+  {
+   "status": "run failed: numpy.linalg.LinAlgError: Singular matrix",
+   "score": "",
+   "idea": "Replace the 1-split LightGBM with a closed-form Gamma GLM (log-link) using ridge-regularized Newton-Raphson IRLS on a short set of numeric drivers to capture multiplicative severity effects that the 1-split GBM misses, ensuring finite positive predictions via log-space exponentiation."
+  },
+  {
+   "status": "discarded",
+   "score": -2.3355,
+   "idea": "Replace the LightGBM model with a Gamma GLM (log link) fit via IRLS on a short set of numeric drivers (log-transformed continuous variables) to capture multiplicative severity effects that the 1-split GBM misses, while keeping the minimum claim threshold and fallback to the mean for small perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03857,
+   "idea": "Switch the LightGBM booster to a 3-leaf tree structure with a lower L2 penalty and increased boosting rounds to allow the model to capture the under-predicted severity gradients for high-value drivers like vehicle_value_group and sum_insured."
+  },
+  {
+   "status": "discarded",
+   "score": -18928436350.51996,
+   "idea": "Implement a numerically stable closed-form Gamma GLM (log-link) with Ridge-regularized Newton-Raphson IRLS on log-transformed numeric drivers to directly capture the multiplicative severity gradients (e.g., vehicle value, sum insured) that the 1-split GBM smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.02162,
+   "idea": "Apply a 10% winsorisation cap to the training target severity to reduce the influence of extreme heavy-tail outliers on the Gamma GBM fit, improving robustness for high-variance perils while preserving the multiplicative signal in the bulk of the distribution."
+  },
+  {
+   "status": "run failed: TypeError: ufunc 'isnan' not supported for the input types, and the inputs could not be safely coerced to an",
+   "score": "",
+   "idea": "Use a Gamma GLM with log link (IRLS) on a small set of numeric drivers (log-transformed continuous, one-hot categoricals) to capture multiplicative severity effects that the 1-split GBM smooths out, with proper fallback for small perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04271,
+   "idea": "Reduce the LightGBM minimum data per leaf to 50 and increase boosting rounds to 250 to allow the model to capture finer-grained severity variations for high-value drivers like vehicle_value_group and sum_insured without overfitting."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03537,
+   "idea": "Use LightGBM's native categorical feature handling with a single split per tree to capture the under-predicted severity gradient of `vehicle_value_group` and `sum_insured`, replacing the previous one-hot encoding that diluted the signal."
+  },
+  {
+   "status": "discarded",
+   "score": -0.35518,
+   "idea": "Switch the LightGBM objective from \"gamma\" to \"regression\" on the log-transformed target to directly model the multiplicative severity gradients (like vehicle_value_group and sum_insured) in log-space, which the Gamma objective's link function may smooth out excessively under strong L2 regularizatio"
+  },
+  {
+   "status": "discarded",
+   "score": -0.04183,
+   "idea": "Use a 50/50 ensemble of the current 1-split Gamma LightGBM and a low-degree (degree-2) Ridge regression model on the log-transformed target to capture multiplicative severity gradients (interactions) that the single-split tree structure cannot represent, while maintaining robustness through regulari"
+  },
+  {
+   "status": "discarded",
+   "score": -57.6178,
+   "idea": "Use a numerically stable Gamma GLM (log-link) with ridge-regularized Newton-Raphson IRLS on log-transformed numeric drivers to directly model the multiplicative severity gradients that the 1-split GBM smooths out, ensuring finite positive predictions via log-space exponentiation and a fallback to th"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04237,
+   "idea": "Use target encoding with additive Bayesian shrinkage (credibility-weighted) to replace the categorical driver columns, allowing the 1-split LightGBM to capture the severity gradients of high-cardinality features like `make_model` and `region` that are smoothed out by native LightGBM categorical hand"
+  },
+  {
+   "status": "discarded",
+   "score": -0.38462,
+   "idea": "Replace the 1-split LightGBM with a Gamma GLM (log-link) fit via IRLS on a short set of numeric drivers (log-transformed continuous variables) to capture multiplicative severity effects that the 1-split GBM smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": -0.01985,
+   "idea": "Add a 50/50 blend of the current LightGBM Gamma model and a Ridge-regularized log-linear model to capture smooth multiplicative severity gradients that the 1-split tree structure misses."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03261,
+   "idea": "Use target encoding with Bayesian shrinkage to encode `make_model` as a continuous feature, allowing the single-split LightGBM to capture the specific severity gradients of high-cardinality vehicle makes that the native categorical handling smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04246,
+   "idea": "Add a `vehicle_value_group` \u00d7 `vehicle_age` interaction feature to explicitly capture the multiplicative severity gradient for high-value older vehicles that the single-split 1-split GBM smooths out."
+  },
+  {
+   "status": "run failed: ValueError: operands could not be broadcast together with shapes (4285,) (4285,319)",
+   "score": "",
+   "idea": "Replace the LightGBM model with a Ridge-regularized Gamma GLM (log-link) fit via IRLS on log-transformed numeric drivers and one-hot encoded categoricals, with a fallback to the unregularized mean for small perils or convergence failure."
+  },
+  {
+   "status": "discarded",
+   "score": -7142.45712,
+   "idea": "Implement a numerically stable, ridge-regularized Gamma GLM (log-link) using Newton-Raphson IRLS on a short set of log-transformed numeric drivers and one-hot encoded categoricals to directly model the multiplicative severity gradients that the 1-split GBM smooths out, with a robust fallback to the "
+  },
+  {
+   "status": "run failed: ValueError: Length of 'prefix' (5) did not match the length of the columns being encoded (0).",
+   "score": "",
+   "idea": "Add a 50% blend with a Ridge-regularized log-linear model on log-transformed drivers to capture smooth multiplicative severity gradients that the 1-split LightGBM tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0327,
+   "idea": "Apply a Bayesian shrinkage of 0.55 to the LightGBM raw output towards the log-mean to dampen overfitting on the heavy-tailed perils while preserving the multiplicative severity gradient of the drivers."
+  },
+  {
+   "status": "run failed: ValueError: all the input arrays must have same number of dimensions, but the array at index 0 has 2 dimensi",
+   "score": "",
+   "idea": "Replace the LightGBM model with a numerically stable Gamma GLM (log-link) fit via IRLS on a short set of numeric drivers to capture the multiplicative severity gradients that the 1-split GBM smooths out, using a fallback to the mean for small perils or convergence failure."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0417,
+   "idea": "Reduce LightGBM L2 regularization from 100 to 10 and increase boosting rounds from 100 to 200 to allow stronger learning of the vehicle_value_group severity gradient in motor own damage while maintaining stability."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04017,
+   "idea": "Increase the number of boosting rounds from 100 to 400 to allow the model to better capture the severity gradients of high-value drivers like vehicle_value_group and sum_insured, which are currently smoothed out by the strong L2 regularization and limited boosting iterations."
+  },
+  {
+   "status": "discarded",
+   "score": -19437.5254,
+   "idea": "Replace the 1-split LightGBM with a Ridge-regularized Gamma GLM (log-link) fit via IRLS on a small set of log-transformed numeric drivers to directly model the multiplicative severity gradients that the single-split tree structure smooths out."
+  },
+  {
+   "status": "run failed: RuntimeError: predictions must be finite and > 0",
+   "score": "",
+   "idea": "Add a `cover_type` driver to the motor feature set to capture policy-level severity differences (e.g., comprehensive vs third-party) that the current model ignores, potentially improving the under-predicted severity for high-value vehicles."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03255,
+   "idea": "For motor perils, encode `make_model` using Bayesian shrinkage (K=50) on the training set and feed the resulting continuous feature to the LightGBM model, allowing the 1-split tree to capture the specific severity gradients of high-value vehicle makes that native categorical handling smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03599,
+   "idea": "Use sklearn's GammaRegressor (log-link) with standardized drivers and 5-fold cross-validation to capture smooth multiplicative severity gradients (e.g., log(sum_insured), vehicle_value_group) that the 1-split GBM smooths out, while maintaining robustness via regularization."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03915,
+   "idea": "Reduce the LightGBM number of boosting rounds from 100 to 50 to increase shrinkage toward the log-mean prior, specifically to dampen overfitting on heavy-tailed perils (like bodily_injury and fire) while preserving the signal from the main drivers."
+  },
+  {
+   "status": "discarded",
+   "score": -0.35518,
+   "idea": "Switch the LightGBM boosting objective to `regression` on the log-transformed severity target to directly model multiplicative severity gradients (like vehicle_value_group and sum_insured) in log-space, while keeping the same strong L2 regularization and 1-split tree structure."
+  },
+  {
+   "status": "run failed: ValueError: could not convert string to float: 'suburban'",
+   "score": "",
+   "idea": "Replace the 1-split LightGBM with sklearn's GammaRegressor (log-link) on a short set of standardized log-transformed numeric drivers to directly model smooth multiplicative severity gradients that the single-split tree structure cannot represent."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Use sklearn's GammaRegressor (log-link) with standardized log-transformed numeric drivers (log(sum_insured), vehicle_value_group, vehicle_age, high_value_items) to directly model smooth multiplicative severity gradients that the 1-split GBM smooths out, with a fallback to the mean for small perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Replace the LightGBM model with a Ridge-regularized Gamma GLM (log-link) fit via IRLS on a short set of standardized numeric drivers (log-transformed where appropriate) to directly model smooth multiplicative severity gradients that the 1-split GBM smooths out, with a robust fallback to the mean for"
+  },
+  {
+   "status": "discarded",
+   "score": -0.01841,
+   "idea": "Use a 50/50 blend of the current LightGBM Gamma model and a simple log-linear model (fitted via log-space OLS) on the same numeric drivers to capture smooth multiplicative severity gradients that the single-split tree structure smooths out."
+  },
+  {
+   "status": "run failed: ModuleNotFoundError: No module named 'sklearn.glm'",
+   "score": "",
+   "idea": "Replace the LightGBM model with a Ridge-regularized Gamma GLM (log-link) fit via IRLS on a short set of standardized numeric drivers to directly model smooth multiplicative severity gradients that the single-split GBM smooths out, with a robust fallback to the mean for small perils or convergence fa"
+  },
+  {
+   "status": "discarded",
+   "score": 0.03,
+   "idea": "Add a 50% blend with a simple log-linear model fitted via OLS on log(sev) to capture smooth multiplicative severity gradients that the single-split LightGBM tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": -0.01804,
+   "idea": "Blend the existing LightGBM Gamma model with a robust Ridge-regression model fitted on log(severity) using standardized numeric drivers to capture smooth multiplicative severity gradients that the single-split tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Use sklearn's GammaRegressor with a log link on standardized log-transformed numeric drivers (log(sum_insured), vehicle_value_group, vehicle_age, high_value_items, bedrooms) to directly capture the smooth multiplicative severity gradients that the 1-split GBM smooths out, with a fallback to the mean"
+  },
+  {
+   "status": "discarded",
+   "score": -0.04515,
+   "idea": "Blend the current LightGBM Gamma model with a simple log-linear model (OLS on log(sev)) fitted on the same numeric drivers to capture smooth multiplicative severity gradients that the 1-split GBM smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04273,
+   "idea": "Add `voluntary_excess` and `compulsory_excess` as numeric features for all lines, and `bedrooms` for buildings/contents, to capture the direct impact of policy excesses and property size on net claim severity."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Replace the LightGBM model with a Ridge-regularized Gamma GLM (log-link) fit via IRLS on a short set of standardized numeric drivers to directly model smooth multiplicative severity gradients that the single-split tree structure smooths out, with a robust fallback to the mean for small perils or con"
+  },
+  {
+   "status": "discarded",
+   "score": -0.35518,
+   "idea": "Switch the LightGBM objective from `gamma` to `regression` on the log-transformed severity target to directly model the multiplicative severity gradients (e.g., vehicle_value_group, sum_insured) that the Gamma loss with strong L2 and 1-split trees smooths out, while maintaining the same hyperparamet"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04124,
+   "idea": "For motor perils, add a single multiplicative adjustment factor based on `vehicle_value_group` to the LightGBM predictions to explicitly capture the smooth severity gradient for high-value vehicles that the single-split tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": -0.01822,
+   "idea": "Blend the LightGBM predictions with a log-linear Ridge regression model fitted on standardized numeric drivers to capture smooth multiplicative severity gradients that the single-split tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04273,
+   "idea": "Add `voluntary_excess` and `compulsory_excess` as numeric features for all lines to capture the direct impact of policy excesses on net claim severity, which the current model ignores."
+  },
+  {
+   "status": "run failed: ValueError: assignment destination is read-only",
+   "score": "",
+   "idea": "Replace the LightGBM model with a Ridge-regularized Gamma GLM (log-link) fitted via IRLS on a short set of standardized numeric drivers to directly model smooth multiplicative severity gradients that the single-split tree structure smooths out, with a robust fallback to the mean for small perils or "
+  },
+  {
+   "status": "discarded",
+   "score": 0.04021,
+   "idea": "Tune the LightGBM hyperparameters by reducing L2 regularization and increasing boosting rounds to allow the single-split trees to capture stronger severity gradients (e.g., vehicle value, sum insured) without overfitting, addressing the under-prediction of high-value claims."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04023,
+   "idea": "Increase the LightGBM number of boosting rounds from 100 to 300 and reduce lambda_l2 from 100 to 25 to allow the model to capture stronger severity gradients (e.g., vehicle value, sum insured) without overfitting, addressing the under-prediction of high-value claims."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04273,
+   "idea": "Use a LightGBM model with 3 leaves and reduced L2 regularization to allow the trees to capture interactions between severity drivers (e.g., vehicle value and age) that single-split trees cannot represent."
+  },
+  {
+   "status": "discarded",
+   "score": -0.5704,
+   "idea": "Replace the single-split LightGBM with a Gamma GLM (log-link) fitted via IRLS on standardized numeric drivers to directly model smooth multiplicative severity gradients that the 1-split tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Replace the LightGBM model with a GammaRegressor (log-link) on standardized numeric drivers (log-transformed where appropriate) to capture smooth multiplicative severity gradients that the 1-split GBM smooths out, with a fallback to the mean for small perils or convergence failures."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04273,
+   "idea": "Replace the single-split LightGBM with a LightGBM model using 3 leaves and reduced L2 regularization to allow the trees to capture interactions between severity drivers (e.g., vehicle value and age) that single-split trees cannot represent."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04127,
+   "idea": "Add a multiplicative adjustment factor based on `vehicle_value_group` for motor perils to explicitly capture the smooth severity gradient for high-value vehicles that the single-split tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03662,
+   "idea": "Implement a Gamma GLM with log link using sklearn's GammaRegressor on a small set of standardized, log-transformed numeric drivers (sum_insured, si_per_bedroom, vehicle_value_group, vehicle_age, high_value_items) to capture smooth multiplicative severity gradients that the 1-split GBM misses, with a"
+  },
+  {
+   "status": "run failed: RuntimeError: predictions must be finite and > 0",
+   "score": "",
+   "idea": "For contents and buildings, replace the LightGBM model with a Gamma GLM (log-link) fitted via IRLS on standardized log(sum_insured) to explicitly capture the smooth power-law severity gradient that the single-split tree structure smooths out, while retaining the LightGBM model for motor perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04245,
+   "idea": "Add `vehicle_value_group` as a numeric feature to the motor driver list to explicitly capture the smooth severity gradient by vehicle value that the current categorical/interaction-heavy tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": -0.14947,
+   "idea": "For motor perils, replace the single-split LightGBM model with a log-linear Ridge regression on standardized `vehicle_value_group` and `vehicle_age` to explicitly capture the smooth multiplicative severity gradient (value x age interaction) that the baseline tree structure smooths out, while retaini"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04081,
+   "idea": "For motor perils, add a multiplicative adjustment factor based on the ratio of the peril-specific mean severity to the overall motor mean severity to explicitly capture the smooth severity gradient for high-value vehicles that the single-split tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.01964,
+   "idea": "Use a Gamma GLM (log link) fitted via sklearn's GammaRegressor on a small set of log-transformed numeric drivers to explicitly model the smooth multiplicative severity gradients (e.g., log sum_insured, vehicle_value_group) that the single-split tree structure smooths out, with a fallback to the mean"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Use a Gamma GLM (log link) fitted via sklearn's GammaRegressor on a small set of standardized, log-transformed numeric drivers to explicitly model smooth multiplicative severity gradients (e.g., log sum_insured, vehicle_value_group) that the 1-split GBM smooths out, with a fallback to the mean for s"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Replace the LightGBM model with a Gamma GLM (log-link) fitted via sklearn's GammaRegressor on a small set of standardized, log-transformed numeric drivers to capture smooth multiplicative severity gradients that the 1-split GBM smooths out, using a robust fallback to the mean for small perils or con"
+  },
+  {
+   "status": "discarded",
+   "score": -0.15379,
+   "idea": "For buildings and contents perils, fit a Gamma GLM with log-link on standardized log(sum_insured) to explicitly capture the smooth multiplicative power-law severity gradient that the single-split tree structure smooths out, while retaining the LightGBM model for motor perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04295,
+   "idea": "For large perils with sufficient data, fit a Gamma GLM using sklearn's GammaRegressor on standardized log-transformed numeric drivers to capture smooth multiplicative severity gradients, and blend it with the existing LightGBM prediction to mitigate overfitting while improving predictions for high-v"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Replace the LightGBM model with a GammaRegressor (log-link) fitted on standardized log-transformed numeric drivers to explicitly capture the smooth multiplicative severity gradients (e.g., log sum_insured, vehicle_value_group) that the single-split tree structure smooths out, with a robust fallback "
+  },
+  {
+   "status": "discarded",
+   "score": 0.03388,
+   "idea": "Blend the existing LightGBM prediction with a Gamma GLM (log-link) fitted via sklearn's GammaRegressor on a small set of standardized numeric drivers to explicitly capture the smooth multiplicative severity gradients (e.g., vehicle value for motor, log sum_insured for property) that the single-split"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04241,
+   "idea": "Blend the existing LightGBM prediction with a Gamma GLM (log-link) fitted via sklearn's GammaRegressor on a small set of standardized numeric drivers to explicitly capture the smooth multiplicative severity gradients that the 1-split tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Use a Gamma GLM with log link (sklearn GammaRegressor) on standardized numeric drivers (log(sum_insured), si_per_bedroom, vehicle_value_group, vehicle_age) to capture smooth multiplicative severity gradients that the 1-split GBM smooths out, with a fallback to the mean for small perils or convergenc"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04261,
+   "idea": "For the motor line, add a multiplicative severity adjustment factor computed from the train-set relationship between `vehicle_value_group` and claim severity (using a simple mean-ratio approach) to explicitly capture the smooth severity gradient for high-value vehicles that the 1-split GBM under-pre"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04242,
+   "idea": "Use a weighted blend of the existing LightGBM prediction and a GammaRegressor (log-link) prediction to capture the smooth multiplicative severity gradients that the 1-split tree structure smooths out, specifically for motor perils where vehicle value effects are under-predicted."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04245,
+   "idea": "Blend the existing LightGBM prediction with a Gamma GLM (log-link) fitted via sklearn's GammaRegressor on a small set of standardized numeric drivers to explicitly capture the smooth multiplicative severity gradients (e.g., vehicle value for motor, log sum_insured for property) that the 1-split tree"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04291,
+   "idea": "For motor perils, replace the categorical `make_model` feature with a numerically-coded `vehicle_make` feature (mapping makes to their mean log-severity in training, centered) to provide a smooth, continuous gradient for the tree to split on, better capturing the vehicle value/type severity effect t"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04294,
+   "idea": "Blend the existing LightGBM prediction with a Gamma GLM (log-link) fitted via sklearn's GammaRegressor on a small set of standardized, log-transformed numeric drivers to explicitly capture the smooth multiplicative severity gradients that the single-split tree structure smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04033,
+   "idea": "Increase the LightGBM model's flexibility by increasing the number of leaves to 3, reducing L2 regularization to 10, and increasing boosting rounds to 200 to better capture the smooth multiplicative severity gradients (vehicle value, sum insured) that the current 1-split tree structure misses, parti"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04241,
+   "idea": "For large perils, fit a Gamma GLM with log-link using sklearn's GammaRegressor on a small set of standardized numeric drivers (log-transformed sum_insured, si_per_bedroom, vehicle_value_group, vehicle_age, high_value_items) to capture smooth multiplicative severity gradients that the 1-split GBM mis"
+  },
+  {
+   "status": "discarded",
+   "score": 0.00439,
+   "idea": "For building and contents lines, fit a Gamma GLM with log-link using `sklearn.GammaRegressor` on standardized `log(sum_insured)` and `log(si_per_bedroom)` to capture the smooth power-law severity gradient, replacing the tree-based model for these lines while retaining LightGBM for motor."
+  },
+  {
+   "status": "discarded",
+   "score": 0.00134,
+   "idea": "Use a Gamma GLM (log-link) fitted via sklearn's GammaRegressor on standardized log-transformed numeric drivers (log sum_insured, si_per_bedroom, vehicle_value_group, vehicle_age, high_value_items) to capture smooth multiplicative severity gradients that the 1-split GBM misses, with a fallback to the"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "For perils with at least 500 claims, fit a Gamma GLM with log-link via sklearn's GammaRegressor on standardized log-transformed numeric drivers (log sum_insured for property, vehicle_value_group and vehicle_age for motor) to capture smooth multiplicative severity gradients that the single-split tree"
+  },
+  {
+   "status": "discarded",
+   "score": 0.03786,
+   "idea": "For motor own_damage and theft, replace the GBM with a Gamma GLM (log-link) on standardized vehicle_value_group and vehicle_age to explicitly model the smooth multiplicative severity gradient that the 1-split tree under-predicts for high-value vehicles."
+  },
+  {
+   "status": "discarded",
+   "score": 0.00439,
+   "idea": "For buildings and contents perils, replace the tree-based model with a Gamma GLM (log-link) fitted via `sklearn.GammaRegressor` on standardized `log(sum_insured)` to explicitly model the smooth power-law severity gradient, while retaining the existing LightGBM setup for motor perils."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04059,
+   "idea": "For perils with sufficient claims, use a Gamma GLM with log-link fitted via sklearn's GammaRegressor on standardized, log-transformed numeric drivers (log sum_insured, vehicle_value_group, vehicle_age, high_value_items) to capture smooth multiplicative severity gradients that the 1-split GBM smooths"
+  },
+  {
+   "status": "run failed: TypeError: GammaRegressor.__init__() got an unexpected keyword argument 'random_state'",
+   "score": "",
+   "idea": "For motor perils, replace the LightGBM model with a Gamma GLM (log-link) fitted via sklearn's GammaRegressor on standardized vehicle_value_group and vehicle_age to explicitly capture the smooth multiplicative severity gradient for high-value vehicles that the single-split tree structure smooths out,"
+  },
+  {
+   "status": "discarded",
+   "score": 0.04275,
+   "idea": "Fit a Gamma GLM with log-link on standardized numeric drivers using sklearn's GammaRegressor to capture smooth multiplicative severity gradients, blending it with the existing LightGBM prediction to improve predictions for high-value vehicles and sum-insured effects."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03808,
+   "idea": "For perils with sufficient claims, fit a Gamma GLM with log-link using sklearn's GammaRegressor on standardized numeric drivers (log(sum_insured), vehicle_value_group, vehicle_age, high_value_items) to capture smooth multiplicative severity gradients that the 1-split GBM smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.03748,
+   "idea": "Use a Gamma GLM with log-link fitted via sklearn's GammaRegressor on a small set of standardized numeric drivers (log sum_insured, si_per_bedroom, vehicle_value_group, vehicle_age, high_value_items) to capture smooth multiplicative severity gradients that the 1-split GBM smooths out."
+  },
+  {
+   "status": "discarded",
+   "score": 0.04181,
+   "idea": "For motor perils, replace the LightGBM model with a Gamma GLM (log-link) fitted via sklearn's GammaRegressor on standardized `vehicle_value_group` and `vehicle_age` to explicitly capture the smooth multiplicative severity gradient for high-value vehicles that the single-split tree structure smooths "
+  }
+ ]
+}

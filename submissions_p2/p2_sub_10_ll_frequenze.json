@@ -1,0 +1,18 @@
+{
+ "motor": {
+  "glm": "{'alpha': 0.01, 'coef': {'new_business[False]': np.float64(-0.093), 'new_business[True]': np.float64(0.093), 'gender[F]': np.float64(-0.098), 'gender[M]': np.float64(0.098)}, 'intercept': -0.156}",
+  "tasso": 655.5488893930657,
+  "target_train_tasso": 497.32880362781583
+ },
+ "buildings": {
+  "k": 0.8564920103854247,
+  "tasso": 488.3917781410169,
+  "target_train_tasso": 453.6149913989206
+ },
+ "contents": {
+  "glm": "{'alpha': 1.0, 'coef': {'gender[F]': np.float64(0.042), 'gender[M]': np.float64(-0.042)}, 'intercept': -0.004}",
+  "livelli_perilo": "{'perils': {'accidental_damage': {'a': 0.833, 'b': 0.82, 'n': 335, 'z_f': 0.77, 'z_s': 0.63}, 'escape_of_water': {'a': 0.931, 'b': 0.828, 'n': 171, 'z_f': 0.63, 'z_s': 0.46}, 'flood': {'a': 1.003, 'b': 0.869, 'n': 86, 'z_f': 0.46, 'z_s': 0.3}, 'theft': {'a': 1.164, 'b': 0.839, 'n': 406, 'z_f': 0.8, 'z_s': 0.67}}, 'a_line': 0.97, 'b_line': 0.85, 'c': 1.04}",
+  "tasso": 106.37344376453177,
+  "target_train_tasso": 97.96427882094098
+ }
+}

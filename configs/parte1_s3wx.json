@@ -1,0 +1,9 @@
+{
+  "name": "parte1_s3wx",
+  "interim": "data/interim_s3wx",
+  "model_dir": "data/model_s3wx",
+  "results": "results_s3wx",
+  "trend": {"sev_nonsig": "own"},
+  "development": {"inflation_override": {"motor|bodily_injury": 0.019}},
+  "fixes": {"construction_map": {"brick": "nessuno", "stone": "nessuno", "non_standard": "nessuno", "w": "nessuno", "t": "nessuno"}}
+}

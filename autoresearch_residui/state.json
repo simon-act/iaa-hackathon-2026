@@ -1,0 +1,342 @@
+{
+ "best": {
+  "by": {
+   "motor|F2024": 0.000388,
+   "motor|F2023": 0.000294,
+   "buildings|F2024": 0.0,
+   "buildings|F2023": 0.0,
+   "contents|F2024": 0.0,
+   "contents|F2023": 0.0
+  },
+  "pooled": {
+   "F2023": 0.00012,
+   "F2024": 0.000158
+  },
+  "pooled_mean": 0.00012,
+  "score": 0.000139,
+  "seconds": 2.6
+ },
+ "iter": 64,
+ "history": [
+  {
+   "status": "run failed: You can drop duplicate edges by setting the 'duplicates' kwarg",
+   "score": "",
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `pol_prev_rate` (policy previous claim rate) band, specifically targeting the potential mis-specification of experience rating strength in the base model."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000531,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `building_age` band (merged into 5 bands) to address potential mis-specification of how building age impacts risk in the base model."
+  },
+  {
+   "status": "KEPT",
+   "score": 0.00012,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `vehicle_value_group` band to address potential mis-specification of how vehicle value impacts risk in the base model for the motor line."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000936,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `sum_insured` band to address potential mis-specification of how sum insured impacts risk in the buildings and contents lines."
+  },
+  {
+   "status": "discarded",
+   "score": -2e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `pol_prev_n_last` (previous policy claim count) band to adjust for potential mis-specification of experience rating strength, which is a stable feature across years unlike weather."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative correction to the `annual_mileage` band for the motor line to address potential mis-specification of the mileage effect, while keeping other lines unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000229,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `driver_age` band for the motor line to address potential mis-specification of the driver age effect, while keeping other lines unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `cust_n_lines` band to address potential mis-specification of how multi-line customer concentration impacts risk across all lines."
+  },
+  {
+   "status": "discarded",
+   "score": 0.00012,
+   "idea": "Apply a credibility-weighted multiplicative correction to the motor line based on the `annual_mileage` band (merging low-exposure/noise rows), rescaling to preserve total level."
+  },
+  {
+   "status": "discarded",
+   "score": 0.00012,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `high_value_items` band for the contents line to address potential mis-specification of how high-value items impact risk, while keeping other lines unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000258,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `pol_prev_rate` band (merged into 5 quantile bands) to address the potential mis-specification of the experience rating strength, while keeping the total prediction level unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000157,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `driver_age` x `years_licensed` interaction bands for the motor line to address potential mis-specification of the driver risk gradient, while keeping other lines unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.00036,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `ncb_years` (No Claims Bonus) band for the motor line to address potential mis-specification of the NCB effect, while keeping other lines unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": 0.00012,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `vehicle_value_group` band to address potential mis-specification of how vehicle value impacts risk in the base model for the motor line."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000653,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": -6.1e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `vehicle_age` band for the motor line to address potential mis-specification of the vehicle age effect, while keeping other lines unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `flood_zone` band for the motor line to address potential mis-specification of how property flood risk impacts vehicle damage frequency, while keeping other lines unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000358,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `building_age` band (merged into 5 quantile bands) for the buildings line to address potential mis-specification of how building age impacts risk, while keeping other lines unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `household_size` band to address potential mis-specification of how household size impacts risk, while keeping the total prediction level unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000526,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `building_age` band for the buildings line, and a credibility-weighted multiplicative correction based on the `sum_insured` band for the contents line, to address potential mis-specification of how structural age and insured value i"
+  },
+  {
+   "status": "discarded",
+   "score": -6.1e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `vehicle_age` band for the motor line to address potential mis-specification of how vehicle age impacts risk, while keeping the total prediction level unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": 0.00012,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `building_age` band for the buildings line, and the `sum_insured` band for the contents line, to address potential mis-specification of how structural age and insured value impact risk, while keeping the total prediction level uncha"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative correction to the motor line based on the `annual_mileage` band (merged into 5 quantile bands on the training set) to address potential mis-specification of the mileage effect."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000346,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `vehicle_use` band for the motor line to address potential mis-specification of how vehicle usage type impacts risk, while keeping other lines unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a smoothed experience-rating correction based on the `pol_prev_rate` band (merged into 5 quantile bands) to address potential mis-specification of the experience rating strength, rescaling to preserve total level."
+  },
+  {
+   "status": "discarded",
+   "score": -0.00093,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `sum_insured` band for the buildings line to address potential mis-specification of how sum insured impacts risk in the base model, while keeping the total prediction level unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.00093,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `sum_insured` band (merged into 5 quantile bands on training) for the buildings line, rescaling to preserve total level."
+  },
+  {
+   "status": "discarded",
+   "score": 4.9e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `pol_prev_n_last` (prior claim count) band for the motor line to address potential mis-specification of the experience rating strength, while keeping other lines unchanged and rescaling to preserve total level."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000516,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `building_age` band (merged into 5 quantile bands) for the buildings line to address potential mis-specification of how building age impacts risk, while keeping the total prediction level unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000163,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `sum_insured` band (merged into 5 quantile bands) for the buildings and contents lines to address potential mis-specification of how sum insured impacts risk, while keeping the motor line unchanged and preserving the total predictio"
+  },
+  {
+   "status": "discarded",
+   "score": -0.000936,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `sum_insured` band (merged into 5 quantile bands on the training set) for the buildings and contents lines to address potential mis-specification of the sum insured effect, while keeping the motor line unchanged and rescaling to pre"
+  },
+  {
+   "status": "discarded",
+   "score": -0.000229,
+   "idea": "Apply a credibility-weighted multiplicative correction to the motor line based on the `driver_age` band, addressing potential mis-specification of the driver age risk gradient, while keeping the total prediction level unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000461,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `driver_age` and `annual_mileage` interaction bands for the motor line, while leaving other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": 5.4e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `driver_age` x `years_licensed` interaction bands for the motor line to address potential mis-specification of the risk gradient for new drivers with limited experience, while keeping other lines unchanged and preserving the total p"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `cust_n_lines` band for the motor line to address potential mis-specification of how multi-line customer bundling impacts risk, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `cust_n_lines` band for the buildings and contents lines to address potential mis-specification of how multi-line customer bundling impacts risk, while keeping the motor line unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": 0.00012,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `vehicle_value_group` band for the motor line, and leave other lines unchanged, to address potential mis-specification of how vehicle value impacts risk in the base model while preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -3.8e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction to the motor line based on the `named_young_driver` indicator to address the potential mis-specification of the young driver surcharge, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -8.1e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `prior_claims_5y` band for the motor line to address potential mis-specification of the 5-year claim history effect, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": 0.00012,
+   "idea": "Apply a credibility-weighted multiplicative correction to the motor line based on the `vehicle_value_group` band (merged into 5 quantile bands on the training set) to address potential mis-specification of how vehicle value impacts risk, while keeping other lines unchanged and preserving the total p"
+  },
+  {
+   "status": "discarded",
+   "score": -0.001094,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `sum_insured` band for the contents line, and the `sum_insured` band for the buildings line, to address potential mis-specification of how sum insured impacts risk, while keeping the total prediction level unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000232,
+   "idea": "Apply a single credibility-weighted multiplicative correction to the motor line based on the `telematics_score` band (merged into 5 quantile bands) to address potential mis-specification of the telematics risk gradient, while keeping the total prediction level unchanged."
+  },
+  {
+   "status": "discarded",
+   "score": -0.00093,
+   "idea": "(no idea line)"
+  },
+  {
+   "status": "discarded",
+   "score": -0.00038,
+   "idea": "Apply a credibility-weighted multiplicative correction to the motor line based on the `annual_mileage` band (merged into 5 quantile bands), addressing potential mis-specification of the mileage risk gradient, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -6.1e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `vehicle_age` band for the motor line to address potential mis-specification of the vehicle age risk gradient, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `flood_zone` band for the buildings and contents lines, addressing the potential mis-specification of the flood risk gradient in the base model, while keeping the motor line unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000164,
+   "idea": "Apply a credibility-weighted multiplicative correction to the contents line based on the `security_level` band to address potential mis-specification of the security risk gradient, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -6.1e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction based on the `vehicle_age` band (merged into 5 quantile bands on the training set) for the motor line to address potential mis-specification of the vehicle age risk gradient, while keeping other lines unchanged and preserving the total predictio"
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a smoothed, credibility-weighted multiplicative A/E correction to the motor line based on the `pol_prev_rate` (experience rating intensity) band, specifically correcting for the non-linear gradient of prior premium rate, then rescale to maintain the aggregate prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -3.5e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction to the motor line based on the `named_young_driver` indicator to address the potential mis-specification of the young driver surcharge, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -8.6e-05,
+   "idea": "Apply a credibility-weighted multiplicative correction to the motor line based on the `years_licensed` band, addressing the potential mis-specification of the driver experience risk gradient, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -6.6e-05,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the motor line based on the `urban_density` band, addressing the potential mis-specification of the urban/rural risk gradient in the base model, while rescaling to preserve the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000657,
+   "idea": "Apply a credibility-weighted multiplicative correction to the buildings line based on the `basement` indicator to address the potential mis-specification of the basement flood/seepage surcharge, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -0.001204,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the buildings and contents lines based on the `sum_insured` band (merged into 4 quantile bands), addressing potential mis-specification of the sum insured risk gradient, while keeping the motor line unchanged and preserving the total pred"
+  },
+  {
+   "status": "discarded",
+   "score": -0.000224,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the motor line based on a smoothed `driver_age` band to capture any non-linear age gradient missed by the base model's additive log structure, while preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000229,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the motor line based on the `driver_age` band (merged into 5 quantile bands) to capture any non-linear age gradient missed by the base model's additive log structure, while preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the motor line based on the `voluntary_excess` band to capture the specific, stable gradient of voluntary excess that may be mis-specified by the base model, while keeping other lines unchanged and preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": 0.0,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the motor line based on the `flood_zone` band (merged into 5 quantile bands) to address potential mis-specification of the flood risk gradient in the base model, while keeping other lines unchanged and preserving the total prediction leve"
+  },
+  {
+   "status": "discarded",
+   "score": -7.4e-05,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the buildings and contents lines based on the `si_per_bedroom` band (sum insured per bedroom), addressing potential mis-specification of the property value density risk gradient, while keeping the motor line unchanged and preserving the t"
+  },
+  {
+   "status": "discarded",
+   "score": -0.000245,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the contents line based on the `high_value_items` band to capture the specific severity gradient for high-value declarations that may be mis-specified by the base model, while preserving the total prediction level."
+  },
+  {
+   "status": "discarded",
+   "score": -0.000722,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the buildings and contents lines based on the `building_age` band, addressing potential mis-specification of the building age risk gradient in the base model, while keeping the motor line unchanged and preserving the total prediction leve"
+  },
+  {
+   "status": "discarded",
+   "score": -0.001094,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the buildings and contents lines based on the `sum_insured` band (merged into 5 quantile bands on the training set) to address potential mis-specification of the sum insured risk gradient, while keeping the motor line unchanged and preser"
+  },
+  {
+   "status": "discarded",
+   "score": -0.000666,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the buildings and contents lines based on the `construction_type` band (merged into 5 quantile bands on the training set) to address potential mis-specification of the construction risk gradient, while keeping the motor line unchanged and"
+  },
+  {
+   "status": "discarded",
+   "score": 5.1e-05,
+   "idea": "Apply a credibility-weighted multiplicative A/E correction to the buildings and contents lines based on a smoothed band of `days_unoccupied` (buildings) or `works_from_home` (contents) to capture the specific, stable severity gradient of occupancy risk that may be mis-specified by the base model, wh"
+  }
+ ]
+}

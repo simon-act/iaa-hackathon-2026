@@ -1,0 +1,9 @@
+{
+  "name": "parte1_s3wm",
+  "interim": "data/interim_s3wm",
+  "model_dir": "data/model_s3wm",
+  "results": "results_s3wm",
+  "trend": {"sev_nonsig": "own"},
+  "development": {"inflation_override": {"motor|bodily_injury": 0.019}},
+  "fixes": {"construction_map": {"brick": "brick", "stone": "stone", "non_standard": "non_standard", "w": "timber", "t": "missing"}}
+}

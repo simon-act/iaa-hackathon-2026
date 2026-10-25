@@ -1,0 +1,10 @@
+assumption,motor_pct,buildings_pct,contents_pct
+base,0.0,0.0,0.0
+trend = 0,-1.1,-8.5,-7.9
+severity trend +2 pt/yr,2.7,3.1,2.9
+no IBNER,-5.7,-0.1,0.3
+"reported only (no IBNR, no IBNER)",-15.4,-2.3,-1.1
+bodily injury 2024 IBNR +25%,2.9,0.0,0.0
+2024 only,3.6,-24.1,-4.0
+2023 only,-3.8,25.6,4.3
+no large-loss load,-4.2,-1.2,-0.4

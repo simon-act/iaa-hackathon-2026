@@ -1,0 +1,49 @@
+{
+ "name": "parte2_llc",
+ "_nota": "Come parte2_llp.json (prior carico grandi sinistri auto da Pareto), con il prior di ogni linea riscalato col rapporto delle frequenze di sinistri sopra f × soglia (auto 0,2, fabbricato 0,5, contenuto 0,2), 25/10.",
+ "raw": "data/raw_p2",
+ "interim": "data/interim_p2_llc",
+ "model_dir": "data/model_p2_llc",
+ "results": "results_p2_llc",
+ "train_years": [
+  2023,
+  2024
+ ],
+ "folds": {
+  "F2024": [
+   [
+    2023
+   ],
+   2024
+  ]
+ },
+ "holdout_share": 0.0,
+ "fixes": {
+  "construction_map": {
+   "brk": "brick",
+   "stn": "stone",
+   "wod": "timber",
+   "mix": "non_standard"
+  },
+  "occupation_normalize": true
+ },
+ "trend": {
+  "from_source": true
+ },
+ "transfer": {
+  "source_market": "configs/parte1_s3.json",
+  "mode": "offset_credibility",
+  "ll_prior_pareto": {
+   "motor": 50000
+  },
+  "ll_prior_count_ratio": {
+   "motor": 0.2,
+   "buildings": 0.5,
+   "contents": 0.2
+  }
+ },
+ "development": {
+  "source_interim": "data/interim_s3",
+  "reporting_from_source": true
+ }
+}
