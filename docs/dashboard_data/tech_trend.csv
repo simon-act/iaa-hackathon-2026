@@ -1,0 +1,16 @@
+line,peril,freq_trend_pct,freq_p,freq_rule,sev_trend_pct,sev_p,sev_rule,burning_cost_2025
+buildings,accidental_damage,0.0,0.208,not significant → 0,2.1,0.409,own estimate (not significant),8.3
+buildings,escape_of_water,0.0,0.85,not significant → 0,8.3,0.019,estimated,119.6
+buildings,fire,6.7,0.077,estimated,-2.6,0.003,estimated,102.7
+buildings,flood,0.0,0.064,weather peril → 0 (the model uses 2025 weather),7.1,0.028,estimated,140.3
+buildings,storm,0.0,0.532,weather peril → 0 (the model uses 2025 weather),8.5,0.019,estimated,55.8
+buildings,subsidence,0.0,0.002,weather peril → 0 (the model uses 2025 weather),6.3,0.056,estimated,66.8
+contents,accidental_damage,1.9,0.366,line trend (p=0.034),2.6,0.112,own estimate (not significant),13.5
+contents,escape_of_water,1.7,0.072,estimated,2.6,0.169,own estimate (not significant),28.0
+contents,flood,0.0,0.566,weather peril → 0 (the model uses 2025 weather),4.9,0.224,own estimate (not significant),30.5
+contents,theft,2.6,0.032,estimated,4.1,0.097,estimated,55.3
+motor,bodily_injury,-2.6,0.127,line trend (p=0.085),-1.2,0.685,own estimate (not significant),201.4
+motor,glass_hail,0.0,0.06,weather peril → 0 (the model uses 2025 weather),8.1,0.018,estimated,26.3
+motor,own_damage,-2.6,0.148,line trend (p=0.085),3.9,0.002,estimated,116.4
+motor,theft,-2.6,0.772,line trend (p=0.085),3.7,0.239,own estimate (not significant),50.4
+motor,third_party_prop,-2.6,0.114,line trend (p=0.085),7.9,0.0,estimated,177.3

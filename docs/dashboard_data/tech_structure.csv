@@ -1,0 +1,16 @@
+line,peril,d2_additive,d2_interactions,main_drivers
+motor,bodily injury,0.037,0.025,"make_model, NCB, years licensed, age"
+motor,glass / hail,0.076,0.068,"cover type, voluntary excess, hail days"
+motor,own damage,0.127,0.128,"cover type, NCB, age"
+motor,theft,0.029,0.014,"make_model, cover, overnight parking, urban density"
+motor,third-party property,0.057,0.053,"NCB, age, years licensed, mileage"
+buildings,accidental damage,0.106,0.102,accidental damage cover
+buildings,escape of water,0.033,0.029,"building age, freezing days, days unoccupied"
+buildings,fire,0.009,0.0,wildfire index
+buildings,flood,0.297,0.297,"flood zone, elevation"
+buildings,storm,0.043,0.037,"building age, property type, wind"
+buildings,subsidence,0.047,0.05,"soil, dry summer, temperature (the only interaction)"
+contents,accidental damage,0.114,0.108,accidental damage cover
+contents,escape of water,0.02,0.014,"freezing days, region"
+contents,flood,0.26,0.254,"flood zone, elevation"
+contents,theft,0.018,0.013,"urban density, security level"

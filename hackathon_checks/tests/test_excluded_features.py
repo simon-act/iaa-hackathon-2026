@@ -8,7 +8,7 @@ import pytest
 EXCLUDED = {
     "customer_service_contacts": "leakage: generati dai sinistri (anche non denunciati); nel test ha la distribuzione delle righe senza sinistri — usati solo come segnale di sinistri tardivi nella storia (experience.history_fix)",
     "renewal_decision": "leakage: decisa dopo il periodo, assente nel test",
-    "written_premium": "circolare: tariffa attuale, solo benchmark",
+    "written_premium": "circolare in Parte 1: tariffa attuale, solo benchmark (in Parte 2 entra solo prem_rel nella correzione auto, vedi report §5)",
     "row_id": "id", "policy_id": "id", "customer_id": "id (solo per la storia)", "address_id": "id (solo per la storia)", "claim_id": "id",
     "surname": "proxy etnia / nessuna logica di rischio", "email_domain": "nessuna logica di rischio",
     "date_of_birth": "sostituita dall'età", "birth_year": "sostituita dall'età", "construction_type_raw": "grezzo, sostituito dalla versione pulita",

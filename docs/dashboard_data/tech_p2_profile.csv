@@ -1,0 +1,13 @@
+line,group,rows,exposure,prior_cost_per_exposure,young_17_24_pct,prior_claims_5y,mean_exposure,ncb_years,sum_insured
+motor,2025 broker portfolio (test),68823,60719,759.9,27.6,0.264,0.882,5.69,
+motor,2025 renewals (test),21698,18288,567.1,16.1,0.265,0.843,7.17,
+motor,Emerging new business 2023–24,6535,3040,787.1,28.5,0.268,0.465,5.45,
+motor,Emerging renewals 2023–24,40748,35929,607.0,18.5,0.266,0.882,6.51,
+buildings,2025 broker portfolio (test),39716,36367,580.1,27.5,0.262,0.916,,250355.0
+buildings,2025 renewals (test),12579,11010,537.6,15.7,0.273,0.875,,250728.0
+buildings,Emerging new business 2023–24,3786,1810,587.5,27.8,0.263,0.478,,242560.0
+buildings,Emerging renewals 2023–24,23661,21658,524.8,18.7,0.269,0.915,,238981.0
+contents,2025 broker portfolio (test),50441,45454,119.7,27.4,0.265,0.901,,41106.0
+contents,2025 renewals (test),15806,13562,111.5,16.1,0.276,0.858,,41673.0
+contents,Emerging new business 2023–24,4716,2233,116.8,28.8,0.27,0.474,,41281.0
+contents,Emerging renewals 2023–24,29850,26825,107.8,18.9,0.275,0.899,,40405.0

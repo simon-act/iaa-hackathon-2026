@@ -1,0 +1,9 @@
+loop,part,what_it_could_change,how_it_was_judged,outcome
+Part 1 · main model (direct GBM),Part 1,"one file: features, parameters, bagging of a direct Tweedie GBM",frozen judge: both validation years; kept only if the worse year improves,its iteration-73 model is the boosting partner in the final blend (weights 0.1 / 0.4 / 0.2 by line)
+Part 1 · frequency per peril,Part 1,frequency model of each peril,same,nothing beat the actuary's additive model: confirms the structure
+Part 1 · boosting partner,Part 1,a second GBM to blend,same,no gain: the partner was already as good as it gets
+Part 1 · severity,Part 1,severity models per peril,same,"one gain, below noise on the row score"
+Part 1 · residual corrections,Part 1,corrections on the blend's residuals,same,found the vehicle-value residual; too small to act on
+Part 1 · claim history,Part 1,experience-rating variants,same,no gain over the actuary's experience rating
+Part 2 · emerging-market corrections,Part 2,corrections on top of the Part 1 prior,frozen judge on 2023 → 2024,running; kept ideas go to the seven-check bench
+Code review,Part 1 → 2,"reads the pipeline, raises findings, then tries to refute them",manual check by Claude and the actuary,4 robustness fixes that the Part 2 market needed

@@ -1,0 +1,7 @@
+judge,what_it_scores,good_at,weakness,used_for
+Official,"Kaggle-like target: ultimate cost at the 2025 level, IBNR spread over every row by exposure, large losses capped and loaded",imitates the leaderboard,spreading IBNR uniformly rewards flatter predictions (22% of the 2024 motor target sits on rows regardless of claims),level and blend weights
+Own,reported claims only; the prediction is multiplied by each row's completeness π instead of adding IBNR to the target,the shape: which rows are riskier,noisier on the youngest year,shape of the model (it decides when the judges disagree)
+True large losses,as official but with each row's actual large-loss excess instead of a flat load,allocation of large losses,dominated by a few dozen claims,large-loss load and its allocation
+Frozen holdout,"10% of policies never used for fitting or choosing, scored once on 2024",a final out-of-sample check,"one draw, small",tie-breaks between finalists
+Paired bootstrap,"400 resamples of policies, difference between two candidates on the same rows",whether a gain is larger than noise,,probability that a change helps
+Public leaderboard,"one third of the test, scored by Kaggle",a final sanity check,gaps below 0.0005 were coin flips on the private board,never optimised

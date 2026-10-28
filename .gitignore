@@ -34,3 +34,4 @@ results_p2/*.parquet
 results_p2/office_premium_reference*.csv
 results_p2_llc/
 results_p2_llp/
+.dash_push/

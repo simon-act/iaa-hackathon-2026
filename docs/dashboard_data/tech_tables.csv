@@ -1,0 +1,25 @@
+market,table,rows,columns,years,grain,joins_on
+Part 1 (developed),addresses,575983,16,,one row per address,address_id
+Part 1 (developed),claims,163150,12,2020–2024,one row per claim,policy_id + loss date → policy row
+Part 1 (developed),customers,545240,18,,one row per customer,customer_id
+Part 1 (developed),policies_buildings,707726,27,2021–2024,one row per policy per year,row_id / policy_id / customer_id / address_id
+Part 1 (developed),policies_contents,721617,28,2021–2024,one row per policy per year,row_id / policy_id / customer_id / address_id
+Part 1 (developed),policies_motor,979968,39,2021–2024,one row per policy per year,row_id / policy_id / customer_id / address_id
+Part 1 (developed),sample_submission,626639,2,,submission template,row_id
+Part 1 (developed),test_buildings,184155,26,2025–2025,2025 rows to price,row_id / policy_id / customer_id / address_id
+Part 1 (developed),test_contents,187498,27,2025–2025,2025 rows to price,row_id / policy_id / customer_id / address_id
+Part 1 (developed),test_motor,254986,38,2025–2025,2025 rows to price,row_id / policy_id / customer_id / address_id
+Part 1 (developed),weather,2879915,9,2021–2025,one row per address per year,address_id + year
+Part 2 (emerging),addresses,136914,16,,one row per address,address_id
+Part 2 (emerging),claims,9258,12,2021–2024,one row per claim,policy_id + loss date → policy row
+Part 2 (emerging),customers,135856,17,,one row per customer,customer_id
+Part 2 (emerging),expenses,8,4,,expense assumptions (Part 2 only),—
+Part 2 (emerging),policies_buildings,27447,27,2023–2024,one row per policy per year,row_id / policy_id / customer_id / address_id
+Part 2 (emerging),policies_contents,34566,28,2023–2024,one row per policy per year,row_id / policy_id / customer_id / address_id
+Part 2 (emerging),policies_motor,47283,36,2023–2024,one row per policy per year,row_id / policy_id / customer_id / address_id
+Part 2 (emerging),reference_policies,20,50,2025–2025,20 policies to quote an office premium (Part 2 only),—
+Part 2 (emerging),sample_submission,209063,2,,submission template,row_id
+Part 2 (emerging),test_buildings,52295,26,2025–2025,2025 rows to price,row_id / policy_id / customer_id / address_id
+Part 2 (emerging),test_contents,66247,27,2025–2025,2025 rows to price,row_id / policy_id / customer_id / address_id
+Part 2 (emerging),test_motor,90521,35,2025–2025,2025 rows to price,row_id / policy_id / customer_id / address_id
+Part 2 (emerging),weather,410742,9,2023–2025,one row per address per year,address_id + year

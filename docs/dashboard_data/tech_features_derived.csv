@@ -1,0 +1,9 @@
+feature,built_from,why
+"customer_age, licence_age","date_of_birth, years_licensed",age at the start of the row
+building_age,year_built,age at the start of the row
+si_per_bedroom,"sum_insured, bedrooms","compares homes of different size; exposed the 1,000× unit error"
+relative deductible,"voluntary + compulsory excess, vehicle value / sum insured",the deductible acts on frequency and fades with the insured value
+"pol_prev_rate, pol_prev_cost_rate",claims of the same policy in earlier years,"experience rating input (rates per year of history, not counts)"
+"addr_prev_rate, addr_n_customers","claims at the same address, all lines and customers","address history; small gain, kept"
+cust_n_lines,policies of the same customer,multi-line customers
+completeness π,reporting-delay curve per peril,offset: share of the row's claims already reported at 31/12/2024

@@ -4,34 +4,47 @@ Claim cost pricing for a motor + home (buildings, contents) portfolio, in two ma
 (risk premium) of every policy row. Kaggle: *IAA AI Assisted Hackathon 2026* Part 1 (developed market, 2021–24) and
 Part 2 (emerging market, 2023–24). Metric: Tweedie deviance D², p = 1.5.
 
-## Results
+## Final submissions
 
-| | Submission | Public LB | Private LB (final) |
+| | Submission | What it is | md5 |
 |---|---|---|---|
-| Part 1 — developed | `sub_51` (selected) | 0.12926 | **0.13875 — 2nd of 51 teams** |
-| Part 1 — best of ours on private | `sub_26` (frequency × severity only) | 0.12916 | 0.13932 |
-| Part 2 — emerging | `p2_sub_01` (Part 1 model as prior × emerging level × gender) | **0.16176** (1st at 24/10; next team 0.11166) | — |
+| Part 1 — developed | `sub_51` | frequency × severity per peril + experience rating (motor k = 16) + Qwen GBM, blended per line | `1f3c985a9506` |
+| Part 2 — emerging | `p2_sub_21_auto_prem_costo` | Part 1 model as prior × emerging level × corrections the emerging data support | `c126730083a5` |
 
-Lesson from the Part 1 private leaderboard (`results_s3/subs_private_p1.csv`): the public third rewarded fine choices that
-did not hold on the private two thirds (blend with the GBM, level probes); the plain structural model was the most robust.
-Part 2 therefore keeps the structure and lets the new data set only what they can support.
+Both files are rebuilt from the code with identical md5 (sub_51 on 21/10, p2_sub_21 on 28/10).
+Lesson from Part 1: fine choices made late, on small internal gains, did not hold out of sample; the plain structural model
+was the most robust. Part 2 therefore keeps the structure and lets the new data set only what they can support.
 
-## Part 2 — the emerging market (`docs/30_parte2.md`, `configs/parte2.json`)
+## Part 2 — the emerging market (`docs/30_parte2.md`, `configs/parte2.json`, `configs/parte2_llc.json`)
 
 ```bash
-./run_all.sh configs/parte2.json                                                          # same pipeline, one config file
+./run_all.sh configs/parte2.json                                                     # same pipeline, one config file
 IAA_MARKET=configs/parte1_s3.json python3 scripts/p2_export.py configs/parte2.json motor,buildings,contents   # prior
-IAA_MARKET=configs/parte2.json python3 scripts/p2_final.py p2_sub_01_prior_genere         # submission
-IAA_MARKET=configs/parte2.json python3 scripts/p2_office_premium.py submissions_p2/p2_sub_01_prior_genere.csv
+./run_all.sh configs/parte2_llc.json                  # after copying results_p2/source_pred_*.parquet to results_p2_llc/
+IAA_MARKET=configs/parte1_s3.json python3 scripts/p2_export_p1.py buildings v2 configs/parte2_llc.json   # home priors
+IAA_MARKET=configs/parte1_s3.json python3 scripts/p2_export_p1.py contents v2 configs/parte2_llc.json
+IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_final.py p2_sub_20_prior_p1v2_casa --spec v13       # md5 cfedcffc39a7
+IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_sub_varianti_auto.py premcost p2_sub_21_auto_prem_costo   # final
+IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_office_premium.py submissions_p2/p2_sub_21_auto_prem_costo.csv
+# -> results_p2_llc/office_premium_reference.csv (kept as results_p2/office_premium_reference_sub21.csv)
 ```
 - Automated audit of what changed (`src/audit_new_market.py` → `docs/30_parte2_audit_auto.md`).
 - Reporting delays identical to the developed market per peril → delays, late-claim severity, IBNER by age and trends
-  borrowed from the developed market (`src/develop.py`, `src/trend.py`, options in the config).
-- Prior = Part 1 frequency × severity fitted on the developed market with the shared columns (`src/transfer.py`);
-  emerging data set the level; one correction passes all judges: gender (absent in the developed market).
-- Checks: internal fold (fit 2023 → score 2024), simulation of a small, different market inside the developed data
-  (`scripts/p2_sim.py`: prior beats new-data-only in 16/18 cases), leaderboard probes for new business and level (diagnostic only).
-- Office premium for the 20 reference policies: `results_p2/office_premium_reference.csv`.
+  borrowed from the developed market (`src/develop.py`, `src/trend.py`, options in the config); large-loss load rescaled
+  by the emerging frequency of large claims.
+- Prior = Part 1 frequency × severity fitted on the developed market with the shared columns (`src/transfer.py`;
+  for buildings and contents the Part 1 variant with relative premium, `scripts/p2_export_p1.py`). The emerging data set
+  the level per line (and per peril with credibility in buildings and contents) and the corrections that pass the bench:
+  gender, new business, fuel and cover type at half weight, relative premium and a Poisson boost on claim counts (motor),
+  storm level (buildings), working from home (contents).
+- The insurer's premium: excluded in Part 1 (pricing on the current tariff would be circular); in Part 2 its relative
+  index (log premium net of discount minus the year median) enters only the motor correction, as the carrier of local
+  rating information the emerging data lack (no credit band, mileage, telematics). It sets the slope, not the level.
+- Checks: seven-check bench with a rule fixed in advance (`scripts/p2_bench*.py`, ≥ 5/7 on shape and own judge), then a
+  stricter bench on the final pieces (fit one year, score the other, disjoint customers: `scripts/p2_bench27.py`);
+  simulation of a small, different market inside the developed data (`scripts/p2_sim.py`: prior wins 16/18).
+- Office premium for the 20 reference policies: `results_p2/office_premium_reference_sub21.csv`
+  (sensitivities in `results_p2/office_premium_sensitivity_sub21.csv`).
 
 ## Part 1 — how to reproduce
 

@@ -1,0 +1,21 @@
+market,status,issue,train_rows,test_rows,evidence,action
+Part 1,applied,Exposure written in days or on a 360-day year,13796,0,declared exposure 2.66m years vs 1.97m from the dates (+35%),"recomputed from dates; motor D² fell from 0.154 to 0.112 (2024 fold) without it, the largest single fix"
+Part 1,applied,"Sum insured 1,000× too large",2797,730,two clusters three orders of magnitude apart in sum insured per bedroom; nothing in between,"divided by 1,000 (train and test)"
+Part 1,applied,Customer code lost its leading zeros,98110,25554,1 motor code in 10 did not join its customer,"zero-padded; rows recover age, credit band, prior claims"
+Part 1,applied,Exact duplicate claims,598,0,"same policy, date, peril, amounts and report date; only the claim id differs",one copy kept
+Part 1,applied,Repudiated claims,1711,0,zero incurred; excluded by the target definition,removed
+Part 1,applied,"Claims in 2020, before any policy",270,0,no policy row covers them,removed
+Part 1,applied,Claims before policy inception,139,0,"median gap of months, not a date typo",removed
+Part 1,applied,Construction codes W and T,85556,22261,undocumented; same frequency; the test has only W,both mapped to timber
+Part 1,flagged only,NCB years above years licensed,127041,34781,cannot tell which value is wrong,flagged only; the model sees both
+Part 1,applied,Labels written in several cases; empty text values,,,the same level written as Brick / brick; blanks in categorical columns,cases merged; blanks become an explicit 'missing' level the model can price
+Part 1,"applied, then reversed",Annual mileage = 0,11928,3108,"first treated as missing; the data showed zero-mileage rows have the frequency of rows under 5,000 km, and lumping them with true blanks gave A/E errors both ways",kept as a real value in the final model (fs2_v2_cred)
+Part 1,"tested, not adopted",Loss dates shifted by about a year,836,,"409 claims outside every policy row; short-tail delays have a gap between 180 and 365 days, then a cluster at 365–730","date = report date − median delay of the peril (config parte1_v3, sub_17); no gain on the judges or the board, so the final pipeline does not use it"
+Part 1,flagged only,Years licensed above age − 16,2962,755,cannot tell which value is wrong,flagged; the model sees both
+Part 2,applied,Exposure written in days or on a 360-day year,590,0,declared exposure 127k years vs 91k from the dates,same rule as Part 1
+Part 2,applied,"Sum insured 1,000× too large",110,239,same defect as Part 1,"divided by 1,000"
+Part 2,applied,Repudiated claims,120,0,zero incurred,removed
+Part 2,applied,Claims before 2023 or before inception,36,0,no policy row covers them,removed
+Part 2,applied,Local construction codes,,,brk / stn / wod / mix instead of the Part 1 labels,mapped to brick / stone / timber / non-standard (configuration file)
+Part 2,applied,Occupation as free text,,,the same job written in several ways,normalised to the Part 1 categories
+Part 2,applied,Ages only in bands,,,driver and policyholder ages given as bands,Part 1 ages grouped into the same bands so the prior can be refitted on common columns

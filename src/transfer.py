@@ -310,3 +310,80 @@ def src_glm2(train, valid, line):
         return src_glm(train, valid, line)
     finally:
         CORRECTION_VARS = old
+
+
+# ----------------------------------------------------------------- 26/10: livello proprio solo per alcuni perili
+def peril_own_override(train, valid, line, own, k_freq=100.0, k_sev=200.0):
+    """Prior × (1 + Σ_{p in own} quota_p × (r_p − 1)), r_p = (a_p·b_p)/(a_linea·b_linea) di src_peril (credibilità k verso la
+    linea, stimata solo su train). Gli altri perili restano al livello della linea. Restituisce (override per _PRIOR_OVERRIDE, r).
+    Banco: scripts/p2_bench10.py (fabbricato storm k=100/200 passa 5/7, auto glass+TPP no)."""
+    src_peril(train, train, line, correct=False, k_freq=k_freq, k_sev=k_sev)
+    lg = src_peril.last_log
+    r = {p: v["a"] * v["b"] / (lg["a_line"] * lg["b_line"]) for p, v in lg["perils"].items()}
+
+    def adj(df):
+        s = _prior_parts(df, line)
+        m = np.ones(len(df))
+        for p in own:
+            m += s[f"f_{p}"].to_numpy() * s[f"s_{p}"].to_numpy() / s["mu_src"].to_numpy() * (r[p] - 1)
+        return s["mu_src"].to_numpy() * m
+    ids = np.r_[train.row_id.to_numpy(), valid.row_id.to_numpy()]
+    return pd.DataFrame({"mu_src": np.r_[adj(train), adj(valid)]}, index=ids), r, lg
+
+
+# ----------------------------------------------------------------- 27/10: correzione stimata sulla frequenza
+def _exp_count(df, line):
+    dev, _, _ = M._tables(); dl = dev[dev["line"] == line]
+    s = _prior_parts(df, line); yrs = df["year"].to_numpy(); e = np.zeros(len(df)); n = np.zeros(len(df))
+    for p in [c[2:] for c in s.columns if c.startswith("f_")]:
+        d = dl[dl["peril"] == p]
+        if d.empty or f"n_{p}" not in df:
+            continue
+        ft = float(d["freq_trend"].iloc[0])
+        e += s[f"f_{p}"].to_numpy() * np.clip(df[f"pi_{p}"].to_numpy(), 1e-3, None) * (1 + ft) ** (-(2025 - yrs))
+        n += df[f"n_{p}"].to_numpy(float)
+    return n, e
+
+
+def freq_correction(train, valid, line, vars_):
+    """GLM Poisson (ridge) sul numero di sinistri con offset = numero atteso dal prior (Σ f_p × pi_p × deflattore); restituisce
+    il fattore per le righe di valid, a media 1 (pesata sul numero atteso) nel train. Da applicare al costo. Banco: p2_bench13."""
+    from glum import GeneralizedLinearRegressor
+    n, e = _exp_count(train, line); e = np.clip(e, 1e-6, None)
+    Xtr, Xva = _bins(train, valid, vars_)
+    h = pd.util.hash_array(train["policy_id"].to_numpy()) % 10 == 3
+    best = (-np.inf, None)
+    for a in [0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1.0]:
+        g = GeneralizedLinearRegressor(family="poisson", link="log", alpha=a, l1_ratio=0.0, max_iter=300)
+        g.fit(Xtr[~h], n[~h] / e[~h], sample_weight=e[~h])
+        mu = g.predict(Xtr[h]) * e[h]
+        ll = float(np.sum(n[h] * np.log(np.clip(mu, 1e-12, None)) - mu))
+        if ll > best[0]:
+            best = (ll, a)
+    g = GeneralizedLinearRegressor(family="poisson", link="log", alpha=best[1], l1_ratio=0.0, max_iter=300).fit(Xtr, n / e, sample_weight=e)
+    freq_correction.last = dict(alpha=best[1], coef=dict(zip(g.feature_names_, np.round(g.coef_, 3))))
+    return g.predict(Xva) / np.average(g.predict(Xtr), weights=e)
+
+
+# ----------------------------------------------------------------- 27/10: GBM di correzione sul NUMERO di sinistri (banco p2_bench14)
+GBM_FREQ_PARAMS = dict(objective="poisson", learning_rate=0.03, num_leaves=4, min_data_in_leaf=500, lambda_l2=10.0,
+                       feature_fraction=0.8, bagging_fraction=0.8, bagging_freq=1, max_bin=63, max_cat_to_onehot=8, cat_smooth=50,
+                       min_data_per_group=300, verbose=-1, num_threads=4, seed=7)
+
+
+def gbm_freq_correction(train, valid, line, b_tr):
+    """Poisson sul numero di sinistri con init = log(numero atteso dal prior × correzione relativa già applicata, b_tr / prior),
+    alberi scelti con lgb.cv a 5 gruppi di polizze (early stopping 150). Restituisce il fattore per valid (media 1 sul train)."""
+    import lightgbm as lgb
+    feats = [c for c in M._features(train, line) if c in valid.columns] + (["fuel_type"] if line == "motor" else [])
+    Xtr, cats = M.to_frame(train, feats); Xva, _ = M.to_frame(valid, feats, cats)
+    grp = pd.util.hash_array(train["policy_id"].to_numpy()) % 5
+    n, e = _exp_count(train, line)
+    ee = np.clip(e * b_tr / _prior(train, line), 1e-6, None); ee *= n.sum() / ee.sum(); init = np.log(ee)
+    folds_ = [(np.where(grp != k)[0], np.where(grp == k)[0]) for k in range(5)]
+    r = lgb.cv(GBM_FREQ_PARAMS, lgb.Dataset(Xtr, label=n, init_score=init), num_boost_round=1500, folds=folds_,
+               callbacks=[lgb.early_stopping(150, verbose=False)], stratified=False)
+    nr = len(next(iter(r.values())))
+    m = lgb.train(GBM_FREQ_PARAMS, lgb.Dataset(Xtr, label=n, init_score=init), num_boost_round=nr)
+    gbm_freq_correction.last = dict(alberi=nr)
+    return np.exp(m.predict(Xva, raw_score=True)) / np.average(np.exp(m.predict(Xtr, raw_score=True)), weights=ee)

@@ -1,0 +1,5 @@
+component,pct_of_deviance,meaning
+Rating factors (the variables),12.7,what a model with the right variables can explain
+Claim history,0.2,"+0.002 on our folds, +0.004 in the test, through experience rating"
+Unseen policy risk,4.3,"each policy's own risk, invisible in the data (frailty φ ≈ 0.3)"
+Pure noise,82.8,which claims happen and how large they are; no model can predict it

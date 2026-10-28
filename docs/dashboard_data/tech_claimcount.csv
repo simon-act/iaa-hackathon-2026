@@ -1,0 +1,25 @@
+market,line,claims_per_row,share_pct
+Part 1,motor,0,89.99
+Part 1,motor,1,8.92
+Part 1,motor,2,0.946
+Part 1,motor,3+,0.144
+Part 1,buildings,0,96.417
+Part 1,buildings,1,3.462
+Part 1,buildings,2,0.115
+Part 1,buildings,3+,0.006
+Part 1,contents,0,96.824
+Part 1,contents,1,3.074
+Part 1,contents,2,0.099
+Part 1,contents,3+,0.003
+Part 2,motor,0,87.118
+Part 2,motor,1,11.154
+Part 2,motor,2,1.485
+Part 2,motor,3+,0.243
+Part 2,buildings,0,96.317
+Part 2,buildings,1,3.53
+Part 2,buildings,2,0.142
+Part 2,buildings,3+,0.011
+Part 2,contents,0,97.197
+Part 2,contents,1,2.719
+Part 2,contents,2,0.084
+Part 2,contents,3+,0.0

@@ -1,0 +1,7 @@
+change,official_2023_2024,own_2023_2024,true_ll_2023_2024,agreement,decision
+Motor credibility k = 8 → 16,+0.3 / +4.5,−0.3 / −2.8,+4.4 / −4.1,"official, holdout and public agree; own against","k = 16 adopted by the actuary (sub_51, final)"
+Relative deductible in the buildings GBM,+2.55 / +0.84,+2.34 / +1.16,+2.30 / +1.09,"all three judges, both years; beats four noise columns",kept (sub_48)
+Late-reported claims completed in motor history,+0.34 / +0.39,+0.23 / +0.15,+0.13 / +0.01,all judges positive for motor,kept for motor (sub_50)
+Late-reported claims completed in buildings history,−0.17 / −0.13,−0.17 / −0.13,−0.17 / −0.13,negative on all judges,rejected
+Contents flood severity: GLM + GBM mix,+1.05 / +0.24,+1.01 / +0.22,+1.17 / +0.36,"all judges positive; public −0.00007, within noise",kept internally (sub_41)
+Power calibration pred^b per line,positive in-year,positive in-year,,fitted on 2–3 year models; public −0.00035,rejected; rule against post-hoc transforms

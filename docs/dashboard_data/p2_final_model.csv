@@ -1,0 +1,11 @@
+line,step,what,kept_in
+all lines,1 · prior,Part 1 frequency × severity model refitted on the developed market with the variables both markets share,the basis of every submission
+all lines,2 · level,"line level estimated on the emerging 2023–24 data (ultimate with IBNR and IBNER, trended to 2025)",sub_01
+motor,3 · corrections,GLM on the prior: gender and new business; half of it also with fuel type and cover type,"sub_07, sub_16 (+9.6 / +7.6, 6/7)"
+motor,4 · claim-count boosting,"Poisson boosting on the number of claims on top, trees chosen by 5-fold cross-validation","sub_18 (+8.9 / +6.3, 5/7)"
+motor,5 · insurer's premium,relative premium (log premium net of discount minus the year median) in both halves of the GLM and in the claim-count boosting,"sub_21 (vs no premium +47.1 / +32.2 on the stricter bench, 6/6 · 5/6)"
+buildings,3 · prior,prior from the best Part 1 model on the private board (frequency × severity with the relative premium),"sub_20 (+7.5 / +6.8, 5/7)"
+buildings,4 · storm,"storm at its own credibility-weighted level, other perils at the line level","sub_14 (+0.9 / +0.7, 5/7; neutral on the stricter bench)"
+buildings,5 · emerging-only model,10% of a model fitted on the emerging data alone,"sub_01 (+22.0 / +16.3, 5/7)"
+contents,3 · prior,prior from the best Part 1 model on the private board,"sub_20 (+6.4 / +5.9, 5/7)"
+contents,4 · levels and corrections,"levels by peril with credibility; gender; working from home, fitted on claim counts","sub_09, sub_17 (+5.8 / +5.1, 6/7)"

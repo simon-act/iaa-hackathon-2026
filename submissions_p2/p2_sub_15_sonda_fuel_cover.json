@@ -1,0 +1,18 @@
+{
+ "motor": {
+  "glm": "{'alpha': 0.01, 'coef': {'new_business[False]': np.float64(-0.093), 'new_business[True]': np.float64(0.093), 'gender[F]': np.float64(-0.098), 'gender[M]': np.float64(0.098), 'fuel_type[diesel]': np.float64(0.072), 'fuel_type[electric]': np.float64(-0.115), 'fuel_type[hybrid]': np.float64(0.119), 'fuel_type[petrol]': np.float64(-0.076), 'cover_type[comprehensive]': np.float64(0.047), 'cover_type[third_party_fire_theft]': np.float64(-0.096), 'cover_type[third_party_only]': np.float64(0.049)}, 'intercept': -0.188}",
+  "tasso": 654.7081466148153,
+  "target_train_tasso": 497.3288036281016
+ },
+ "buildings": {
+  "k": 0.8564920103854932,
+  "tasso": 488.3917781410559,
+  "target_train_tasso": 453.6149913989569
+ },
+ "contents": {
+  "glm": "{'alpha': 1.0, 'coef': {'gender[F]': np.float64(0.042), 'gender[M]': np.float64(-0.042)}, 'intercept': -0.004}",
+  "livelli_perilo": "{'perils': {'accidental_damage': {'a': 0.833, 'b': 0.82, 'n': 335, 'z_f': 0.77, 'z_s': 0.63}, 'escape_of_water': {'a': 0.931, 'b': 0.828, 'n': 171, 'z_f': 0.63, 'z_s': 0.46}, 'flood': {'a': 1.003, 'b': 0.869, 'n': 86, 'z_f': 0.46, 'z_s': 0.3}, 'theft': {'a': 1.164, 'b': 0.839, 'n': 406, 'z_f': 0.8, 'z_s': 0.67}}, 'a_line': 0.97, 'b_line': 0.85, 'c': 1.04}",
+  "tasso": 106.37344376453183,
+  "target_train_tasso": 97.96427882093903
+ }
+}

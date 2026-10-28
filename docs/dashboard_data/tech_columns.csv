@@ -1,0 +1,154 @@
+table,column,kind,missing_pct,levels,status,reason,severity_driver,in_part1,in_part2
+addresses,address_id,category,0.0,575983,key,join key only,,yes,yes
+addresses,region,category,0.0,12,used,allowed feature; frequency per peril and boosting model,yes,yes,yes
+addresses,urban_density,category,0.0,4,used,allowed feature; frequency per peril and boosting model,yes,yes,yes
+addresses,flood_zone,number,2.92,5,used,allowed feature; frequency per peril and boosting model,,yes,yes
+addresses,distance_to_river_km,number,2.5,2093,used,allowed feature; frequency per peril and boosting model,,yes,yes
+addresses,elevation_m,number,0.0,949,used,allowed feature; frequency per peril and boosting model,,yes,yes
+addresses,soil_type,category,2.5,5,used,allowed feature; frequency per peril and boosting model,,yes,yes
+addresses,year_built,number,0.0,160,used (rebuilt),building age,,yes,yes
+addresses,property_type,category,0.0,4,used,allowed feature; frequency per peril and boosting model,yes,yes,yes
+addresses,roof_type,category,2.5,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+addresses,basement,number,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+addresses,trees_within_5m,number,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+addresses,listed_building,number,0.0,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+addresses,bedrooms,number,0.0,7,used,allowed feature; frequency per peril and boosting model,yes,yes,yes
+addresses,energy_rating,category,2.51,7,used,allowed feature; frequency per peril and boosting model,,yes,yes
+addresses,solar_panels,number,0.0,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+claims,claim_id,category,0.0,163150,key,join key only,,yes,yes
+claims,policy_id,category,0.0,125103,key,join key only,,yes,yes
+claims,line,category,0.0,3,target source,"builds the claim cost (net incurred, development, reporting delay)",,yes,yes
+claims,peril,category,0.0,11,target source,"builds the claim cost (net incurred, development, reporting delay)",,yes,yes
+claims,loss_date,category,0.0,1473,target source,"builds the claim cost (net incurred, development, reporting delay)",,yes,yes
+claims,report_date,category,0.0,1459,target source,"builds the claim cost (net incurred, development, reporting delay)",,yes,yes
+claims,status,category,0.0,3,target source,"builds the claim cost (net incurred, development, reporting delay)",,yes,yes
+claims,paid_to_date,number,0.0,139258,target source,"builds the claim cost (net incurred, development, reporting delay)",,yes,yes
+claims,incurred_to_date,number,0.0,141111,target source,"builds the claim cost (net incurred, development, reporting delay)",,yes,yes
+claims,recoveries,number,0.0,14464,target source,"builds the claim cost (net incurred, development, reporting delay)",,yes,yes
+claims,repairer_id,category,49.26,1000,key,join key only,,yes,yes
+claims,third_party_id,category,74.62,41163,key,join key only,,yes,yes
+customers,customer_id,category,0.0,545240,key,join key only,,yes,yes
+customers,surname,category,0.0,600,excluded,no risk logic; fairness,,yes,yes
+customers,date_of_birth,category,0.0,27380,used (rebuilt),customer age at the start of the row,,yes,no
+customers,occupation,category,2.47,20,used,allowed feature; frequency per peril and boosting model,,yes,yes
+customers,marital_status,category,2.52,4,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+customers,household_size,number,2.47,7,used,allowed feature; frequency per peril and boosting model,,yes,yes
+customers,credit_band,category,0.0,5,used,used in Part 1; absent in Part 2,,yes,no
+customers,prior_claims_5y,number,0.0,7,used,allowed feature; frequency per peril and boosting model,,yes,yes
+customers,licence_points,number,0.0,4,used,allowed feature; frequency per peril and boosting model,,yes,yes
+customers,years_at_address,number,2.51,55,used,allowed feature; frequency per peril and boosting model,,yes,yes
+customers,customer_since_year,number,0.0,20,used (rebuilt),customer tenure,,yes,yes
+customers,email_domain,category,0.0,5,excluded,no risk logic,,yes,yes
+customers,marketing_consent,number,0.0,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+customers,document_preference,category,0.0,3,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+customers,previous_insurer,category,0.0,40,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+customers,campaign_code,category,51.19,15,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+customers,branch_id,number,0.0,25,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+customers,marketing_segment,category,0.0,12,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_buildings,row_id,category,0.0,707726,key,join key only,,yes,yes
+policies_buildings,policy_id,category,0.0,230921,key,join key only,,yes,yes
+policies_buildings,customer_id,category,0.0,230921,key,join key only,,yes,yes
+policies_buildings,address_id,category,0.0,258068,key,join key only,,yes,yes
+policies_buildings,period_start,category,0.0,1456,used (rebuilt),exposure and calendar year of the row,,yes,yes
+policies_buildings,period_end,category,0.0,1456,used (rebuilt),exposure and calendar year of the row,,yes,yes
+policies_buildings,exposure,number,0.0,870,used (rebuilt),recomputed from dates (offset of every frequency model),,yes,yes
+policies_buildings,policyholder_age,number,0.0,75,used,allowed feature; frequency per peril and boosting model,,yes,no
+policies_buildings,sum_insured,number,0.0,1135,used (rebuilt),"kept, plus sum insured per bedroom",yes,yes,yes
+policies_buildings,construction_type,category,0.0,11,used,allowed feature; frequency per peril and boosting model,yes,yes,yes
+policies_buildings,occupancy,category,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,days_unoccupied,number,2.49,104,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,smoke_alarms,category,2.52,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_buildings,accidental_damage_cover,number,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,mortgage,number,0.0,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_buildings,voluntary_excess,number,0.0,4,used,"used, also through the relative deductible",,yes,yes
+policies_buildings,compulsory_excess,number,0.0,1,used,used through the relative deductible (deductible ÷ value),,yes,yes
+policies_buildings,channel,category,0.0,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,payment_method,category,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,missed_payments_12m,number,0.0,8,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,new_business,number,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,renewal_count,number,0.0,19,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,days_quote_to_inception,number,0.0,31,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,discount_applied,number,0.0,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_buildings,written_premium,number,0.0,104995,excluded,circular: today's tariff; used only as a benchmark and for the office premium,,yes,yes
+policies_buildings,customer_service_contacts,number,0.0,18,excluded: leakage,leakage: contacts are generated by the claims themselves (0 contacts → claim frequency 0.03%); used only to complete late-reported claims in the policy history,,yes,yes
+policies_buildings,renewal_decision,category,0.0,5,excluded: leakage,"leakage: decided after the period, absent from the test",,yes,yes
+policies_contents,row_id,category,0.0,721617,key,join key only,,yes,yes
+policies_contents,policy_id,category,0.0,231255,key,join key only,,yes,yes
+policies_contents,customer_id,category,0.0,231255,key,join key only,,yes,yes
+policies_contents,address_id,category,0.0,257529,key,join key only,,yes,yes
+policies_contents,period_start,category,0.0,1456,used (rebuilt),exposure and calendar year of the row,,yes,yes
+policies_contents,period_end,category,0.0,1456,used (rebuilt),exposure and calendar year of the row,,yes,yes
+policies_contents,exposure,number,0.0,892,used (rebuilt),recomputed from dates (offset of every frequency model),,yes,yes
+policies_contents,policyholder_age,number,0.0,75,used,allowed feature; frequency per peril and boosting model,,yes,no
+policies_contents,sum_insured,number,0.0,2569,used (rebuilt),"kept, plus sum insured per bedroom",yes,yes,yes
+policies_contents,tenure,category,0.0,2,used,allowed feature; frequency per peril and boosting model,yes,yes,yes
+policies_contents,security_level,category,2.51,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,high_value_items,number,2.51,6,used,allowed feature; frequency per peril and boosting model,yes,yes,yes
+policies_contents,accidental_damage_cover,number,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,works_from_home,number,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,lodgers,number,0.0,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_contents,bicycle_cover,number,0.0,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_contents,voluntary_excess,number,0.0,4,used,"used, also through the relative deductible",,yes,yes
+policies_contents,compulsory_excess,number,0.0,1,used,used through the relative deductible (deductible ÷ value),,yes,yes
+policies_contents,channel,category,0.0,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,payment_method,category,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,missed_payments_12m,number,0.0,8,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,new_business,number,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,renewal_count,number,0.0,19,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,days_quote_to_inception,number,0.0,31,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,discount_applied,number,0.0,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_contents,written_premium,number,0.0,31964,excluded,circular: today's tariff; used only as a benchmark and for the office premium,,yes,yes
+policies_contents,customer_service_contacts,number,0.0,18,excluded: leakage,leakage: contacts are generated by the claims themselves (0 contacts → claim frequency 0.03%); used only to complete late-reported claims in the policy history,,yes,yes
+policies_contents,renewal_decision,category,0.0,5,excluded: leakage,"leakage: decided after the period, absent from the test",,yes,yes
+policies_motor,row_id,category,0.0,979968,key,join key only,,yes,yes
+policies_motor,policy_id,category,0.0,308109,key,join key only,,yes,yes
+policies_motor,customer_id,category,0.0,308109,key,join key only,,yes,yes
+policies_motor,address_id,category,0.0,309499,key,join key only,,yes,yes
+policies_motor,period_start,category,0.0,1456,used (rebuilt),exposure and calendar year of the row,,yes,yes
+policies_motor,period_end,category,0.0,1456,used (rebuilt),exposure and calendar year of the row,,yes,yes
+policies_motor,exposure,number,0.0,956,used (rebuilt),recomputed from dates (offset of every frequency model),,yes,yes
+policies_motor,driver_age,number,0.0,75,used,allowed feature; frequency per peril and boosting model,,yes,no
+policies_motor,years_licensed,number,0.0,88,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,ncb_years,number,0.0,16,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,vehicle_value_group,number,0.0,20,used,allowed feature; frequency per peril and boosting model,yes,yes,yes
+policies_motor,vehicle_age,number,2.49,29,used,allowed feature; frequency per peril and boosting model,yes,yes,yes
+policies_motor,make_model,category,0.0,300,used,"used for severity in the frequency × severity model; dropped from the boosting model (thousands of levels, overfits)",yes,yes,yes
+policies_motor,engine_size_cc,number,2.52,31,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_motor,body_type,category,0.0,5,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_motor,transmission,category,0.0,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_motor,seats,number,0.0,4,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_motor,vehicle_colour,category,0.0,8,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_motor,fuel_type,category,0.0,4,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_motor,driver_assist,number,0.0,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,yes
+policies_motor,cover_type,category,0.0,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,annual_mileage,number,2.52,497,used,used in Part 1 (zero kept: it behaves like low mileage); absent in Part 2,,yes,no
+policies_motor,overnight_parking,category,2.49,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,vehicle_use,category,0.0,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,named_young_driver,number,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,telematics_opt_in,number,0.0,2,excluded: decoy,"tested: no effect on frequency or severity once the true drivers are in (dgp.py), and no residual pattern",,yes,no
+policies_motor,telematics_score,number,87.58,98,used,used in Part 1; absent in Part 2,,yes,no
+policies_motor,voluntary_excess,number,0.0,4,used,"used, also through the relative deductible",,yes,yes
+policies_motor,compulsory_excess,number,0.0,1,used,used through the relative deductible (deductible ÷ value),,yes,yes
+policies_motor,channel,category,0.0,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,payment_method,category,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,missed_payments_12m,number,0.0,8,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,new_business,number,0.0,2,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,renewal_count,number,0.0,19,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,days_quote_to_inception,number,0.0,31,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,discount_applied,number,0.0,3,used,allowed feature; frequency per peril and boosting model,,yes,yes
+policies_motor,written_premium,number,0.0,122304,excluded,circular: today's tariff; used only as a benchmark and for the office premium,,yes,yes
+policies_motor,customer_service_contacts,number,0.0,31,excluded: leakage,leakage: contacts are generated by the claims themselves (0 contacts → claim frequency 0.03%); used only to complete late-reported claims in the policy history,,yes,yes
+policies_motor,renewal_decision,category,0.0,5,excluded: leakage,"leakage: decided after the period, absent from the test",,yes,yes
+weather,address_id,category,0.0,575983,key,join key only,,yes,yes
+weather,year,number,0.0,5,key,join key only,,yes,yes
+weather,hail_days,number,0.0,42,used,"joined by address and year; drives the weather perils (flood, storm, freezing, subsidence, wildfire)",,yes,yes
+weather,wind_exposure_index,number,0.0,101,used,"joined by address and year; drives the weather perils (flood, storm, freezing, subsidence, wildfire)",,yes,yes
+weather,freezing_days,number,0.0,109,used,"joined by address and year; drives the weather perils (flood, storm, freezing, subsidence, wildfire)",,yes,yes
+weather,dry_summer_index,number,0.0,1001,used,"joined by address and year; drives the weather perils (flood, storm, freezing, subsidence, wildfire)",,yes,yes
+weather,wildfire_index,number,0.0,641,used,"joined by address and year; drives the weather perils (flood, storm, freezing, subsidence, wildfire)",,yes,yes
+weather,rainfall_mm,number,0.0,1967,used,"joined by address and year; drives the weather perils (flood, storm, freezing, subsidence, wildfire)",,yes,yes
+weather,mean_temperature_c,number,0.0,162,used,"joined by address and year; drives the weather perils (flood, storm, freezing, subsidence, wildfire)",,yes,yes
+customers,gender,category,0.0,2,used,Part 2 only: used as a credibility-weighted correction,,no,yes
+policies_buildings,policyholder_age_band,category,0.0,5,used (rebuilt),age bands harmonised with Part 1,,no,yes
+policies_contents,policyholder_age_band,category,0.0,5,used (rebuilt),age bands harmonised with Part 1,,no,yes
+policies_motor,driver_age_band,category,0.0,5,used (rebuilt),age bands harmonised with Part 1,,no,yes

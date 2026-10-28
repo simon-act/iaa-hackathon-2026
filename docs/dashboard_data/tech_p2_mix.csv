@@ -1,0 +1,717 @@
+line,variable,cls,group,share_pct
+motor,age_band,17-24,2025 broker portfolio (test),27.79
+motor,age_band,25-34,2025 broker portfolio (test),25.81
+motor,age_band,35-49,2025 broker portfolio (test),12.19
+motor,age_band,50-64,2025 broker portfolio (test),12.26
+motor,age_band,65+,2025 broker portfolio (test),21.95
+motor,age_band,17-24,2025 renewals (test),16.09
+motor,age_band,25-34,2025 renewals (test),23.13
+motor,age_band,35-49,2025 renewals (test),15.86
+motor,age_band,50-64,2025 renewals (test),16.08
+motor,age_band,65+,2025 renewals (test),28.84
+motor,age_band,17-24,Developed 2021–24,13.29
+motor,age_band,25-34,Developed 2021–24,16.8
+motor,age_band,35-49,Developed 2021–24,19.16
+motor,age_band,50-64,Developed 2021–24,19.32
+motor,age_band,65+,Developed 2021–24,31.43
+motor,age_band,17-24,Emerging new business 2023–24,29.55
+motor,age_band,25-34,Emerging new business 2023–24,25.64
+motor,age_band,35-49,Emerging new business 2023–24,11.64
+motor,age_band,50-64,Emerging new business 2023–24,11.91
+motor,age_band,65+,Emerging new business 2023–24,21.26
+motor,age_band,17-24,Emerging renewals 2023–24,18.72
+motor,age_band,25-34,Emerging renewals 2023–24,18.08
+motor,age_band,35-49,Emerging renewals 2023–24,16.84
+motor,age_band,50-64,Emerging renewals 2023–24,17.23
+motor,age_band,65+,Emerging renewals 2023–24,29.12
+motor,ncb_years,"(-0.001, 1.0]",2025 broker portfolio (test),27.53
+motor,ncb_years,"(1.0, 3.0]",2025 broker portfolio (test),18.35
+motor,ncb_years,"(12.0, 15.0]",2025 broker portfolio (test),13.48
+motor,ncb_years,"(3.0, 8.0]",2025 broker portfolio (test),22.45
+motor,ncb_years,"(8.0, 12.0]",2025 broker portfolio (test),18.19
+motor,ncb_years,"(-0.001, 1.0]",2025 renewals (test),12.46
+motor,ncb_years,"(1.0, 3.0]",2025 renewals (test),20.16
+motor,ncb_years,"(12.0, 15.0]",2025 renewals (test),21.44
+motor,ncb_years,"(3.0, 8.0]",2025 renewals (test),26.97
+motor,ncb_years,"(8.0, 12.0]",2025 renewals (test),18.97
+motor,ncb_years,"(-0.001, 1.0]",Developed 2021–24,13.81
+motor,ncb_years,"(1.0, 3.0]",Developed 2021–24,16.72
+motor,ncb_years,"(12.0, 15.0]",Developed 2021–24,21.12
+motor,ncb_years,"(3.0, 8.0]",Developed 2021–24,27.39
+motor,ncb_years,"(8.0, 12.0]",Developed 2021–24,20.97
+motor,ncb_years,"(-0.001, 1.0]",Emerging new business 2023–24,28.88
+motor,ncb_years,"(1.0, 3.0]",Emerging new business 2023–24,19.84
+motor,ncb_years,"(12.0, 15.0]",Emerging new business 2023–24,12.48
+motor,ncb_years,"(3.0, 8.0]",Emerging new business 2023–24,21.45
+motor,ncb_years,"(8.0, 12.0]",Emerging new business 2023–24,17.35
+motor,ncb_years,"(-0.001, 1.0]",Emerging renewals 2023–24,20.27
+motor,ncb_years,"(1.0, 3.0]",Emerging renewals 2023–24,18.85
+motor,ncb_years,"(12.0, 15.0]",Emerging renewals 2023–24,17.11
+motor,ncb_years,"(3.0, 8.0]",Emerging renewals 2023–24,24.18
+motor,ncb_years,"(8.0, 12.0]",Emerging renewals 2023–24,19.59
+motor,cover_type,comprehensive,2025 broker portfolio (test),77.25
+motor,cover_type,third_party_fire_theft,2025 broker portfolio (test),11.36
+motor,cover_type,third_party_only,2025 broker portfolio (test),11.39
+motor,cover_type,comprehensive,2025 renewals (test),78.49
+motor,cover_type,third_party_fire_theft,2025 renewals (test),10.95
+motor,cover_type,third_party_only,2025 renewals (test),10.56
+motor,cover_type,comprehensive,Developed 2021–24,82.06
+motor,cover_type,third_party_fire_theft,Developed 2021–24,9.02
+motor,cover_type,third_party_only,Developed 2021–24,8.92
+motor,cover_type,comprehensive,Emerging new business 2023–24,76.04
+motor,cover_type,third_party_fire_theft,Emerging new business 2023–24,12.37
+motor,cover_type,third_party_only,Emerging new business 2023–24,11.6
+motor,cover_type,comprehensive,Emerging renewals 2023–24,79.17
+motor,cover_type,third_party_fire_theft,Emerging renewals 2023–24,10.74
+motor,cover_type,third_party_only,Emerging renewals 2023–24,10.09
+motor,vehicle_value_group,"(0.999, 8.0]",2025 broker portfolio (test),29.03
+motor,vehicle_value_group,"(10.0, 12.0]",2025 broker portfolio (test),19.17
+motor,vehicle_value_group,"(12.0, 14.0]",2025 broker portfolio (test),16.1
+motor,vehicle_value_group,"(14.0, 20.0]",2025 broker portfolio (test),16.58
+motor,vehicle_value_group,"(8.0, 10.0]",2025 broker portfolio (test),19.12
+motor,vehicle_value_group,"(0.999, 8.0]",2025 renewals (test),27.54
+motor,vehicle_value_group,"(10.0, 12.0]",2025 renewals (test),20.09
+motor,vehicle_value_group,"(12.0, 14.0]",2025 renewals (test),16.62
+motor,vehicle_value_group,"(14.0, 20.0]",2025 renewals (test),17.35
+motor,vehicle_value_group,"(8.0, 10.0]",2025 renewals (test),18.4
+motor,vehicle_value_group,"(0.999, 8.0]",Developed 2021–24,25.51
+motor,vehicle_value_group,"(10.0, 12.0]",Developed 2021–24,19.87
+motor,vehicle_value_group,"(12.0, 14.0]",Developed 2021–24,17.14
+motor,vehicle_value_group,"(14.0, 20.0]",Developed 2021–24,18.7
+motor,vehicle_value_group,"(8.0, 10.0]",Developed 2021–24,18.78
+motor,vehicle_value_group,"(0.999, 8.0]",Emerging new business 2023–24,30.28
+motor,vehicle_value_group,"(10.0, 12.0]",Emerging new business 2023–24,19.37
+motor,vehicle_value_group,"(12.0, 14.0]",Emerging new business 2023–24,15.6
+motor,vehicle_value_group,"(14.0, 20.0]",Emerging new business 2023–24,15.83
+motor,vehicle_value_group,"(8.0, 10.0]",Emerging new business 2023–24,18.93
+motor,vehicle_value_group,"(0.999, 8.0]",Emerging renewals 2023–24,26.74
+motor,vehicle_value_group,"(10.0, 12.0]",Emerging renewals 2023–24,20.17
+motor,vehicle_value_group,"(12.0, 14.0]",Emerging renewals 2023–24,16.89
+motor,vehicle_value_group,"(14.0, 20.0]",Emerging renewals 2023–24,17.97
+motor,vehicle_value_group,"(8.0, 10.0]",Emerging renewals 2023–24,18.23
+motor,vehicle_age,"(11.0, 13.0]",2025 broker portfolio (test),10.11
+motor,vehicle_age,"(13.0, 26.0]",2025 broker portfolio (test),16.1
+motor,vehicle_age,"(2.999, 7.0]",2025 broker portfolio (test),28.41
+motor,vehicle_age,"(7.0, 9.0]",2025 broker portfolio (test),18.2
+motor,vehicle_age,"(9.0, 11.0]",2025 broker portfolio (test),14.92
+motor,vehicle_age,"(11.0, 13.0]",2025 renewals (test),13.87
+motor,vehicle_age,"(13.0, 26.0]",2025 renewals (test),23.56
+motor,vehicle_age,"(2.999, 7.0]",2025 renewals (test),13.22
+motor,vehicle_age,"(7.0, 9.0]",2025 renewals (test),18.39
+motor,vehicle_age,"(9.0, 11.0]",2025 renewals (test),18.12
+motor,vehicle_age,"(11.0, 13.0]",Developed 2021–24,7.16
+motor,vehicle_age,"(13.0, 26.0]",Developed 2021–24,10.17
+motor,vehicle_age,"(2.999, 7.0]",Developed 2021–24,46.41
+motor,vehicle_age,"(7.0, 9.0]",Developed 2021–24,16.03
+motor,vehicle_age,"(9.0, 11.0]",Developed 2021–24,11.12
+motor,vehicle_age,"(11.0, 13.0]",Emerging new business 2023–24,10.55
+motor,vehicle_age,"(13.0, 26.0]",Emerging new business 2023–24,17.53
+motor,vehicle_age,"(2.999, 7.0]",Emerging new business 2023–24,26.97
+motor,vehicle_age,"(7.0, 9.0]",Emerging new business 2023–24,17.82
+motor,vehicle_age,"(9.0, 11.0]",Emerging new business 2023–24,15.16
+motor,vehicle_age,"(11.0, 13.0]",Emerging renewals 2023–24,11.22
+motor,vehicle_age,"(13.0, 26.0]",Emerging renewals 2023–24,17.23
+motor,vehicle_age,"(2.999, 7.0]",Emerging renewals 2023–24,25.86
+motor,vehicle_age,"(7.0, 9.0]",Emerging renewals 2023–24,18.59
+motor,vehicle_age,"(9.0, 11.0]",Emerging renewals 2023–24,15.27
+motor,urban_density,dense_urban,2025 broker portfolio (test),10.13
+motor,urban_density,rural,2025 broker portfolio (test),20.11
+motor,urban_density,suburban,2025 broker portfolio (test),45.07
+motor,urban_density,urban,2025 broker portfolio (test),24.69
+motor,urban_density,dense_urban,2025 renewals (test),9.92
+motor,urban_density,rural,2025 renewals (test),20.4
+motor,urban_density,suburban,2025 renewals (test),44.89
+motor,urban_density,urban,2025 renewals (test),24.78
+motor,urban_density,dense_urban,Developed 2021–24,10.06
+motor,urban_density,rural,Developed 2021–24,19.9
+motor,urban_density,suburban,Developed 2021–24,44.95
+motor,urban_density,urban,Developed 2021–24,25.09
+motor,urban_density,dense_urban,Emerging new business 2023–24,10.02
+motor,urban_density,rural,Emerging new business 2023–24,19.51
+motor,urban_density,suburban,Emerging new business 2023–24,45.4
+motor,urban_density,urban,Emerging new business 2023–24,25.08
+motor,urban_density,dense_urban,Emerging renewals 2023–24,10.0
+motor,urban_density,rural,Emerging renewals 2023–24,20.57
+motor,urban_density,suburban,Emerging renewals 2023–24,44.74
+motor,urban_density,urban,Emerging renewals 2023–24,24.69
+motor,vehicle_use,business,2025 broker portfolio (test),9.81
+motor,vehicle_use,commuting,2025 broker portfolio (test),45.14
+motor,vehicle_use,social,2025 broker portfolio (test),45.04
+motor,vehicle_use,business,2025 renewals (test),10.01
+motor,vehicle_use,commuting,2025 renewals (test),44.82
+motor,vehicle_use,social,2025 renewals (test),45.17
+motor,vehicle_use,business,Developed 2021–24,9.88
+motor,vehicle_use,commuting,Developed 2021–24,44.92
+motor,vehicle_use,social,Developed 2021–24,45.2
+motor,vehicle_use,business,Emerging new business 2023–24,9.78
+motor,vehicle_use,commuting,Emerging new business 2023–24,44.85
+motor,vehicle_use,social,Emerging new business 2023–24,45.37
+motor,vehicle_use,business,Emerging renewals 2023–24,10.05
+motor,vehicle_use,commuting,Emerging renewals 2023–24,44.85
+motor,vehicle_use,social,Emerging renewals 2023–24,45.1
+motor,channel,broker,2025 broker portfolio (test),69.97
+motor,channel,comparison_site,2025 broker portfolio (test),5.04
+motor,channel,direct,2025 broker portfolio (test),24.99
+motor,channel,broker,2025 renewals (test),70.07
+motor,channel,comparison_site,2025 renewals (test),4.81
+motor,channel,direct,2025 renewals (test),25.13
+motor,channel,broker,Developed 2021–24,24.96
+motor,channel,comparison_site,Developed 2021–24,34.99
+motor,channel,direct,Developed 2021–24,40.06
+motor,channel,broker,Emerging new business 2023–24,69.77
+motor,channel,comparison_site,Emerging new business 2023–24,4.79
+motor,channel,direct,Emerging new business 2023–24,25.44
+motor,channel,broker,Emerging renewals 2023–24,70.19
+motor,channel,comparison_site,Emerging renewals 2023–24,4.87
+motor,channel,direct,Emerging renewals 2023–24,24.94
+motor,payment_method,annual,2025 broker portfolio (test),54.95
+motor,payment_method,monthly,2025 broker portfolio (test),45.05
+motor,payment_method,annual,2025 renewals (test),55.07
+motor,payment_method,monthly,2025 renewals (test),44.93
+motor,payment_method,annual,Developed 2021–24,54.91
+motor,payment_method,monthly,Developed 2021–24,45.09
+motor,payment_method,annual,Emerging new business 2023–24,55.24
+motor,payment_method,monthly,Emerging new business 2023–24,44.76
+motor,payment_method,annual,Emerging renewals 2023–24,55.21
+motor,payment_method,monthly,Emerging renewals 2023–24,44.79
+motor,prior_claims_5y,0,2025 broker portfolio (test),77.06
+motor,prior_claims_5y,1,2025 broker portfolio (test),19.71
+motor,prior_claims_5y,2,2025 broker portfolio (test),2.86
+motor,prior_claims_5y,3,2025 broker portfolio (test),0.32
+motor,prior_claims_5y,4,2025 broker portfolio (test),0.04
+motor,prior_claims_5y,5,2025 broker portfolio (test),0.0
+motor,prior_claims_5y,0,2025 renewals (test),77.02
+motor,prior_claims_5y,1,2025 renewals (test),19.84
+motor,prior_claims_5y,2,2025 renewals (test),2.86
+motor,prior_claims_5y,3,2025 renewals (test),0.23
+motor,prior_claims_5y,4,2025 renewals (test),0.05
+motor,prior_claims_5y,0,Developed 2021–24,73.78
+motor,prior_claims_5y,1,Developed 2021–24,22.15
+motor,prior_claims_5y,2,Developed 2021–24,3.62
+motor,prior_claims_5y,3,Developed 2021–24,0.41
+motor,prior_claims_5y,4,Developed 2021–24,0.04
+motor,prior_claims_5y,5,Developed 2021–24,0.0
+motor,prior_claims_5y,7,Developed 2021–24,0.0
+motor,prior_claims_5y,0,Emerging new business 2023–24,76.83
+motor,prior_claims_5y,1,Emerging new business 2023–24,20.12
+motor,prior_claims_5y,2,Emerging new business 2023–24,2.76
+motor,prior_claims_5y,3,Emerging new business 2023–24,0.26
+motor,prior_claims_5y,4,Emerging new business 2023–24,0.03
+motor,prior_claims_5y,0,Emerging renewals 2023–24,76.88
+motor,prior_claims_5y,1,Emerging renewals 2023–24,20.03
+motor,prior_claims_5y,2,Emerging renewals 2023–24,2.81
+motor,prior_claims_5y,3,Emerging renewals 2023–24,0.23
+motor,prior_claims_5y,4,Emerging renewals 2023–24,0.05
+motor,gender,F,2025 broker portfolio (test),49.9
+motor,gender,M,2025 broker portfolio (test),50.1
+motor,gender,F,2025 renewals (test),50.41
+motor,gender,M,2025 renewals (test),49.59
+motor,gender,F,Emerging new business 2023–24,50.5
+motor,gender,M,Emerging new business 2023–24,49.5
+motor,gender,F,Emerging renewals 2023–24,50.52
+motor,gender,M,Emerging renewals 2023–24,49.48
+motor,region,E01,2025 broker portfolio (test),12.53
+motor,region,E02,2025 broker portfolio (test),18.08
+motor,region,E03,2025 broker portfolio (test),29.34
+motor,region,E04,2025 broker portfolio (test),4.31
+motor,region,E05,2025 broker portfolio (test),16.42
+motor,region,E06,2025 broker portfolio (test),19.32
+motor,region,E01,2025 renewals (test),12.8
+motor,region,E02,2025 renewals (test),17.39
+motor,region,E03,2025 renewals (test),29.79
+motor,region,E04,2025 renewals (test),4.47
+motor,region,E05,2025 renewals (test),16.27
+motor,region,E06,2025 renewals (test),19.27
+motor,region,R01,Developed 2021–24,16.19
+motor,region,R02,Developed 2021–24,6.35
+motor,region,R03,Developed 2021–24,9.7
+motor,region,R04,Developed 2021–24,5.9
+motor,region,R05,Developed 2021–24,7.88
+motor,region,R06,Developed 2021–24,4.25
+motor,region,R07,Developed 2021–24,7.26
+motor,region,R08,Developed 2021–24,7.11
+motor,region,R09,Developed 2021–24,7.51
+motor,region,R10,Developed 2021–24,9.4
+motor,region,R11,Developed 2021–24,8.49
+motor,region,R12,Developed 2021–24,9.98
+motor,region,E01,Emerging new business 2023–24,13.29
+motor,region,E02,Emerging new business 2023–24,17.42
+motor,region,E03,Emerging new business 2023–24,29.39
+motor,region,E04,Emerging new business 2023–24,4.25
+motor,region,E05,Emerging new business 2023–24,17.23
+motor,region,E06,Emerging new business 2023–24,18.41
+motor,region,E01,Emerging renewals 2023–24,12.67
+motor,region,E02,Emerging renewals 2023–24,17.72
+motor,region,E03,Emerging renewals 2023–24,29.74
+motor,region,E04,Emerging renewals 2023–24,4.6
+motor,region,E05,Emerging renewals 2023–24,15.99
+motor,region,E06,Emerging renewals 2023–24,19.29
+buildings,age_band,17-24,2025 broker portfolio (test),27.73
+buildings,age_band,25-34,2025 broker portfolio (test),25.89
+buildings,age_band,35-49,2025 broker portfolio (test),12.17
+buildings,age_band,50-64,2025 broker portfolio (test),12.49
+buildings,age_band,65+,2025 broker portfolio (test),21.73
+buildings,age_band,17-24,2025 renewals (test),15.6
+buildings,age_band,25-34,2025 renewals (test),22.64
+buildings,age_band,35-49,2025 renewals (test),16.16
+buildings,age_band,50-64,2025 renewals (test),16.05
+buildings,age_band,65+,2025 renewals (test),29.55
+buildings,age_band,17-24,Developed 2021–24,13.19
+buildings,age_band,25-34,Developed 2021–24,16.74
+buildings,age_band,35-49,Developed 2021–24,19.38
+buildings,age_band,50-64,Developed 2021–24,19.32
+buildings,age_band,65+,Developed 2021–24,31.37
+buildings,age_band,17-24,Emerging new business 2023–24,29.21
+buildings,age_band,25-34,Emerging new business 2023–24,24.42
+buildings,age_band,35-49,Emerging new business 2023–24,12.36
+buildings,age_band,50-64,Emerging new business 2023–24,12.26
+buildings,age_band,65+,Emerging new business 2023–24,21.75
+buildings,age_band,17-24,Emerging renewals 2023–24,18.7
+buildings,age_band,25-34,Emerging renewals 2023–24,17.91
+buildings,age_band,35-49,Emerging renewals 2023–24,16.64
+buildings,age_band,50-64,Emerging renewals 2023–24,17.24
+buildings,age_band,65+,Emerging renewals 2023–24,29.51
+buildings,property_type,detached,2025 broker portfolio (test),25.22
+buildings,property_type,flat,2025 broker portfolio (test),19.79
+buildings,property_type,semi_detached,2025 broker portfolio (test),29.71
+buildings,property_type,terraced,2025 broker portfolio (test),25.28
+buildings,property_type,detached,2025 renewals (test),25.04
+buildings,property_type,flat,2025 renewals (test),19.66
+buildings,property_type,semi_detached,2025 renewals (test),29.46
+buildings,property_type,terraced,2025 renewals (test),25.84
+buildings,property_type,detached,Developed 2021–24,25.1
+buildings,property_type,flat,Developed 2021–24,19.89
+buildings,property_type,semi_detached,Developed 2021–24,29.9
+buildings,property_type,terraced,Developed 2021–24,25.11
+buildings,property_type,detached,Emerging new business 2023–24,26.95
+buildings,property_type,flat,Emerging new business 2023–24,19.85
+buildings,property_type,semi_detached,Emerging new business 2023–24,30.08
+buildings,property_type,terraced,Emerging new business 2023–24,23.11
+buildings,property_type,detached,Emerging renewals 2023–24,24.58
+buildings,property_type,flat,Emerging renewals 2023–24,19.82
+buildings,property_type,semi_detached,Emerging renewals 2023–24,29.56
+buildings,property_type,terraced,Emerging renewals 2023–24,26.04
+buildings,construction_type,brick,2025 broker portfolio (test),70.21
+buildings,construction_type,non_standard,2025 broker portfolio (test),9.96
+buildings,construction_type,stone,2025 broker portfolio (test),7.87
+buildings,construction_type,timber,2025 broker portfolio (test),11.95
+buildings,construction_type,brick,2025 renewals (test),70.22
+buildings,construction_type,non_standard,2025 renewals (test),10.18
+buildings,construction_type,stone,2025 renewals (test),7.81
+buildings,construction_type,timber,2025 renewals (test),11.79
+buildings,construction_type,brick,Developed 2021–24,70.03
+buildings,construction_type,non_standard,Developed 2021–24,9.92
+buildings,construction_type,stone,Developed 2021–24,7.96
+buildings,construction_type,timber,Developed 2021–24,12.1
+buildings,construction_type,brick,Emerging new business 2023–24,70.94
+buildings,construction_type,non_standard,Emerging new business 2023–24,9.4
+buildings,construction_type,stone,Emerging new business 2023–24,7.99
+buildings,construction_type,timber,Emerging new business 2023–24,11.67
+buildings,construction_type,brick,Emerging renewals 2023–24,69.78
+buildings,construction_type,non_standard,Emerging renewals 2023–24,10.29
+buildings,construction_type,stone,Emerging renewals 2023–24,7.83
+buildings,construction_type,timber,Emerging renewals 2023–24,12.1
+buildings,flood_zone,1.0,2025 broker portfolio (test),68.52
+buildings,flood_zone,2.0,2025 broker portfolio (test),14.94
+buildings,flood_zone,3.0,2025 broker portfolio (test),7.6
+buildings,flood_zone,4.0,2025 broker portfolio (test),4.22
+buildings,flood_zone,5.0,2025 broker portfolio (test),1.66
+buildings,flood_zone,1.0,2025 renewals (test),68.58
+buildings,flood_zone,2.0,2025 renewals (test),14.77
+buildings,flood_zone,3.0,2025 renewals (test),7.58
+buildings,flood_zone,4.0,2025 renewals (test),4.29
+buildings,flood_zone,5.0,2025 renewals (test),1.89
+buildings,flood_zone,1.0,Developed 2021–24,68.51
+buildings,flood_zone,2.0,Developed 2021–24,14.82
+buildings,flood_zone,3.0,Developed 2021–24,7.88
+buildings,flood_zone,4.0,Developed 2021–24,4.33
+buildings,flood_zone,5.0,Developed 2021–24,1.54
+buildings,flood_zone,1.0,Emerging new business 2023–24,67.86
+buildings,flood_zone,2.0,Emerging new business 2023–24,15.29
+buildings,flood_zone,3.0,Emerging new business 2023–24,7.69
+buildings,flood_zone,4.0,Emerging new business 2023–24,4.48
+buildings,flood_zone,5.0,Emerging new business 2023–24,1.79
+buildings,flood_zone,1.0,Emerging renewals 2023–24,68.94
+buildings,flood_zone,2.0,Emerging renewals 2023–24,14.55
+buildings,flood_zone,3.0,Emerging renewals 2023–24,7.6
+buildings,flood_zone,4.0,Emerging renewals 2023–24,4.25
+buildings,flood_zone,5.0,Emerging renewals 2023–24,1.86
+buildings,sum_insured,"(159000.0, 208000.0]",2025 broker portfolio (test),18.85
+buildings,sum_insured,"(208000.0, 254000.0]",2025 broker portfolio (test),19.35
+buildings,sum_insured,"(254000.0, 314000.0]",2025 broker portfolio (test),20.23
+buildings,sum_insured,"(314000.0, 813000.0]",2025 broker portfolio (test),23.56
+buildings,sum_insured,"(43999.999, 159000.0]",2025 broker portfolio (test),17.99
+buildings,sum_insured,"(159000.0, 208000.0]",2025 renewals (test),19.0
+buildings,sum_insured,"(208000.0, 254000.0]",2025 renewals (test),19.53
+buildings,sum_insured,"(254000.0, 314000.0]",2025 renewals (test),20.44
+buildings,sum_insured,"(314000.0, 813000.0]",2025 renewals (test),23.44
+buildings,sum_insured,"(43999.999, 159000.0]",2025 renewals (test),17.58
+buildings,sum_insured,"(159000.0, 208000.0]",Developed 2021–24,21.43
+buildings,sum_insured,"(208000.0, 254000.0]",Developed 2021–24,19.82
+buildings,sum_insured,"(254000.0, 314000.0]",Developed 2021–24,18.94
+buildings,sum_insured,"(314000.0, 813000.0]",Developed 2021–24,17.61
+buildings,sum_insured,"(43999.999, 159000.0]",Developed 2021–24,22.19
+buildings,sum_insured,"(159000.0, 208000.0]",Emerging new business 2023–24,17.85
+buildings,sum_insured,"(208000.0, 254000.0]",Emerging new business 2023–24,20.47
+buildings,sum_insured,"(254000.0, 314000.0]",Emerging new business 2023–24,19.3
+buildings,sum_insured,"(314000.0, 813000.0]",Emerging new business 2023–24,21.57
+buildings,sum_insured,"(43999.999, 159000.0]",Emerging new business 2023–24,20.81
+buildings,sum_insured,"(159000.0, 208000.0]",Emerging renewals 2023–24,20.35
+buildings,sum_insured,"(208000.0, 254000.0]",Emerging renewals 2023–24,19.96
+buildings,sum_insured,"(254000.0, 314000.0]",Emerging renewals 2023–24,19.84
+buildings,sum_insured,"(314000.0, 813000.0]",Emerging renewals 2023–24,19.63
+buildings,sum_insured,"(43999.999, 159000.0]",Emerging renewals 2023–24,20.23
+buildings,occupancy,let,2025 broker portfolio (test),10.0
+buildings,occupancy,owner_occupied,2025 broker portfolio (test),90.0
+buildings,occupancy,let,2025 renewals (test),10.12
+buildings,occupancy,owner_occupied,2025 renewals (test),89.88
+buildings,occupancy,let,Developed 2021–24,9.93
+buildings,occupancy,owner_occupied,Developed 2021–24,90.07
+buildings,occupancy,let,Emerging new business 2023–24,9.81
+buildings,occupancy,owner_occupied,Emerging new business 2023–24,90.19
+buildings,occupancy,let,Emerging renewals 2023–24,10.14
+buildings,occupancy,owner_occupied,Emerging renewals 2023–24,89.86
+buildings,accidental_damage_cover,False,2025 broker portfolio (test),60.15
+buildings,accidental_damage_cover,True,2025 broker portfolio (test),39.85
+buildings,accidental_damage_cover,False,2025 renewals (test),59.97
+buildings,accidental_damage_cover,True,2025 renewals (test),40.03
+buildings,accidental_damage_cover,False,Developed 2021–24,60.08
+buildings,accidental_damage_cover,True,Developed 2021–24,39.92
+buildings,accidental_damage_cover,False,Emerging new business 2023–24,59.77
+buildings,accidental_damage_cover,True,Emerging new business 2023–24,40.23
+buildings,accidental_damage_cover,False,Emerging renewals 2023–24,60.18
+buildings,accidental_damage_cover,True,Emerging renewals 2023–24,39.82
+buildings,urban_density,dense_urban,2025 broker portfolio (test),10.14
+buildings,urban_density,rural,2025 broker portfolio (test),19.98
+buildings,urban_density,suburban,2025 broker portfolio (test),45.32
+buildings,urban_density,urban,2025 broker portfolio (test),24.56
+buildings,urban_density,dense_urban,2025 renewals (test),9.52
+buildings,urban_density,rural,2025 renewals (test),20.38
+buildings,urban_density,suburban,2025 renewals (test),45.31
+buildings,urban_density,urban,2025 renewals (test),24.79
+buildings,urban_density,dense_urban,Developed 2021–24,10.12
+buildings,urban_density,rural,Developed 2021–24,19.77
+buildings,urban_density,suburban,Developed 2021–24,44.94
+buildings,urban_density,urban,Developed 2021–24,25.17
+buildings,urban_density,dense_urban,Emerging new business 2023–24,9.45
+buildings,urban_density,rural,Emerging new business 2023–24,20.15
+buildings,urban_density,suburban,Emerging new business 2023–24,45.47
+buildings,urban_density,urban,Emerging new business 2023–24,24.94
+buildings,urban_density,dense_urban,Emerging renewals 2023–24,9.7
+buildings,urban_density,rural,Emerging renewals 2023–24,20.4
+buildings,urban_density,suburban,Emerging renewals 2023–24,45.41
+buildings,urban_density,urban,Emerging renewals 2023–24,24.49
+buildings,channel,broker,2025 broker portfolio (test),69.68
+buildings,channel,comparison_site,2025 broker portfolio (test),5.0
+buildings,channel,direct,2025 broker portfolio (test),25.32
+buildings,channel,broker,2025 renewals (test),70.37
+buildings,channel,comparison_site,2025 renewals (test),5.08
+buildings,channel,direct,2025 renewals (test),24.54
+buildings,channel,broker,Developed 2021–24,25.09
+buildings,channel,comparison_site,Developed 2021–24,34.99
+buildings,channel,direct,Developed 2021–24,39.92
+buildings,channel,broker,Emerging new business 2023–24,69.89
+buildings,channel,comparison_site,Emerging new business 2023–24,4.75
+buildings,channel,direct,Emerging new business 2023–24,25.36
+buildings,channel,broker,Emerging renewals 2023–24,70.21
+buildings,channel,comparison_site,Emerging renewals 2023–24,5.2
+buildings,channel,direct,Emerging renewals 2023–24,24.59
+buildings,prior_claims_5y,0,2025 broker portfolio (test),77.18
+buildings,prior_claims_5y,1,2025 broker portfolio (test),19.65
+buildings,prior_claims_5y,2,2025 broker portfolio (test),2.83
+buildings,prior_claims_5y,3,2025 broker portfolio (test),0.3
+buildings,prior_claims_5y,4,2025 broker portfolio (test),0.03
+buildings,prior_claims_5y,5,2025 broker portfolio (test),0.0
+buildings,prior_claims_5y,0,2025 renewals (test),76.38
+buildings,prior_claims_5y,1,2025 renewals (test),20.15
+buildings,prior_claims_5y,2,2025 renewals (test),3.17
+buildings,prior_claims_5y,3,2025 renewals (test),0.26
+buildings,prior_claims_5y,4,2025 renewals (test),0.04
+buildings,prior_claims_5y,0,Developed 2021–24,73.87
+buildings,prior_claims_5y,1,Developed 2021–24,22.13
+buildings,prior_claims_5y,2,Developed 2021–24,3.55
+buildings,prior_claims_5y,3,Developed 2021–24,0.41
+buildings,prior_claims_5y,4,Developed 2021–24,0.04
+buildings,prior_claims_5y,5,Developed 2021–24,0.0
+buildings,prior_claims_5y,0,Emerging new business 2023–24,77.78
+buildings,prior_claims_5y,1,Emerging new business 2023–24,18.69
+buildings,prior_claims_5y,2,Emerging new business 2023–24,3.19
+buildings,prior_claims_5y,3,Emerging new business 2023–24,0.29
+buildings,prior_claims_5y,4,Emerging new business 2023–24,0.05
+buildings,prior_claims_5y,0,Emerging renewals 2023–24,76.56
+buildings,prior_claims_5y,1,Emerging renewals 2023–24,20.11
+buildings,prior_claims_5y,2,Emerging renewals 2023–24,3.09
+buildings,prior_claims_5y,3,Emerging renewals 2023–24,0.21
+buildings,prior_claims_5y,4,Emerging renewals 2023–24,0.03
+buildings,gender,F,2025 broker portfolio (test),49.77
+buildings,gender,M,2025 broker portfolio (test),50.23
+buildings,gender,F,2025 renewals (test),49.9
+buildings,gender,M,2025 renewals (test),50.1
+buildings,gender,F,Emerging new business 2023–24,48.73
+buildings,gender,M,Emerging new business 2023–24,51.27
+buildings,gender,F,Emerging renewals 2023–24,50.36
+buildings,gender,M,Emerging renewals 2023–24,49.64
+buildings,region,E01,2025 broker portfolio (test),12.64
+buildings,region,E02,2025 broker portfolio (test),17.9
+buildings,region,E03,2025 broker portfolio (test),29.21
+buildings,region,E04,2025 broker portfolio (test),4.22
+buildings,region,E05,2025 broker portfolio (test),16.52
+buildings,region,E06,2025 broker portfolio (test),19.51
+buildings,region,E01,2025 renewals (test),12.09
+buildings,region,E02,2025 renewals (test),17.71
+buildings,region,E03,2025 renewals (test),29.67
+buildings,region,E04,2025 renewals (test),4.36
+buildings,region,E05,2025 renewals (test),16.03
+buildings,region,E06,2025 renewals (test),20.14
+buildings,region,R01,Developed 2021–24,16.24
+buildings,region,R02,Developed 2021–24,6.26
+buildings,region,R03,Developed 2021–24,9.73
+buildings,region,R04,Developed 2021–24,5.89
+buildings,region,R05,Developed 2021–24,7.98
+buildings,region,R06,Developed 2021–24,4.18
+buildings,region,R07,Developed 2021–24,7.15
+buildings,region,R08,Developed 2021–24,7.11
+buildings,region,R09,Developed 2021–24,7.52
+buildings,region,R10,Developed 2021–24,9.35
+buildings,region,R11,Developed 2021–24,8.5
+buildings,region,R12,Developed 2021–24,10.09
+buildings,region,E01,Emerging new business 2023–24,11.69
+buildings,region,E02,Emerging new business 2023–24,17.72
+buildings,region,E03,Emerging new business 2023–24,29.79
+buildings,region,E04,Emerging new business 2023–24,3.4
+buildings,region,E05,Emerging new business 2023–24,16.69
+buildings,region,E06,Emerging new business 2023–24,20.71
+buildings,region,E01,Emerging renewals 2023–24,12.18
+buildings,region,E02,Emerging renewals 2023–24,17.88
+buildings,region,E03,Emerging renewals 2023–24,29.5
+buildings,region,E04,Emerging renewals 2023–24,4.44
+buildings,region,E05,Emerging renewals 2023–24,16.12
+buildings,region,E06,Emerging renewals 2023–24,19.88
+contents,age_band,17-24,2025 broker portfolio (test),27.56
+contents,age_band,25-34,2025 broker portfolio (test),25.91
+contents,age_band,35-49,2025 broker portfolio (test),12.09
+contents,age_band,50-64,2025 broker portfolio (test),12.45
+contents,age_band,65+,2025 broker portfolio (test),21.99
+contents,age_band,17-24,2025 renewals (test),16.09
+contents,age_band,25-34,2025 renewals (test),22.55
+contents,age_band,35-49,2025 renewals (test),15.95
+contents,age_band,50-64,2025 renewals (test),16.2
+contents,age_band,65+,2025 renewals (test),29.22
+contents,age_band,17-24,Developed 2021–24,13.21
+contents,age_band,25-34,Developed 2021–24,16.75
+contents,age_band,35-49,Developed 2021–24,19.34
+contents,age_band,50-64,Developed 2021–24,19.27
+contents,age_band,65+,Developed 2021–24,31.42
+contents,age_band,17-24,Emerging new business 2023–24,30.3
+contents,age_band,25-34,Emerging new business 2023–24,25.34
+contents,age_band,35-49,Emerging new business 2023–24,12.28
+contents,age_band,50-64,Emerging new business 2023–24,11.95
+contents,age_band,65+,Emerging new business 2023–24,20.12
+contents,age_band,17-24,Emerging renewals 2023–24,18.93
+contents,age_band,25-34,Emerging renewals 2023–24,17.67
+contents,age_band,35-49,Emerging renewals 2023–24,16.87
+contents,age_band,50-64,Emerging renewals 2023–24,17.11
+contents,age_band,65+,Emerging renewals 2023–24,29.42
+contents,tenure,owner,2025 broker portfolio (test),55.97
+contents,tenure,renter,2025 broker portfolio (test),44.03
+contents,tenure,owner,2025 renewals (test),57.14
+contents,tenure,renter,2025 renewals (test),42.86
+contents,tenure,owner,Developed 2021–24,69.99
+contents,tenure,renter,Developed 2021–24,30.01
+contents,tenure,owner,Emerging new business 2023–24,57.35
+contents,tenure,renter,Emerging new business 2023–24,42.65
+contents,tenure,owner,Emerging renewals 2023–24,56.87
+contents,tenure,renter,Emerging renewals 2023–24,43.13
+contents,security_level,alarm_and_locks,2025 broker portfolio (test),30.79
+contents,security_level,locks,2025 broker portfolio (test),26.3
+contents,security_level,missing,2025 broker portfolio (test),12.22
+contents,security_level,standard,2025 broker portfolio (test),30.7
+contents,security_level,alarm_and_locks,2025 renewals (test),30.18
+contents,security_level,locks,2025 renewals (test),26.75
+contents,security_level,missing,2025 renewals (test),11.98
+contents,security_level,standard,2025 renewals (test),31.08
+contents,security_level,alarm_and_locks,Developed 2021–24,34.01
+contents,security_level,locks,Developed 2021–24,29.26
+contents,security_level,missing,Developed 2021–24,2.51
+contents,security_level,standard,Developed 2021–24,34.22
+contents,security_level,alarm_and_locks,Emerging new business 2023–24,30.65
+contents,security_level,locks,Emerging new business 2023–24,27.9
+contents,security_level,missing,Emerging new business 2023–24,11.95
+contents,security_level,standard,Emerging new business 2023–24,29.5
+contents,security_level,alarm_and_locks,Emerging renewals 2023–24,30.41
+contents,security_level,locks,Emerging renewals 2023–24,26.51
+contents,security_level,missing,Emerging renewals 2023–24,12.31
+contents,security_level,standard,Emerging renewals 2023–24,30.76
+contents,high_value_items,0.0,2025 broker portfolio (test),44.1
+contents,high_value_items,1.0,2025 broker portfolio (test),17.52
+contents,high_value_items,2.0,2025 broker portfolio (test),10.6
+contents,high_value_items,3.0,2025 broker portfolio (test),6.88
+contents,high_value_items,4.0,2025 broker portfolio (test),4.57
+contents,high_value_items,5.0,2025 broker portfolio (test),4.29
+contents,high_value_items,0.0,2025 renewals (test),44.38
+contents,high_value_items,1.0,2025 renewals (test),17.63
+contents,high_value_items,2.0,2025 renewals (test),10.43
+contents,high_value_items,3.0,2025 renewals (test),6.98
+contents,high_value_items,4.0,2025 renewals (test),4.39
+contents,high_value_items,5.0,2025 renewals (test),4.28
+contents,high_value_items,0.0,Developed 2021–24,48.65
+contents,high_value_items,1.0,Developed 2021–24,19.59
+contents,high_value_items,2.0,Developed 2021–24,11.72
+contents,high_value_items,3.0,Developed 2021–24,7.79
+contents,high_value_items,4.0,Developed 2021–24,4.83
+contents,high_value_items,5.0,Developed 2021–24,4.91
+contents,high_value_items,0.0,Emerging new business 2023–24,43.93
+contents,high_value_items,1.0,Emerging new business 2023–24,16.68
+contents,high_value_items,2.0,Emerging new business 2023–24,10.81
+contents,high_value_items,3.0,Emerging new business 2023–24,7.78
+contents,high_value_items,4.0,Emerging new business 2023–24,4.51
+contents,high_value_items,5.0,Emerging new business 2023–24,4.7
+contents,high_value_items,0.0,Emerging renewals 2023–24,44.49
+contents,high_value_items,1.0,Emerging renewals 2023–24,18.1
+contents,high_value_items,2.0,Emerging renewals 2023–24,10.31
+contents,high_value_items,3.0,Emerging renewals 2023–24,6.89
+contents,high_value_items,4.0,Emerging renewals 2023–24,4.24
+contents,high_value_items,5.0,Emerging renewals 2023–24,4.27
+contents,sum_insured,"(21900.0, 30800.0]",2025 broker portfolio (test),20.26
+contents,sum_insured,"(30800.0, 41500.0]",2025 broker portfolio (test),19.85
+contents,sum_insured,"(41500.0, 56700.0]",2025 broker portfolio (test),19.75
+contents,sum_insured,"(5199.999, 21900.0]",2025 broker portfolio (test),19.59
+contents,sum_insured,"(56700.0, 235000.0]",2025 broker portfolio (test),20.55
+contents,sum_insured,"(21900.0, 30800.0]",2025 renewals (test),19.83
+contents,sum_insured,"(30800.0, 41500.0]",2025 renewals (test),19.72
+contents,sum_insured,"(41500.0, 56700.0]",2025 renewals (test),20.42
+contents,sum_insured,"(5199.999, 21900.0]",2025 renewals (test),18.7
+contents,sum_insured,"(56700.0, 235000.0]",2025 renewals (test),21.31
+contents,sum_insured,"(21900.0, 30800.0]",Developed 2021–24,17.82
+contents,sum_insured,"(30800.0, 41500.0]",Developed 2021–24,21.27
+contents,sum_insured,"(41500.0, 56700.0]",Developed 2021–24,22.74
+contents,sum_insured,"(5199.999, 21900.0]",Developed 2021–24,16.12
+contents,sum_insured,"(56700.0, 235000.0]",Developed 2021–24,22.05
+contents,sum_insured,"(21900.0, 30800.0]",Emerging new business 2023–24,19.47
+contents,sum_insured,"(30800.0, 41500.0]",Emerging new business 2023–24,20.66
+contents,sum_insured,"(41500.0, 56700.0]",Emerging new business 2023–24,19.68
+contents,sum_insured,"(5199.999, 21900.0]",Emerging new business 2023–24,19.95
+contents,sum_insured,"(56700.0, 235000.0]",Emerging new business 2023–24,20.24
+contents,sum_insured,"(21900.0, 30800.0]",Emerging renewals 2023–24,20.18
+contents,sum_insured,"(30800.0, 41500.0]",Emerging renewals 2023–24,19.97
+contents,sum_insured,"(41500.0, 56700.0]",Emerging renewals 2023–24,20.05
+contents,sum_insured,"(5199.999, 21900.0]",Emerging renewals 2023–24,20.34
+contents,sum_insured,"(56700.0, 235000.0]",Emerging renewals 2023–24,19.46
+contents,accidental_damage_cover,False,2025 broker portfolio (test),54.47
+contents,accidental_damage_cover,True,2025 broker portfolio (test),45.53
+contents,accidental_damage_cover,False,2025 renewals (test),55.15
+contents,accidental_damage_cover,True,2025 renewals (test),44.85
+contents,accidental_damage_cover,False,Developed 2021–24,55.1
+contents,accidental_damage_cover,True,Developed 2021–24,44.9
+contents,accidental_damage_cover,False,Emerging new business 2023–24,54.74
+contents,accidental_damage_cover,True,Emerging new business 2023–24,45.26
+contents,accidental_damage_cover,False,Emerging renewals 2023–24,55.42
+contents,accidental_damage_cover,True,Emerging renewals 2023–24,44.58
+contents,urban_density,dense_urban,2025 broker portfolio (test),10.07
+contents,urban_density,rural,2025 broker portfolio (test),20.1
+contents,urban_density,suburban,2025 broker portfolio (test),45.26
+contents,urban_density,urban,2025 broker portfolio (test),24.57
+contents,urban_density,dense_urban,2025 renewals (test),9.32
+contents,urban_density,rural,2025 renewals (test),20.38
+contents,urban_density,suburban,2025 renewals (test),45.65
+contents,urban_density,urban,2025 renewals (test),24.65
+contents,urban_density,dense_urban,Developed 2021–24,10.07
+contents,urban_density,rural,Developed 2021–24,19.9
+contents,urban_density,suburban,Developed 2021–24,44.93
+contents,urban_density,urban,Developed 2021–24,25.1
+contents,urban_density,dense_urban,Emerging new business 2023–24,9.07
+contents,urban_density,rural,Emerging new business 2023–24,19.81
+contents,urban_density,suburban,Emerging new business 2023–24,45.82
+contents,urban_density,urban,Emerging new business 2023–24,25.3
+contents,urban_density,dense_urban,Emerging renewals 2023–24,9.71
+contents,urban_density,rural,Emerging renewals 2023–24,20.27
+contents,urban_density,suburban,Emerging renewals 2023–24,45.65
+contents,urban_density,urban,Emerging renewals 2023–24,24.38
+contents,channel,broker,2025 broker portfolio (test),69.85
+contents,channel,comparison_site,2025 broker portfolio (test),4.99
+contents,channel,direct,2025 broker portfolio (test),25.16
+contents,channel,broker,2025 renewals (test),70.08
+contents,channel,comparison_site,2025 renewals (test),4.97
+contents,channel,direct,2025 renewals (test),24.95
+contents,channel,broker,Developed 2021–24,25.15
+contents,channel,comparison_site,Developed 2021–24,35.03
+contents,channel,direct,Developed 2021–24,39.81
+contents,channel,broker,Emerging new business 2023–24,69.84
+contents,channel,comparison_site,Emerging new business 2023–24,5.0
+contents,channel,direct,Emerging new business 2023–24,25.16
+contents,channel,broker,Emerging renewals 2023–24,70.21
+contents,channel,comparison_site,Emerging renewals 2023–24,5.08
+contents,channel,direct,Emerging renewals 2023–24,24.71
+contents,prior_claims_5y,0,2025 broker portfolio (test),77.07
+contents,prior_claims_5y,1,2025 broker portfolio (test),19.68
+contents,prior_claims_5y,2,2025 broker portfolio (test),2.89
+contents,prior_claims_5y,3,2025 broker portfolio (test),0.31
+contents,prior_claims_5y,4,2025 broker portfolio (test),0.04
+contents,prior_claims_5y,5,2025 broker portfolio (test),0.0
+contents,prior_claims_5y,0,2025 renewals (test),76.37
+contents,prior_claims_5y,1,2025 renewals (test),20.01
+contents,prior_claims_5y,2,2025 renewals (test),3.31
+contents,prior_claims_5y,3,2025 renewals (test),0.27
+contents,prior_claims_5y,4,2025 renewals (test),0.03
+contents,prior_claims_5y,5,2025 renewals (test),0.01
+contents,prior_claims_5y,0,Developed 2021–24,73.87
+contents,prior_claims_5y,1,Developed 2021–24,22.07
+contents,prior_claims_5y,2,Developed 2021–24,3.62
+contents,prior_claims_5y,3,Developed 2021–24,0.41
+contents,prior_claims_5y,4,Developed 2021–24,0.04
+contents,prior_claims_5y,5,Developed 2021–24,0.0
+contents,prior_claims_5y,0,Emerging new business 2023–24,77.38
+contents,prior_claims_5y,1,Emerging new business 2023–24,19.33
+contents,prior_claims_5y,2,Emerging new business 2023–24,2.98
+contents,prior_claims_5y,3,Emerging new business 2023–24,0.27
+contents,prior_claims_5y,4,Emerging new business 2023–24,0.04
+contents,prior_claims_5y,0,Emerging renewals 2023–24,76.57
+contents,prior_claims_5y,1,Emerging renewals 2023–24,19.83
+contents,prior_claims_5y,2,Emerging renewals 2023–24,3.26
+contents,prior_claims_5y,3,Emerging renewals 2023–24,0.3
+contents,prior_claims_5y,4,Emerging renewals 2023–24,0.03
+contents,prior_claims_5y,5,Emerging renewals 2023–24,0.01
+contents,gender,F,2025 broker portfolio (test),49.98
+contents,gender,M,2025 broker portfolio (test),50.02
+contents,gender,F,2025 renewals (test),49.94
+contents,gender,M,2025 renewals (test),50.06
+contents,gender,F,Emerging new business 2023–24,49.6
+contents,gender,M,Emerging new business 2023–24,50.4
+contents,gender,F,Emerging renewals 2023–24,50.25
+contents,gender,M,Emerging renewals 2023–24,49.75
+contents,region,E01,2025 broker portfolio (test),12.71
+contents,region,E02,2025 broker portfolio (test),18.01
+contents,region,E03,2025 broker portfolio (test),29.26
+contents,region,E04,2025 broker portfolio (test),4.23
+contents,region,E05,2025 broker portfolio (test),16.48
+contents,region,E06,2025 broker portfolio (test),19.31
+contents,region,E01,2025 renewals (test),12.57
+contents,region,E02,2025 renewals (test),17.85
+contents,region,E03,2025 renewals (test),29.35
+contents,region,E04,2025 renewals (test),4.21
+contents,region,E05,2025 renewals (test),16.33
+contents,region,E06,2025 renewals (test),19.69
+contents,region,R01,Developed 2021–24,16.32
+contents,region,R02,Developed 2021–24,6.29
+contents,region,R03,Developed 2021–24,9.73
+contents,region,R04,Developed 2021–24,5.83
+contents,region,R05,Developed 2021–24,7.97
+contents,region,R06,Developed 2021–24,4.23
+contents,region,R07,Developed 2021–24,7.18
+contents,region,R08,Developed 2021–24,7.1
+contents,region,R09,Developed 2021–24,7.47
+contents,region,R10,Developed 2021–24,9.4
+contents,region,R11,Developed 2021–24,8.51
+contents,region,R12,Developed 2021–24,9.97
+contents,region,E01,Emerging new business 2023–24,12.85
+contents,region,E02,Emerging new business 2023–24,18.47
+contents,region,E03,Emerging new business 2023–24,29.24
+contents,region,E04,Emerging new business 2023–24,3.57
+contents,region,E05,Emerging new business 2023–24,16.52
+contents,region,E06,Emerging new business 2023–24,19.35
+contents,region,E01,Emerging renewals 2023–24,12.44
+contents,region,E02,Emerging renewals 2023–24,17.76
+contents,region,E03,Emerging renewals 2023–24,29.3
+contents,region,E04,Emerging renewals 2023–24,4.41
+contents,region,E05,Emerging renewals 2023–24,16.14
+contents,region,E06,Emerging renewals 2023–24,19.96

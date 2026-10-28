@@ -1,0 +1,4 @@
+line,auc,features_used,most_different
+motor,0.531,21,"occupation, years_licensed, vehicle_age, household_size"
+buildings,0.526,18,"occupation, sum_insured, household_size, age_band"
+contents,0.518,19,"occupation, sum_insured, high_value_items, household_size"

@@ -1,0 +1,8 @@
+stage,count,note
+Findings raised by Qwen,125,"25 code chunks × 3 lenses: leakage, bugs, robustness for Part 2"
+Refuted by Qwen itself,93,second pass: Qwen tries to disprove each high/medium finding
+Not re-checked (mostly low severity),21,
+Left as real or uncertain,11,"3 real, 8 uncertain; each checked by hand"
+True after manual check,7,small but real points
+Fixed in the pipeline,4,"hard-coded lines and mature years, missing-column guards: these would have broken Part 2"
+Leakage found,0,no leakage in the pipeline

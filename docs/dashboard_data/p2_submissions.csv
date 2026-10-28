@@ -1,7 +1,7 @@
 submission,date,public,kind
 p2_sub_02_genere_mix,2026-10-24 06:06,0.16154,candidate
 p2_sub_01_prior_genere,2026-10-24 06:06,0.16176,candidate
-p2_sub_03_senza_nb,2026-10-24 06:15,0.16008,candidate
+p2_sub_03_senza_nb,2026-10-24 06:15,0.16008,diagnostic probe (not a candidate)
 p2_sub_05_sonda_x104,2026-10-24 06:16,0.16267,diagnostic probe (not a candidate)
 p2_sub_06_meteo,2026-10-24 17:13,0.16147,candidate
 p2_sonda_auto_x105,2026-10-24 17:16,0.16305,diagnostic probe (not a candidate)
@@ -17,3 +17,22 @@ p2_sonda_sub10_auto_x120,2026-10-25 14:44,0.16473,diagnostic probe (not a candid
 p2_sonda_sub10_auto_x110,2026-10-25 14:44,0.16539,diagnostic probe (not a candidate)
 p2_sub_11_senza_nb,2026-10-25 17:42,0.161,candidate
 p2_sub_12_nb_tagliato,2026-10-25 17:43,0.16236,candidate
+p2_sub_13_qwen_loop,2026-10-25 22:47,0.16015,candidate
+p2_sub_14_storm,2026-10-26 00:14,0.16474,candidate
+p2_sub_15_sonda_fuel_cover,2026-10-26 17:38,0.16355,diagnostic probe (not a candidate)
+p2_sub_16_storm_auto_half,2026-10-27 10:02,0.16432,candidate
+sonda_sub10_cont_x1.10,2026-10-27 10:03,0.16422,diagnostic probe (not a candidate)
+sonda_sub10_fab_x0.90,2026-10-27 10:03,0.16426,diagnostic probe (not a candidate)
+sonda_sub10_fab_x1.10,2026-10-27 10:03,0.16442,diagnostic probe (not a candidate)
+sonda_sub10_cont_x0.90,2026-10-27 10:04,0.16482,diagnostic probe (not a candidate)
+p2_sub_17_wfh_freq,2026-10-27 10:12,0.1643,candidate
+p2_sub_18_auto_gbmfreq,2026-10-27 10:17,0.16421,candidate
+sonda_sub18_innesto_auto,2026-10-27 10:51,0.16277,diagnostic probe (not a candidate)
+sonda_sub18_ripida_w05,2026-10-27 10:56,0.16442,diagnostic probe (not a candidate)
+sonda_sub18_ripida_w1,2026-10-27 10:56,0.16429,diagnostic probe (not a candidate)
+p2_sub_20_prior_p1v2_casa,2026-10-28 00:01,0.16532,candidate
+p2_sub_19_auto_prem,2026-10-28 00:01,0.16496,candidate
+sonda_sub20_auto_bag,2026-10-28 00:15,0.16495,diagnostic probe (not a candidate)
+sonda_sub20_auto_bag_prem,2026-10-28 00:15,0.16484,diagnostic probe (not a candidate)
+sonda_sub20_auto_prior_prem60,2026-10-28 00:21,0.16425,diagnostic probe (not a candidate)
+p2_sub_21_auto_prem_costo,2026-10-28 00:21,0.16623,candidate
