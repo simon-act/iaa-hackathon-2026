@@ -1,8 +1,8 @@
-"""Passo 1a — pulizia delle tabelle di polizza (training e test).
+"""Step 1a — cleaning of the policy tables (training and test).
 
-Regole deterministiche; ogni correzione lascia un flag nella riga e un contatore
-nel report JSON, così si può riconciliare e spiegare.
-Uso: python -I clean_policies.py <raw_dir> <out_dir>
+Deterministic rules; each correction leaves a flag in the row and a counter
+in the JSON report, so it can be reconciled and explained.
+Usage: python -I clean_policies.py <raw_dir> <out_dir>
 """
 import json
 import sys
@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from market_config import CFG, LINES  # noqa: E402
 
 FIX = CFG["fixes"]
-# W e T non documentati nella Parte 1: nel test esiste solo W con quota = W+T del training e "timber" non compare mai
+# W and T undocumented in Part 1: in the test set only W exists, with share = W+T of training, and "timber" never appears
 CONSTRUCTION_MAP = FIX["construction_map"]
 SI_FACTOR = 1000.0
 
@@ -24,10 +24,10 @@ def clean_one(df: pd.DataFrame, line: str, addresses: pd.DataFrame, rep: dict) -
     df = df.copy()
     if CFG["rename"]:
         df = df.rename(columns=CFG["rename"])
-    for c, k in FIX.get("scale", {}).items():      # unità diverse dal mercato di partenza (dall'audit)
+    for c, k in FIX.get("scale", {}).items():      # units different from the source market (from the audit)
         if c in df.columns:
             df[c] = df[c] * float(k); rep[f"scaled_{c}"] = float(k)
-    # customer_id motor: ~10% ha perso gli zeri iniziali (letto come numero); gli ID sono a 8 cifre (Parte 1)
+    # motor customer_id: ~10% lost leading zeros (read as a number); IDs have 8 digits (Part 1)
     if FIX["customer_id_zfill"]:
         short = df["customer_id"].astype(str).str.len() < FIX["customer_id_zfill"]
         rep["customer_id_zero_padded"] = int(short.sum())
@@ -37,7 +37,7 @@ def clean_one(df: pd.DataFrame, line: str, addresses: pd.DataFrame, rep: dict) -
     days = (df["period_end"] - df["period_start"]).dt.days + 1
     expo_clean = days / 365.0
     diff = (df["exposure"] - expo_clean).abs()
-    df["flag_exposure_fixed"] = diff > 0.5 / 365  # più di mezzo giorno di scarto
+    df["flag_exposure_fixed"] = diff > 0.5 / 365  # more than half a day of difference
     rep["exposure_fixed"] = int(df["flag_exposure_fixed"].sum())
     rep["exposure_fixed_days_coded"] = int((df["exposure"] > 1.5).sum())
     rep["exposure_fixed_365_360"] = int(df["exposure"].between(1.013, 1.015).sum())
@@ -77,7 +77,7 @@ def clean_one(df: pd.DataFrame, line: str, addresses: pd.DataFrame, rep: dict) -
         rep["ncb_gt_licensed"] = int(df["flag_ncb_gt_licensed"].sum())
         rep["licensed_gt_age"] = int(df["flag_licensed_gt_age"].sum())
 
-    # missing espliciti per le categoriche (i numerici restano NaN: li gestirà il modello)
+    # explicit missing level for categoricals (numerics stay NaN: the model handles them)
     for c in df.columns:
         if df[c].dtype == object or str(df[c].dtype) in ("string", "str"):
             if c in ("row_id", "policy_id", "customer_id", "address_id", "renewal_decision"):

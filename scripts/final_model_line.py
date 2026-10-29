@@ -1,6 +1,6 @@
-"""Stima finale di UN modello su tutte le polizze 2021-24 per UNA linea → previsione del test 2025.
-Come final.py submit --all, a pezzi (container 8 GB). Colonne caricate solo quelle che servono (memoria).
-Uso: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/final_model_line.py <modello> <linea>"""
+"""Final fit of ONE model on all 2021-24 policies for ONE line → prediction for the 2025 test.
+Like final.py submit --all, but in pieces (8 GB container). Only the needed columns are loaded (memory).
+Usage: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/final_model_line.py <model> <line>"""
 import sys, time
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -8,7 +8,7 @@ import pyarrow.parquet as pq
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import prepare as P  # noqa: E402
 name, line = sys.argv[1], sys.argv[2]
-if name.startswith("qwen"):          # il GBM usa solo feature ammesse + target: caricamento ridotto
+if name.startswith("qwen"):          # the GBM uses only allowed features + target: reduced loading
     names = pq.ParquetFile(P.MODEL_DIR / f"model_{line}.parquet").schema.names
     keep = [c for c in names if c in ("row_id", "policy_id", "year", "exposure", P.TARGET, "pol_prev_n")
             or c.startswith(("pi_", "n_")) or (c in P.allowed_features(pd.DataFrame(columns=names)) and not c.startswith("addr_"))]

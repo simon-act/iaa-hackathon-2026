@@ -1,9 +1,9 @@
-"""Banco della FRANCHIGIA RELATIVA nella frequenza per perilo (22/10 sera, domanda di Simone: modellare il lordo e applicare la franchigia dopo?).
-Diagnosi: gli importi non dipendono dalla franchigia; la frequenza sì, anche nella RC (fattore di selezione), ma nei danni propri e nei cristalli
-l'effetto si attenua con il valore del veicolo (GLM, interazione z 4,6 e 3,1; RC 0,9). Il freq×sev è additivo (1 split per albero) e non la vede.
-Stesso impianto di weather_bench.py. Varianti: base; xsrel = + (franchigia volontaria + obbligatoria) ÷ valore del bene
-(classe di valore del veicolo nell'auto, somma assicurata in casa).
-Uso: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/excess_bench.py <linea> ; output results_s3/excess_bench.csv"""
+"""Bench for the RELATIVE DEDUCTIBLE in per-peril frequency (22/10 evening, Simone's question: model gross and apply the deductible afterwards?).
+Diagnosis: amounts do not depend on the deductible; frequency does, even in TPL (selection effect), but in own damage and glass
+the effect fades with vehicle value (GLM, interaction z 4.6 and 3.1; TPL 0.9). The freq×sev is additive (1 split per tree) and does not capture it.
+Same setup as weather_bench.py. Variants: base; xsrel = + (voluntary + compulsory deductible) ÷ insured value
+(vehicle value class for motor, sum insured for home).
+Usage: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/excess_bench.py <line> ; output results_s3/excess_bench.csv"""
 import sys, time
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -38,8 +38,8 @@ def run(line):
     has_mm = "make_model" in cols
     base_cols = [c for c in cols if not (has_mm and c == "make_model")]
     df["val_q"] = pd.qcut(scale.rank(method="first"), 5, labels=False)
-    # noxs = senza franchigia; duefasi = "lordo poi netto": modello senza franchigia, poi fattore franchigia × classe di valore
-    # stimato sul train (A/E per cella, credibilità 50 sinistri) e applicato dopo
+    # noxs = no deductible; duefasi = "gross then net": model without deductible, then deductible factor × value class
+    # estimated on train (A/E per cell, credibility with 50 claims) and applied afterwards
     VAR = {"base": ([], {}), "xsrel": (["xs_rel"], {}), "noxs": ([], {}), "duefasi": ([], {})}
     if len(sys.argv) > 2:
         VAR = {k: v for k, v in VAR.items() if k in sys.argv[2].split(",")}
@@ -78,7 +78,7 @@ def run(line):
                 res[name] = poisson_d2(nv, mu_l)
                 rows.append({"linea": line, "perilo": p, "fold": f"F{last + 1}", "variante": name, "d2": res[name], "AE_livello": lvl,
                              "sec": round(time.time() - t0, 1)})
-            print(line, p, f"F{last + 1}", {k: round((v - res['base']) * 1e4, 1) for k, v in res.items()}, "AE livello base", round(rows[-len(VAR)]["AE_livello"], 3), flush=True)
+            print(line, p, f"F{last + 1}", {k: round((v - res['base']) * 1e4, 1) for k, v in res.items()}, "base level AE", round(rows[-len(VAR)]["AE_livello"], 3), flush=True)
             pd.DataFrame(rows).to_csv(OUT, mode="a", header=not OUT.exists(), index=False); rows = []
 
 

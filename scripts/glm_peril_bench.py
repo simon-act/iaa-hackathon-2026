@@ -1,14 +1,14 @@
-"""Banco GLM contro GBM per la FREQUENZA di ogni perilo (21/10, domanda di Simone: scegliere il metodo perilo per perilo).
-Stesso impianto di scripts/freq_bench.py: offset = log(esposizione × completezza) − trend, fold 2023 (stima 2021–22) e
-2024 (stima 2021–23), D² Poisson sui sinistri DENUNCIATI dell'anno dopo, livello riallineato per perilo e fold.
-Modelli:
-  gbm   = la frequenza di sub_40 (FREQ_PARAMS + FREQ_CHOSEN del perilo, cedimento a 3 foglie, encoding make_model);
-  glm   = GLM Poisson (glum) sulle stesse variabili: numeriche con > 20 valori in 20 classi per quantili (NaN classe a sé),
-          le altre come categorie (livelli con < 300 righe raggruppati); in auto anche l'encoding di make_model in 20 classi;
-          cedimento con l'interazione terreno × estate secca (come il GBM a 3 foglie). Penalità ridge scelta su un 10%
-          di polizze del training (devianza Poisson), poi stima su tutto il training;
-  mix50 = media geometrica dei due (stessa forma del blend su log).
-Uso: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/glm_peril_bench.py <linea> ; output results_s3/glm_peril_bench.csv"""
+"""GLM vs GBM bench for the FREQUENCY of each peril (21/10, Simone's question: choose the method peril by peril).
+Same setup as scripts/freq_bench.py: offset = log(exposure × completeness) − trend, fold 2023 (fit 2021–22) and
+2024 (fit 2021–23), Poisson D² on claims REPORTED in the following year, level realigned by peril and fold.
+Models:
+  gbm   = the sub_40 frequency (FREQ_PARAMS + FREQ_CHOSEN of the peril, 3-leaf subsidence, make_model encoding);
+  glm   = Poisson GLM (glum) on the same variables: numerics with > 20 distinct values in 20 quantile bins (NaN as its own bin),
+          the others as categories (levels with < 300 rows grouped); for motor also the make_model encoding in 20 bins;
+          subsidence with the soil × dry-summer interaction (like the 3-leaf GBM). Ridge penalty chosen on a 10% sample
+          of training policies (Poisson deviance), then fitted on the whole training set;
+  mix50 = geometric mean of the two (same form as the log-scale blend).
+Usage: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/glm_peril_bench.py <line> ; output results_s3/glm_peril_bench.csv"""
 import sys, time
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -30,7 +30,7 @@ def pdev(y, mu):
 
 
 def design(tr, va, cols, peril):
-    """categorie comuni a stima e valutazione"""
+    """categories common to fitting and evaluation"""
     A, B = {}, {}
     for c in cols:
         s, t = tr[c], va[c]
@@ -99,7 +99,7 @@ def run(line):
                 te_tr, te_va = M._te_make_model(tr, va, n, np.exp(off + base), k=30.0)
                 Xtr = Xtr0.assign(mm_freq_te=te_tr); Xva = Xva0.assign(mm_freq_te=te_va)
                 gl_tr = tr.assign(mm_freq_te=te_tr); gl_va = va.assign(mm_freq_te=te_va)
-            # GBM come in sub_40
+            # GBM as in sub_40
             cfg = dict(M.FREQ_CHOSEN.get(line, {}).get(p, M.FREQ_CHOSEN.get(line, {}).get("*", {})))
             mult = cfg.pop("_mult", 4)
             params = dict(M.FREQ_PARAMS, num_threads=4)

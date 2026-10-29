@@ -1,6 +1,6 @@
 {
  "name": "mercato_finto",
- "_nota": "prova generale della Parte 2 sui dati finti di scripts/make_fake_market.py; le voci sotto sono le differenze trovate dall'audit",
+ "_nota": "dress rehearsal of Part 2 on the synthetic data from scripts/make_fake_market.py; the entries below are the differences found by the audit",
  "raw": "data/fake_market",
  "interim": "data/fake_market/interim",
  "model_dir": "data/fake_market/model",

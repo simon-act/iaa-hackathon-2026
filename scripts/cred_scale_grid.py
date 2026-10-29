@@ -1,6 +1,6 @@
-"""21/10 sera: nella credibilità M = (N + k)/(E + k) gli attesi della storia E = H × pred/(esposizione × sev media di linea)
-dipendono dalla severità media usata per passare da costo a numero. Se è distorta, E è distorto. Prova c × E (c 0,7–1,2)
-per linea sul blend di sub_41 (OOF), giudice senza spalmatura e ufficiale, due fold. Output results_s3/cred_scale_grid.csv"""
+"""21/10 evening: in the credibility M = (N + k)/(E + k) the history expectations E = H × pred/(exposure × line mean severity)
+depend on the mean severity used to convert cost into counts. If it is biased, E is biased. Test c × E (c 0.7–1.2)
+by line on the sub_41 blend (OOF), own (no spreading) and official judges, two folds. Output results_s3/cred_scale_grid.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd

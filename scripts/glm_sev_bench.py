@@ -1,8 +1,8 @@
-"""Banco GLM contro GBM per la SEVERITÀ di ogni perilo (21/10). Stessi dati, fold e metrica di scripts/sev_bench.py
-(D² Gamma per perilo sui sinistri dell'anno dopo, base = media del training).
-Modelli: base (severità di sub_40: GBM / GLM log SI / media come oggi; per le lesioni auto conta anche 'media'),
-media, glm = GLM Gamma (glum) sui driver di severità (numeriche in 10 classi, auto + encoding make_model), ridge scelto
-su un 20% dei sinistri del training; mix50 = media geometrica base × glm.
+"""GLM vs GBM bench for the SEVERITY of each peril (21/10). Same data, folds and metric as scripts/sev_bench.py
+(Gamma D² per peril on following-year claims, base = training mean).
+Models: base (sub_40 severity: GBM / GLM on log SI / mean as today; for motor bodily injury 'media' also counts),
+media, glm = Gamma GLM (glum) on the severity drivers (numerics in 10 bins, motor + make_model encoding), ridge chosen
+on a 20% sample of training claims; mix50 = geometric mean base × glm.
 Output results_s3/glm_sev_bench.csv"""
 import sys
 from pathlib import Path

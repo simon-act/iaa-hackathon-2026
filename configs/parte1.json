@@ -1,4 +1,4 @@
 {
   "name": "parte1",
-  "_nota": "identica ai default di src/market_config.py: serve solo come esempio e come 'source_market' per la Parte 2"
+  "_nota": "identical to the defaults in src/market_config.py: serves only as an example and as the 'source_market' for Part 2"
 }

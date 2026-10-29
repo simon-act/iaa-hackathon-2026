@@ -1,7 +1,7 @@
-"""Parte 2 (27/10): controllo pulito di bench17 in auto. In bench17 prem_rel entrava anche tra le variabili del GBM sul numero di
-sinistri (anche nel riferimento). Qui, contro p2_sub_18 esatta (senza prem_rel): 'sub_18 + prem nel GBM' e 'sub_18 + prem nel GBM
-+ correzione di frequenza prem_rel' (= la variante 'prem freq' di bench17). Regola ≥ 5/7 forma E own.
-Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench17b.py"""
+"""Part 2 (27/10): clean control of bench17 in motor. In bench17 prem_rel also entered the variables of the GBM on claim
+count (in the reference too). Here, vs the exact p2_sub_18 (without prem_rel): 'prem nel GBM' (sub_18 + prem_rel in the GBM) and 'prem nel GBM
++ freq prem' (also + frequency correction on prem_rel; = the 'prem freq' variant of bench17). Rule ≥ 5/7 shape AND own.
+Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench17b.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd

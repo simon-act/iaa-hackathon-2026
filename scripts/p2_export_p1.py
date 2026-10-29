@@ -1,14 +1,14 @@
-"""Parte 2 (27/10, richiesta di Simone: "testare i migliori modelli della Parte 1 sulla Parte 2"): esporta come prior del developed
-una variante di modello della Parte 1 (senza la credibilità finale sulla storia, che nell'emerging peggiora: bench4), con la stessa
-selezione di variabili comuni di transfer.export_source. Varianti:
-  v2      = fs2_v2 (casa con premio relativo; auto = fs2_all_ll perché il chilometraggio manca nell'emerging)   [sub_26]
-  v2f     = v2 + frequenza per perilo da griglia (FREQ_CHOSEN)                                                    [sub_30]
-  v2fs    = v2f + severità auto per perilo (SEV_CHOSEN: lesioni costante)                                        [sub_38/39]
-  v2fsllr = v2fs + grandi sinistri ripartiti sul rischio                                                          [sub_45]
-  gbm73   = GBM di Qwen (qwen_gbm73), per la miscela                                                              [sub_25]
-  v2prem  = freq×sev con il premio relativo in frequenza e severità anche in auto (28/10)
-Uscita: <results nuovo>/source_pred_<linea>_p1<variante>.parquet (mu_src, parti per perilo se il modello le produce).
-Uso: IAA_MARKET=configs/parte1_s3.json python3 scripts/p2_export_p1.py <linea> <variante> configs/parte2_llc.json [frazione=1]"""
+"""Part 2 (27/10, request: "test the best Part 1 models on Part 2"): exports as developed prior
+a Part 1 model variant (without the final credibility on claims history, which worsens results in the emerging market: bench4), with the same
+selection of common variables as transfer.export_source. Variants:
+  v2      = fs2_v2 (property with relative premium; motor = fs2_all_ll because mileage is missing in the emerging market)   [sub_26]
+  v2f     = v2 + per-peril frequency from grid (FREQ_CHOSEN)                                                    [sub_30]
+  v2fs    = v2f + per-peril motor severity (SEV_CHOSEN: constant bodily injury)                                  [sub_38/39]
+  v2fsllr = v2fs + large losses allocated by risk                                                                [sub_45]
+  gbm73   = Qwen GBM (qwen_gbm73), for the blend                                                                 [sub_25]
+  v2prem  = freq×sev with the relative premium in frequency and severity in motor too (28/10)
+Output: <new results>/source_pred_<line>_p1<variant>.parquet (mu_src, per-peril parts if the model produces them).
+Usage: IAA_MARKET=configs/parte1_s3.json python3 scripts/p2_export_p1.py <line> <variant> configs/parte2_llc.json [fraction=1]"""
 import sys, time
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -19,7 +19,7 @@ line, var, new_cfg = sys.argv[1], sys.argv[2], MC.load(sys.argv[3]); FRAC = floa
 t0 = time.time()
 src = TR.harmonize(P.load(line))
 import os
-_RANGE = os.environ.get("P1_RANGE")   # 28/10: "lo-hi" = polizze con hash % 100 in [lo, hi) (metà disgiunte per il bagging)
+_RANGE = os.environ.get("P1_RANGE")   # 28/10: "lo-hi" = policies with hash % 100 in [lo, hi) (disjoint halves for bagging)
 if _RANGE:
     lo, hi = map(int, _RANGE.split("-")); hh = pd.util.hash_array(src["policy_id"].to_numpy() + "_c") % 100
     src = src[(hh >= lo) & (hh < hi)].reset_index(drop=True); FRAC = (hi - lo) / 100
@@ -40,7 +40,7 @@ def overlap(c):
 common = [c for c in common if overlap(c) >= 0.5]
 M.FEATURE_WHITELIST = set(common) | {"prem_rel"}
 import os
-if os.environ.get("P1_THREADS"):   # 28/10: più thread per stare nel limite di tempo (risultati quasi identici, non bit a bit)
+if os.environ.get("P1_THREADS"):   # 28/10: more threads to stay within the time limit (results nearly identical, not bit-for-bit)
     for d_ in (M.FREQ_PARAMS, M.SEV_PARAMS):
         d_["num_threads"] = int(os.environ["P1_THREADS"])
 both = pd.concat([new_tr, new_te], ignore_index=True)
@@ -63,7 +63,7 @@ def v2fsllr(tr, va, l):
         return v2fs(tr, va, l)
     finally:
         M._LL_RISK = False
-def v2prem(tr, va, l):   # 28/10: freq×sev con il premio relativo anche in auto (in fs2_v2 era solo in casa)
+def v2prem(tr, va, l):   # 28/10: freq×sev with the relative premium in motor too (in fs2_v2 it was property only)
     M.SEV_DRIVERS[l] = M.SEV_DRIVERS[l] + ["prem_rel"]
     try:
         return M.fs2_all_ll(M._prem(tr), M._prem(va), l)
@@ -79,10 +79,10 @@ if lp and var != "gbm73":
     for per, (f_va, s_va) in lp["perils"].items():
         out[f"f_{per}"] = f_va; out[f"s_{per}"] = s_va
     out["ll_src"] = lp["ll"]; out["c_src"] = lp["c"]
-else:   # parti per perilo prese dal prior attuale (servono solo ai livelli per perilo e ai numeri attesi)
+else:   # per-peril parts taken from the current prior (needed only for peril levels and expected counts)
     for c in gb.columns:
         if c != "mu_src":
             out[c] = gb[c].to_numpy()
 out.to_parquet(Path(new_cfg["results"]) / f"source_pred_{line}_p1{var}{('_r' + _RANGE.replace('-', '_')) if _RANGE else ('' if FRAC == 1 else '_s' + str(int(FRAC * 100)))}.parquet", index=False)
-print(f"{line} {var}: corr log col prior attuale {np.corrcoef(np.log(pred), np.log(gb.mu_src.to_numpy()))[0, 1]:.4f}, "
-      f"rapporto totali {pred.sum() / gb.mu_src.sum():.3f} ({time.time() - t0:.0f}s, {len(src)} righe)", flush=True)
+print(f"{line} {var}: log corr with the current prior {np.corrcoef(np.log(pred), np.log(gb.mu_src.to_numpy()))[0, 1]:.4f}, "
+      f"ratio of totals {pred.sum() / gb.mu_src.sum():.3f} ({time.time() - t0:.0f}s, {len(src)} rows)", flush=True)

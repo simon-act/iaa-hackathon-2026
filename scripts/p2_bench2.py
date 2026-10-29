@@ -1,8 +1,8 @@
-"""Parte 2 (25/10): banco a 7 verifiche (stessi fold di p2_bench.py) per il nuovo business per canale.
-Motivo: A/E nuovo business / rinnovi rispetto al prior = 1,20 nel broker (CI90 1,00–1,45) e 0,97 nel diretto (0,80–1,16);
-nel test il nuovo business è 53% broker, 19% diretto, 4% comparatori. Varianti (GLM di correzione con offset = prior):
-genere+nb (= sub_07), genere+nb solo broker, genere+nb×canale, genere+canale (controllo).
-Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench2.py [linee] → results_p2/p2_bench2.csv"""
+"""Part 2 (25/10): 7-check bench (same folds as p2_bench.py) for new business by channel.
+Rationale: A/E new business / renewals relative to the prior = 1.20 in broker (CI90 1.00–1.45) and 0.97 in direct (0.80–1.16);
+in the test, new business is 53% broker, 19% direct, 4% aggregators. Variants (correction GLM with offset = prior):
+gender+nb (= sub_07), gender+nb broker only, gender+nb×channel, gender+channel (control).
+Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench2.py [lines] → results_p2/p2_bench2.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             for k, p in preds.items():
                 rows.append(dict(linea=l, fold=fname, variante=k, forma=P.d2(y, p * y.sum() / p.sum()),
                                  own=P.d2_own(va.row_id, p), unc=P.d2_unc(va.row_id, p)))
-            print(l, fname, "fatto", flush=True)
+            print(l, fname, "done", flush=True)
     r = pd.DataFrame(rows)
     b = r[r.variante == "genere+nb"].set_index(["linea", "fold"])
     for c in ("forma", "own", "unc"):
@@ -58,5 +58,5 @@ if __name__ == "__main__":
         forma=("d_forma", "mean"), own=("d_own", "mean"), unc=("d_unc", "mean"),
         pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{len(x)}"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/{len(x)}"),
         pos_unc=("d_unc", lambda x: f"{(x > 0).sum()}/{len(x)}"))
-    print("Δ e·4 rispetto a genere+nb (sub_07)"); print(s.round(1).to_string())
+    print("Δ e·4 vs gender+nb (sub_07)"); print(s.round(1).to_string())
     print(r.pivot_table(index=["linea", "variante"], columns="fold", values="d_forma").round(1).to_string())

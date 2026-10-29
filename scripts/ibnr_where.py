@@ -1,10 +1,10 @@
-"""21/10 (domanda di Simone): l'IBNR va messo solo sulle righe che hanno già un sinistro, o spalmato su tutte?
-Emulazione: valutazione al 31/12 dell'anno di accadimento (AY 2021–2023). Sinistri 'tardivi' = accaduti nell'AY e
-denunciati dopo il 31/12. Per ogni riga: ha già un sinistro denunciato entro il 31/12 (stessa linea)?
-- quota dei tardivi che cade su righe con sinistro già denunciato, contro la quota di esposizione di quelle righe;
-- lift = tardivi per unità di atteso sulle righe con sinistro / sulle altre. Atteso ∝ esposizione, per trimestre di fine
-  periodo (che decide quanta parte è ancora da denunciare); per AY 2023 anche ∝ previsione OOF del blend (toglie il
-  rischio già spiegato dalle variabili).
+"""21/10 (Simone's question): should IBNR be placed only on rows that already have a claim, or spread across all rows?
+Emulation: valuation at 31/12 of the accident year (AY 2021–2023). 'Late' claims = occurred in the AY and
+reported after 31/12. For each row: does it already have a claim reported by 31/12 (same line)?
+- share of late claims falling on rows with an already-reported claim, vs the exposure share of those rows;
+- lift = late claims per unit of expectation on rows with a claim / on the others. Expectation ∝ exposure, by period-end
+  quarter (which determines how much is still to be reported); for AY 2023 also ∝ the OOF blend prediction (removes the
+  risk already explained by the variables).
 Output results_s3/ibnr_where.csv"""
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -26,7 +26,7 @@ for line in ["motor", "buildings", "contents"]:
         for base in (["esposizione"] + (["previsione OOF"] if ay == 2023 else [])):
             w = r.exposure.to_numpy() if base == "esposizione" else O.reindex(r.row_id)["pred"].to_numpy()
             r["w"] = w
-            # atteso dei tardivi per riga: peso × tasso dei tardivi del trimestre di fine periodo
+            # expected late claims per row: weight × late-claim rate of the period-end quarter
             rate = r.groupby("q").apply(lambda z: z.late.sum() / z.w.sum())
             r["E"] = r.w * r.q.map(rate)
             g = r.groupby("early")[["late", "E", "exposure"]].sum()

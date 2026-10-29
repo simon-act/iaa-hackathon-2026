@@ -1,11 +1,11 @@
-"""Scomposizione di Murphy del punteggio Tweedie (proper scoring rule, divergenza di Bregman).
-S(pred) = UNC − DSC + MCB, con S = devianza media, ricalibrazione isotonica (PAV, ottimale per ogni Bregman):
-  UNC = S(media)          incertezza del target (fissa)
-  DSC = S(media) − S(iso) discriminazione: quanto il modello ordina bene i rischi
-  MCB = S(pred) − S(iso)  errore di calibrazione: perso per livelli sbagliati a parità di ordinamento
+"""Murphy decomposition of the Tweedie score (proper scoring rule, Bregman divergence).
+S(pred) = UNC − DSC + MCB, with S = mean deviance, isotonic recalibration (PAV, optimal for every Bregman):
+  UNC = S(mean)           target uncertainty (fixed)
+  DSC = S(mean) − S(iso)  discrimination: how well the model ranks risks
+  MCB = S(pred) − S(iso)  miscalibration: loss due to wrong levels for the same ranking
   D² = (DSC − MCB) / UNC
-Versione onesta: isotonica stimata su un fold e applicata all'altro.
-Uso: python -I murphy.py <oof_name>
+Honest version: isotonic fit on one fold and applied to the other.
+Usage: python -I murphy.py <oof_name>
 """
 import json, sys
 from pathlib import Path
@@ -32,7 +32,7 @@ def main(name):
             iso = iso_fit(p, y).predict(np.log(p))
             other = o[(o.fold != f) & ((o.line == line) if line != "tutte" else True)]
             iso_x = iso_fit(other.pred.to_numpy(), other.target_b.to_numpy()).predict(np.log(p))
-            iso_x = np.clip(iso_x, 1e-3, None) * (p.sum() / np.clip(iso_x, 1e-3, None).sum())  # stesso livello totale
+            iso_x = np.clip(iso_x, 1e-3, None) * (p.sum() / np.clip(iso_x, 1e-3, None).sum())  # same total level
             sp, si, sx = dev(y, p), dev(y, np.clip(iso, 1e-3, None)), dev(y, iso_x)
             rows.append(dict(line=line, fold=f, D2=round(1 - sp / unc, 5), DSC=round((unc - si) / unc, 5),
                              MCB=round((sp - si) / unc, 5), D2_ricalib_onesta=round(1 - sx / unc, 5),

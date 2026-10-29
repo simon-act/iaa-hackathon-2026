@@ -1,8 +1,8 @@
-"""Parte 2 (25/10): experience rating della Parte 1 (credibilità sulla storia sinistri della polizza, src/experience.py) sopra il
-modello di sub_07. Mai provato nella Parte 2. k fissato dalla Parte 1, non stimato qui: auto 16, fabbricato e contenuto 8.
-Griglia di k solo come diagnosi. Fold di p2_bench2 (F2023 non informativo: le righe 2023 non hanno storia → M = 1).
-Regola: entra se vince in ≥ 5 delle 6 verifiche informative su forma e own.
-Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench4.py → results_p2/p2_bench4.csv"""
+"""Part 2 (25/10): Part 1 experience rating (credibility on the policy's claims history, src/experience.py) on top of the
+sub_07 model. Never tested in Part 2. k fixed from Part 1, not estimated here: motor 16, buildings and contents 8.
+k grid only as a diagnostic. Folds from p2_bench2 (F2023 not informative: 2023 rows have no history → M = 1).
+Rule: adopted if it wins ≥ 5 of the 6 informative checks on shape and own.
+Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench4.py → results_p2/p2_bench4.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -16,7 +16,7 @@ VARS = {"motor": ["gender", "new_business"], "contents": ["gender"]}
 
 
 def base_pred(tr, va, l):
-    """modello di sub_07 per linea: auto genere+nb, contenuto genere, fabbricato 0,9 prior×livello + 0,1 scratch."""
+    """sub_07 model by line: motor gender+nb, contents gender, buildings 0.9 prior×level + 0.1 scratch."""
     if l in VARS:
         TR.CORRECTION_VARS = VARS[l]
         return np.asarray(TR.src_glm(tr, va, l), float)
@@ -36,7 +36,7 @@ for l in P.LINES:
         for name, p in preds.items():
             rows.append(dict(linea=l, fold=fname, variante=name, forma=P.d2(y, p * y.sum() / p.sum()),
                              own=P.d2_own(va.row_id, p), unc=P.d2_unc(va.row_id, p)))
-        print(l, fname, "fatto", flush=True)
+        print(l, fname, "done", flush=True)
 r = pd.DataFrame(rows)
 bb = r[r.variante == "sub_07"].set_index(["linea", "fold"])
 for c in ("forma", "own", "unc"):
@@ -46,5 +46,5 @@ inf = r[(r.variante != "sub_07") & (r.fold != "F2023")]
 s = inf.groupby(["linea", "variante"]).agg(forma=("d_forma", "mean"), own=("d_own", "mean"), unc=("d_unc", "mean"),
     pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{len(x)}"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/{len(x)}"))
 pd.set_option("display.width", 220)
-print("Δ e·4 contro sub_07, 6 verifiche informative"); print(s.round(1).to_string())
+print("Δ e·4 vs sub_07, 6 informative checks"); print(s.round(1).to_string())
 print(r[r.variante.str.contains("Parte 1")].pivot_table(index="linea", columns="fold", values="d_forma").round(1).to_string())

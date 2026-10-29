@@ -1,5 +1,5 @@
-"""Una sola linea × fold di oof.py (il container si riavvia sui job lunghi). Poi: oof_one.py merge <nome>.
-Uso: IAA_MARKET=... python3 -I scripts/oof_one.py <nome> <linea> <fold>"""
+"""A single line × fold of oof.py (the container restarts on long jobs). Then: oof_one.py merge <name>.
+Usage: IAA_MARKET=... python3 -I scripts/oof_one.py <name> <line> <fold>"""
 import sys
 from pathlib import Path
 import numpy as np

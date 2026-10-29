@@ -1,11 +1,11 @@
-"""Parte 2 (26/10): livello proprio SOLO per alcuni perili, il resto al livello della linea, sopra p2_sub_10.
-Motivo (results_p2/p2_bench5_livelli.csv): fabbricato storm 0,94–1,02 sopra il livello della linea; auto glass_hail e TPP
-sotto. Il livello per perilo su TUTTI i perili era stato bocciato (fabbricato −9,5, auto −3,5, 2/7).
-Costruzione: prior di sub_10 × (1 + Σ_{p propri} quota_p × (r_p − 1)), quota_p = f_p·s_p / mu_src della riga,
-r_p = (a_p·b_p)/(a_linea·b_linea) da TR.src_peril (credibilità k verso la linea, stimata solo sul train del fold).
-Poi identico a sub_10 (spec v4): auto GLM genere+nb con offset; fabbricato livello + 0,1 scratch.
-Decisione fissata prima: k = 100/200 per storm, storm+subsidence, glass+TPP; altri k e perili singoli = sensibilità.
-Regola: entra se vince in ≥ 5/7 verifiche su forma E own.  Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench10.py"""
+"""Part 2 (26/10): own level ONLY for some perils, the rest at line level, on top of p2_sub_10.
+Rationale (results_p2/p2_bench5_livelli.csv): buildings storm 0.94–1.02 above the line level; motor glass_hail and TPP
+below. Peril-level for ALL perils had been rejected (buildings −9.5, motor −3.5, 2/7).
+Construction: sub_10 prior × (1 + Σ_{own p} share_p × (r_p − 1)), share_p = f_p·s_p / mu_src of the row,
+r_p = (a_p·b_p)/(a_line·b_line) from TR.src_peril (credibility k toward the line, estimated on the fold's train only).
+Then identical to sub_10 (spec v4): motor GLM gender+nb with offset; buildings level + 0.1 scratch.
+Decision fixed in advance: k = 100/200 for storm, storm+subsidence, glass+TPP; other k values and single perils = sensitivity.
+Rule: adopted if it wins ≥ 5/7 checks on shape judge AND own.  Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench10.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -55,14 +55,14 @@ for l in ("buildings", "motor"):
         for k, p in preds.items():
             rows.append(dict(linea=l, fold=fname, variante=k, forma=P.d2(y, p * y.sum() / p.sum()),
                              own=P.d2_own(va.row_id, p), unc=P.d2_unc(va.row_id, p)))
-        print(l, fname, "fatto", flush=True)
+        print(l, fname, "done", flush=True)
 r = pd.DataFrame(rows)
 b = r[r.variante == "sub_10"].set_index(["linea", "fold"])
 for c in ("forma", "own", "unc"):
     r[f"d_{c}"] = (r[c].to_numpy() - b.loc[list(zip(r.linea, r.fold)), c].to_numpy()) * 1e4
 ctl = r[r.variante.str.startswith("nessuno")][["d_forma", "d_own", "d_unc"]].abs().to_numpy().max()
-print(f"controllo (zero perili propri = sub_10): max |Δ| = {ctl:.2e}")
-assert ctl < 1e-6, "il controllo non riproduce sub_10"
+print(f"control (zero own perils = sub_10): max |Δ| = {ctl:.2e}")
+assert ctl < 1e-6, "the control does not reproduce sub_10"
 out = Path(P.RESULTS)
 r.to_csv(out / "p2_bench10.csv", index=False); pd.DataFrame(logs).to_csv(out / "p2_bench10_livelli.csv", index=False)
 pd.set_option("display.width", 220)
@@ -71,7 +71,7 @@ s = r[~r.variante.isin(["sub_10"]) & ~r.variante.str.startswith("nessuno")].grou
     pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{len(x)}"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/{len(x)}"),
     pos_unc=("d_unc", lambda x: f"{(x > 0).sum()}/{len(x)}"))
 s["decisione"] = [v in DECISIONE for _, v in s.index]
-print("Δ e·4 contro sub_10"); print(s.round(2).to_string())
+print("Δ e·4 vs sub_10"); print(s.round(2).to_string())
 for c in ("d_forma", "d_own"):
     print(c); print(r[r.variante.isin(DECISIONE)].pivot_table(index=["linea", "variante"], columns="fold", values=c).round(2).to_string())
-print("r_p (livello perilo / linea), k=100/200"); print(pd.DataFrame(logs).query("k=='100/200'").round(3).to_string())
+print("r_p (peril level / line level), k=100/200"); print(pd.DataFrame(logs).query("k=='100/200'").round(3).to_string())

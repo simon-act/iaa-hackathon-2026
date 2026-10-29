@@ -1,10 +1,10 @@
-"""Passo 1d — trend di frequenza e severità e livello 2025 per linea × perilo.
+"""Step 1d — frequency and severity trends and 2025 level by line × peril.
 
-Regressione log-lineare su AY degli ultimate sviluppati; pesi: frequenza n_ult*pi^2, severità n_ult*quota chiusi.
-Un trend non significativo (p > 0,10) viene messo a zero. Perili con severità instabile
-(p > 0,10) usano la mediana dei trend significativi della linea.
-Livello 2025 = media pesata degli AY riportati al 2025 con il trend.
-Uso: python -I trend.py <interim_dir>
+Log-linear regression on AY of the developed ultimates; weights: frequency n_ult*pi^2, severity n_ult*closed share.
+A non-significant trend (p > 0.10) is set to zero. Perils with unstable severity
+(p > 0.10) use the median of the line's significant trends.
+2025 level = weighted mean of the AYs trended to 2025.
+Usage: python -I trend.py <interim_dir>
 """
 import json
 import sys
@@ -17,8 +17,8 @@ from scipy import stats
 sys.path.insert(0, str(Path(__file__).parent))
 from market_config import CFG, TARGET_YEAR  # noqa: E402
 P_MAX = 0.10
-# perili guidati dal meteo: la frequenza segue le variabili meteo dell'anno (note anche per il 2025),
-# quindi niente trend temporale nel livello base: lo sposta il modello con weather 2025
+# weather-driven perils: frequency follows the year's weather variables (also known for 2025),
+# so no time trend in the base level: the model moves it using 2025 weather
 WEATHER_PERILS = CFG["weather_perils"]
 
 
@@ -38,7 +38,7 @@ def wls(x, y, w):
 def main(interim: str) -> None:
     interim = Path(interim)
     d = pd.read_parquet(interim / "development.parquet")
-    # pesi: frequenza ~ completezza^2 (gli AY con molto IBNR contano meno), severità ~ quota chiusi
+    # weights: frequency ~ completeness^2 (AYs with a lot of IBNR count less), severity ~ closed share
     d["w_freq"] = d["n_ult"] * d["pi"] ** 2
     d["w_sev"] = d["n_ult"] * (1 - d["open_share"]).clip(lower=0.05)
     rows = []
@@ -49,7 +49,7 @@ def main(interim: str) -> None:
     t = pd.DataFrame(rows)
     t["freq_trend"] = np.where(t["freq_p"] <= P_MAX, np.expm1(t["freq_slope"]), 0.0)
     t["freq_rule"] = np.where(t["freq_p"] <= P_MAX, "stimato", "zero (non significativo)")
-    # trend di linea (perili non meteo insieme) per i perili con stima propria non significativa
+    # line trend (non-weather perils pooled) for perils whose own estimate is not significant
     nw = d[[(l, p) not in WEATHER_PERILS for l, p in zip(d["line"], d["peril"])]]
     for line, g in nw.groupby("line"):
         a = g.groupby("ay").agg(n=("n_ult", "sum"), e=("exposure", "first"), pi=("pi", "mean"))
@@ -57,8 +57,8 @@ def main(interim: str) -> None:
         use = (t["line"] == line) & (t["freq_p"] > P_MAX) & (pl <= P_MAX)
         t.loc[use, "freq_trend"] = np.expm1(bl)
         t.loc[use, "freq_rule"] = f"trend di linea (p={pl:.3f})"
-    # 19/10: override puntuale del trend di frequenza (es. furto auto: stima propria −0,4% invece del trend di linea −2,6%;
-    # il test di previsione 2021–23 → 2024 con i driver dice che il trend di linea peggiora il furto)
+    # 19/10: targeted override of the frequency trend (e.g. motor theft: own estimate −0.4% instead of the line trend −2.6%;
+    # the 2021–23 → 2024 forecast test with the drivers shows that the line trend worsens theft)
     for key, val in CFG.get("trend", {}).get("freq_override", {}).items():
         l_, p_ = key.split("|")
         sel = (t["line"] == l_) & (t["peril"] == p_)
@@ -69,7 +69,7 @@ def main(interim: str) -> None:
     sig = t[t["sev_p"] <= P_MAX]
     line_med = sig.groupby("line")["sev_slope"].median()
     rule = CFG.get("trend", {}).get("sev_nonsig", "line_median")
-    if rule == "own":        # 18/10: la mediana della linea dava alle lesioni (motor) +7,9% invece del +1,9% osservato
+    if rule == "own":        # 18/10: the line median gave injury (motor) +7.9% instead of the observed +1.9%
         alt, lab = np.expm1(t["sev_slope"]), "stima propria (non significativa)"
     elif rule == "zero":
         alt, lab = np.zeros(len(t)), "zero (non significativo)"
@@ -78,8 +78,8 @@ def main(interim: str) -> None:
     t["sev_trend"] = np.where(t["sev_p"] <= P_MAX, np.expm1(t["sev_slope"]), alt)
     t["sev_rule"] = np.where(t["sev_p"] <= P_MAX, "stimato", lab)
 
-    # Parte 2 (23/10): con 2 soli AY la regressione non ha gradi di libertà (p = NaN) e la pendenza su 2 punti è rumore
-    # (es. furto auto +20%/anno, incendio −22%) -> trend di frequenza e severità del mercato di partenza per perilo
+    # Part 2 (23/10): with only 2 AYs the regression has no degrees of freedom (p = NaN) and the 2-point slope is noise
+    # (e.g. motor theft +20%/year, fire −22%) -> frequency and severity trends of the source market by peril
     if CFG.get("trend", {}).get("from_source"):
         import market_config as MC
         st = pd.read_parquet(Path(MC.load(CFG["transfer"]["source_market"])["interim"]) / "trend.parquet").set_index(["line", "peril"])
@@ -103,17 +103,17 @@ def main(interim: str) -> None:
     lvl["bc_2025"] = lvl["freq_2025"] * lvl["sev_2025"]
     t = t.merge(lvl, on=["line", "peril"])
 
-    # caricamento large loss per linea: eccedenza per esposizione, riportata al 2025 con la
-    # mediana del trend di severità della linea
+    # large-loss loading by line: excess per unit of exposure, trended to 2025 with the
+    # median of the line's severity trends
     ll = pd.read_parquet(interim / "large_loss.parquet")
     sev_line = t.groupby("line")["sev_trend"].median()
     ll["excess_onlevel"] = ll["excess_per_expo"] * (1 + ll["line"].map(sev_line)) ** (TARGET_YEAR - ll["ay"])
     ll_load = ll.groupby("line").apply(lambda g: np.average(g["excess_onlevel"], weights=g["exposure"]),
                                        include_groups=False).rename("ll_load_2025")
     line_bc = t.groupby("line")["bc_2025"].sum().rename("bc_2025_capped").to_frame().join(ll_load)
-    # Parte 2 — credibilità sul carico large loss: in un mercato piccolo pochi sinistri enormi dominano il carico
-    # (visto sul mercato finto: un sinistro da 16M = 32% del premio motor). Z = n_large / (n_large + K), prior = carico
-    # del mercato di partenza riscalato al livello (tagliato) del mercato nuovo.
+    # Part 2 — credibility on the large-loss loading: in a small market a few huge claims dominate the loading
+    # (seen on the mock market: one 16M claim = 32% of the motor premium). Z = n_large / (n_large + K), prior = loading
+    # of the source market rescaled to the (capped) level of the new market.
     src_cfg = CFG["transfer"].get("source_market")
     line_bc["ll_load_own"] = line_bc["ll_load_2025"]
     if src_cfg:
@@ -124,8 +124,8 @@ def main(interim: str) -> None:
         K = float(CFG["transfer"].get("ll_credibility_k", 50))
         Z = n_large / (n_large + K)
         src_load = src["ll_load_2025"].reindex(line_bc.index).copy()
-        # 25/10 — prior dal developed con la coda di Pareto (come L2) invece della media empirica: nel developed la media auto
-        # è gonfiata da un sinistro da 11,9 M; nella Parte 1 la versione Pareto (sub_19) era meglio sul privato (+0,00024).
+        # 25/10 — prior from the developed market with the Pareto tail (as in L2) instead of the empirical mean: in the developed market the motor mean
+        # is inflated by one 11.9M claim; in Part 1 the Pareto version (sub_19) scored better on the private test set (+0.00024).
         lp = CFG["transfer"].get("ll_prior_pareto", {})
         if lp:
             scfg = MC.load(src_cfg); sint = Path(scfg["interim"])
@@ -138,11 +138,11 @@ def main(interim: str) -> None:
                 raw = len(x) / E * (float(u0) / capv) ** a * capv / (a - 1)
                 emp_raw = float(sll.loc[sll["line"] == line, "excess"].sum()) / E
                 line_bc.loc[line, "ll_prior_alpha"] = a
-                src_load[line] = raw * float(src.loc[line, "ll_load_2025"]) / emp_raw   # stesso riporto al 2025 della media empirica
+                src_load[line] = raw * float(src.loc[line, "ll_load_2025"]) / emp_raw   # same trending to 2025 as the empirical mean
         prior = src_load * line_bc["bc_2025_capped"] / src["bc_2025_capped"].reindex(line_bc.index)
-        # 25/10 — riscalatura del prior col rapporto delle frequenze di sinistri "grandi ma non estremi" (sopra f × soglia), dove
-        # l'emerging ha abbastanza sinistri, invece che col livello del costo tagliato: auto 26 sinistri > 30k contro 73,5 attesi col
-        # tasso del developed (0,35), fabbricato 15 > 125k contro 6,9 (2,17), contenuto 45 > 10k contro 64,4 (0,70).
+        # 25/10 — prior rescaled by the ratio of frequencies of "large but not extreme" claims (above f × threshold), where
+        # the emerging market has enough claims, instead of by the capped cost level: motor 26 claims > 30k vs 73.5 expected at the
+        # developed-market rate (0.35), buildings 15 > 125k vs 6.9 (2.17), contents 45 > 10k vs 64.4 (0.70).
         cr = CFG["transfer"].get("ll_prior_count_ratio", {})
         if cr:
             scfg = MC.load(src_cfg); sint = Path(scfg["interim"])
@@ -158,8 +158,8 @@ def main(interim: str) -> None:
                 prior[line] = src_load[line] * ratio
         line_bc["ll_load_prior_src"] = prior; line_bc["ll_Z"] = Z; line_bc["n_large"] = n_large
         line_bc["ll_load_2025"] = Z * line_bc["ll_load_own"] + (1 - Z) * prior
-    # 18/10 — L2: carico grandi sinistri da una coda di Pareto invece che dalla media empirica. In auto la media empirica
-    # è dominata da un solo sinistro da 11,9 M (atteso ~0,013 volte in 4 anni sotto la coda stimata, α ≈ 2).
+    # 18/10 — L2: large-loss loading from a Pareto tail instead of the empirical mean. In motor the empirical mean
+    # is dominated by a single 11.9M claim (expected ~0.013 times in 4 years under the fitted tail, α ≈ 2).
     llc = CFG.get("large_loss", {})
     if llc.get("method") == "pareto":
         cl = pd.read_parquet(interim / "claims_clean.parquet", columns=["line", "net_incurred"])

@@ -5,5 +5,5 @@ Part 1 · boosting partner,Part 1,a second GBM to blend,same,no gain: the partne
 Part 1 · severity,Part 1,severity models per peril,same,"one gain, below noise on the row score"
 Part 1 · residual corrections,Part 1,corrections on the blend's residuals,same,found the vehicle-value residual; too small to act on
 Part 1 · claim history,Part 1,experience-rating variants,same,no gain over the actuary's experience rating
-Part 2 · emerging-market corrections,Part 2,corrections on top of the Part 1 prior,frozen judge on 2023 → 2024,running; kept ideas go to the seven-check bench
+Part 2 · emerging-market corrections,Part 2,corrections on top of the Part 1 prior,frozen judge on 2023 → 2024,"124 experiments, 4 kept by its judge; each kept idea was re-checked on the seven-check bench or overlaps a correction already tested there; none entered the final as Qwen code"
 Code review,Part 1 → 2,"reads the pipeline, raises findings, then tries to refute them",manual check by Claude and the actuary,4 robustness fixes that the Part 2 market needed

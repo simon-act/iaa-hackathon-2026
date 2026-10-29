@@ -1,10 +1,10 @@
-"""Ricerca di "spie" (21/10, domanda di Simone): valori di una colonna che, pur rari, segnalano molti più (o meno) sinistri.
-Per ogni linea, colonna e valore (categorie; per le numeriche: mancante, 0, minimo, massimo e valori con quota > 2%):
- - lift grezzo = sinistri denunciati / attesi a frequenza media (esposizione × completezza × frequenza media del perilo);
- - stabilità: lift 2021–22 e 2023–24;
- - A/E del freq×sev (OOF 2023–24, giudice senza spalmatura): se il modello la vede già, A/E ≈ 1;
- - quota del valore nel test 2025.
-Output results_s3/spie_scan.csv. Uso: IAA_MARKET=configs/parte1_s3.json python scripts/spie_scan.py"""
+"""Search for "flags" (21/10, Simone's question): column values that, although rare, signal many more (or fewer) claims.
+For each line, column and value (categories; for numerics: missing, 0, min, max and values with share > 2%):
+ - raw lift = reported claims / expected at average frequency (exposure × completeness × peril average frequency);
+ - stability: lift 2021–22 and 2023–24;
+ - freq×sev A/E (OOF 2023–24, own (no spreading) judge): if the model already captures it, A/E ≈ 1;
+ - share of the value in the 2025 test.
+Output results_s3/spie_scan.csv. Usage: IAA_MARKET=configs/parte1_s3.json python scripts/spie_scan.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -70,7 +70,7 @@ for line in P.LINES:
         g["quota_test"] = (te.groupby(kt, observed=True)["exposure"].sum() / te_e).reindex(g.index) if kt is not None else np.nan
         g = g.reset_index(names="valore"); g.insert(0, "colonna", c); g.insert(0, "linea", line)
         out.append(g)
-    print(line, "fatto", flush=True)
+    print(line, "done", flush=True)
 t = pd.concat(out, ignore_index=True)
 t.to_csv(P.RESULTS / "spie_scan.csv", index=False)
 f = t[(t.valore != "altro") & (t.quota_esp < 0.05) & (t.expo > 50) & (t.z.abs() > 4) & ((t.lift > 1.5) | (t.lift < 0.67))]

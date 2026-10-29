@@ -105,7 +105,7 @@ def pick_model(host, wanted):
                 return name
     if avail:
         return avail[0]
-    raise SystemExit("Ollama non ha modelli installati: esegui per esempio `ollama pull qwen3.6`")
+    raise SystemExit("Ollama has no models installed: run e.g. `ollama pull qwen3.6`")
 
 
 def ask_ollama(host, model, prompt, timeout=1200):
@@ -122,14 +122,14 @@ def ask_ollama(host, model, prompt, timeout=1200):
             return re.sub(r"<think>.*?</think>", "", txt, flags=re.S)
         except urllib.error.HTTPError as e:
             if attempt == 0 and "think" in body:
-                body.pop("think")          # vecchie versioni di Ollama non accettano "think"
+                body.pop("think")          # older Ollama versions do not accept "think"
                 continue
             raise RuntimeError(f"Ollama HTTP {e.code}: {e.read()[:200]}")
     return ""
 
 
 def ask_mock(best_code, it):
-    """LLM finto per i test: cambia un iperparametro, ogni tanto propone codice vietato."""
+    """Fake LLM for tests: changes one hyperparameter and occasionally proposes forbidden code."""
     if it % 3 == 2:
         return "IDEA: read extra data\n```python\nimport subprocess\n" + best_code + "\n```"
     nl = random.choice([7, 15, 31]); lr = random.choice([0.02, 0.03, 0.05])
@@ -188,29 +188,29 @@ def main():
         git("init"); git("add", "experiment.py", "program.md"); git("commit", "-m", "baseline")
 
     model = "mock" if a.llm == "mock" else pick_model(a.host, a.model)
-    print(f"modello: {model}", flush=True)
+    print(f"model: {model}", flush=True)
     state = json.loads(STATE.read_text()) if STATE.exists() else {}
     if "best" not in state:
-        print("valuto la base...", flush=True)
+        print("evaluating the baseline...", flush=True)
         res, msg, sec = evaluate(EXP, a.timeout * 2, COLUMNS)
         if res is None:
-            raise SystemExit(f"la base non gira: {msg}")
+            raise SystemExit(f"the baseline does not run: {msg}")
         state = {"best": res, "iter": 0, "history": []}
         STATE.write_text(json.dumps(state, indent=1))
         log_row({"iter": 0, "time": time.strftime("%Y-%m-%d %H:%M"), "model": model, "status": "baseline",
                  "pooled_mean": res["pooled_mean"], "score": res["score"], "delta": 0, "seconds": round(sec), "idea": "baseline"})
-        print(f"base: pooled_mean={res['pooled_mean']} score={res['score']}", flush=True)
+        print(f"baseline: pooled_mean={res['pooled_mean']} score={res['score']}", flush=True)
 
     start = state["iter"]
     for it in range(start + 1, start + a.iters + 1):
         if STOP.exists():
-            print("STOP trovato: esco", flush=True); break
+            print("STOP found: exiting", flush=True); break
         best = state["best"]; best_code = EXP.read_text()
         t0 = time.time()
         try:
             answer = ask_mock(best_code, it) if a.llm == "mock" else ask_ollama(a.host, model, build_prompt(best_code, best, state["history"]))
         except Exception as e:
-            print(f"[{it}] LLM errore: {e}", flush=True); time.sleep(30); continue
+            print(f"[{it}] LLM error: {e}", flush=True); time.sleep(30); continue
         idea, code = parse_answer(answer)
         row = {"iter": it, "time": time.strftime("%Y-%m-%d %H:%M"), "model": model, "idea": (idea or "").replace("\t", " ")}
         if code is None:

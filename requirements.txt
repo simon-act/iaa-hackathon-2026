@@ -1,4 +1,4 @@
-# ambiente testato nel container il 18/10/2026 (Python 3.13)
+# environment tested in the container on 18 Oct 2026 (Python 3.13)
 pandas==3.0.5
 numpy==2.5.3
 lightgbm==4.7.0
@@ -7,4 +7,4 @@ pyarrow==26.0.0
 scipy==1.18.1
 glum==3.4.1
 duckdb
-torch   # solo per cann (facoltativo)
+torch   # only for cann (optional)

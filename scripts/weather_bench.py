@@ -1,14 +1,14 @@
-"""Banco del METEO nella frequenza per perilo (22/10, idea di Simone: il meteo è probabilmente importante).
-Stesso impianto di freq_bench.py / glm_peril_bench.py (offset log(esposizione × completezza) − trend; fold 2023 e 2024;
-D² Poisson sui sinistri denunciati dell'anno dopo, livello riallineato per perilo e fold), GBM = frequenza di sub_40.
-Varianti (in più delle variabili attuali):
-  base   = come oggi;
-  anom   = + anomalia dell'anno: meteo dell'anno − media dell'indirizzo 2021–25 (clima vs shock dell'anno);
-  lag    = + meteo dell'anno prima allo stesso indirizzo (siccità → cedimento con ritardo, inverni freddi → acqua);
-  anomlag= entrambe;
-  linear = linear_tree=True (il meteo continua a pesare oltre il range visto).
-Diagnosi per la base: A/E nell'anno dopo per decile di ogni variabile meteo (attenuazione?).
-Uso: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/weather_bench.py <linea> ; output results_s3/weather_bench.csv, weather_ae.csv"""
+"""Bench for WEATHER in per-peril frequency (22/10, Simone's idea: weather is probably important).
+Same setup as freq_bench.py / glm_peril_bench.py (offset log(exposure × completeness) − trend; folds 2023 and 2024;
+Poisson D² on claims reported in the following year, level realigned by peril and fold), GBM = sub_40 frequency.
+Variants (on top of the current variables):
+  base   = as today;
+  anom   = + year anomaly: the year's weather − address mean 2021–25 (climate vs the year's shock);
+  lag    = + prior-year weather at the same address (drought → subsidence with a lag, cold winters → water);
+  anomlag= both;
+  linear = linear_tree=True (weather keeps acting beyond the observed range).
+Diagnostics for base: following-year A/E by decile of each weather variable (attenuation?).
+Usage: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/weather_bench.py <line> ; output results_s3/weather_bench.csv, weather_ae.csv"""
 import sys, time
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -44,7 +44,7 @@ def run(line):
     df = FB.load(line)
     ids = pd.read_parquet(P.MODEL_DIR / f"model_{line}.parquet", columns=["row_id", "address_id"])
     df = df.merge(ids, on="row_id", how="left").merge(weather_extra(), on=["address_id", "year"], how="left")
-    # 22/10: media del meteo per regione e anno (gli eventi sono regionali; l'indice per indirizzo è rumoroso)
+    # 22/10: weather mean by region and year (events are regional; the address-level index is noisy)
     rg = df.groupby(["region", "year"]).apply(lambda z: pd.Series({f"reg_{v}": np.average(z[v], weights=z["exposure"]) for v in WV})).reset_index()
     df = df.merge(rg, on=["region", "year"], how="left")
     dev, _, _ = M._tables(); dl = dev[dev["line"] == line]
@@ -96,7 +96,7 @@ def run(line):
                         g = pd.DataFrame({"q": q.to_numpy(), "n": nv, "e": mu_l, "v": va[v].to_numpy()}).groupby("q").agg(n=("n", "sum"), e=("e", "sum"), v=("v", "mean"))
                         for qq, r in g.iterrows():
                             aes.append({"linea": line, "perilo": p, "fold": f"F{last + 1}", "var": v, "decile": int(qq), "v_medio": r.v, "AE": r.n / r.e, "n": r.n})
-            print(line, p, f"F{last + 1}", {k: round((v - res['base']) * 1e4, 1) for k, v in res.items()}, "AE livello base", round(rows[-len(VAR)]["AE_livello"], 3), flush=True)
+            print(line, p, f"F{last + 1}", {k: round((v - res['base']) * 1e4, 1) for k, v in res.items()}, "base level AE", round(rows[-len(VAR)]["AE_livello"], 3), flush=True)
             pd.DataFrame(rows).to_csv(OUT, mode="a", header=not OUT.exists(), index=False); rows = []
     pd.DataFrame(aes).to_csv(OUT_AE, mode="a", header=not OUT_AE.exists(), index=False)
 

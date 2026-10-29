@@ -1,7 +1,7 @@
-"""21/10 sera: credibilità della storia senza i perili 'meteo' (sinistri da evento, non rischio proprio della polizza).
-Spunto: hist_scan.py → nel fabbricato chi ha sinistri del cliente anche su altre linee (stesso evento) ha A/E 0,73–0,80,
-chi ha storia propria A/E 1,1–1,3. Varianti di esclusione e k per linea, applicate a entrambi i componenti del blend di
-sub_41 (uncred k=8 → apply_excl), Δ e·4 di linea su giudice senza spalmatura e ufficiale, due fold. Output results_s3/cred_excl_grid.csv"""
+"""21/10 evening: credibility of the history excluding 'weather' perils (event claims, not the policy's own risk).
+Hint from hist_scan.py → in buildings, policies whose customer also has claims on other lines (same event) have A/E 0.73–0.80,
+those with their own history A/E 1.1–1.3. Exclusion and k variants by line, applied to both components of the
+sub_41 blend (uncred k=8 → apply_excl), line Δ e·4 on the own (no spreading) and official judges, two folds. Output results_s3/cred_excl_grid.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -28,6 +28,6 @@ for l, (a, b, w, ex0) in SPEC.items():
             for k in (4, 8, 12):
                 p1 = blend(excl, k)
                 rows.append(dict(line=l, fold=f, excl="+".join(excl) or "-", k=k, own=(P.d2_own(rid, p1) - o0) * 1e4, uff=(P.d2(s.target_b, p1) - u0) * 1e4))
-        print(l, f, "fatto", flush=True)
+        print(l, f, "done", flush=True)
 r = pd.DataFrame(rows); r.to_csv(R / "cred_excl_grid.csv", index=False)
 print(r.pivot_table(index=["line", "excl", "k"], columns="fold", values=["own", "uff"]).round(2).to_string())

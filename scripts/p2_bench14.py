@@ -1,10 +1,10 @@
-"""Parte 2 (27/10): GBM di correzione rifatto meglio (richiesta di Simone: in bench13 si fermava a 1–35 alberi a caso, perché
-l'early stopping su un solo holdout del COSTO segue il rumore dei sinistri grandi). Contro p2_sub_17 (spec v10):
-- 'gbm freq cv': Poisson sul NUMERO di sinistri, init = log(numero atteso dal prior × correzione già in sub_17), alberi scelti
-  con lgb.cv a 5 gruppi di polizze (lr 0,03, 4 foglie, min 500 righe); fattore applicato al costo, media 1 sul train.
-- 'gbm costo cv': Tweedie 1,5 sul costo, init = log(sub_17), alberi con lgb.cv a 5 gruppi.
-- 'gbm freq N' (N = 25/50/100/200, lr 0,03): solo diagnosi della curva, non decisione.
-Regola: ≥ 5/7 forma E own. Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench14.py [linee]"""
+"""Part 2 (27/10): correction GBM redone properly (in bench13 it stopped at 1–35 trees more or less at random, because
+early stopping on a single COST holdout follows large-claim noise). Vs p2_sub_17 (spec v10):
+- 'gbm freq cv': Poisson on claim COUNT, init = log(expected count from the prior × correction already in sub_17), trees chosen
+  with lgb.cv over 5 policy groups (lr 0.03, 4 leaves, min 500 rows); factor applied to cost, mean 1 on train.
+- 'gbm costo cv': Tweedie 1.5 on cost, init = log(sub_17), trees with lgb.cv over 5 groups.
+- 'gbm freq N' (N = 25/50/100/200, lr 0.03): curve diagnostics only, not a decision.
+Rule: ≥ 5/7 shape AND own. Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench14.py [lines]"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd, lightgbm as lgb
@@ -27,7 +27,7 @@ def glm(tr, va, l, vars_, ov=None):
 
 
 def base17(tr, va, l):
-    """sub_17 per riga su tr (in campione) e va, senza la parte scratch; più la funzione finale e il prior grezzo."""
+    """sub_17 per row on tr (in-sample) and va, without the scratch part; plus the final function and the raw prior."""
     if l == "motor":
         a = lambda d: 0.5 * glm(tr, d, l, ["new_business", "gender"]) + 0.5 * glm(tr, d, l, ["new_business", "gender", "fuel_type", "cover_type"])
         return a(tr), a(va), (lambda p: p)
@@ -65,7 +65,7 @@ for l in LINES:
         preds = {"sub_17": fin(b_va)}
         Xtr, Xva = frames(tr, va, l)
         grp = pd.util.hash_array(tr["policy_id"].to_numpy()) % 5
-        # frequenza: numero atteso dal prior × correzione relativa di sub_17 (b / prior)
+        # frequency: expected count from the prior × relative sub_17 correction (b / prior)
         n, e = TR._exp_count(tr, l)
         rel = b_tr / TR._prior(tr, l) if l != "contents" else b_tr / np.clip(np.asarray(TR.src_peril(tr, tr, l, correct=False, k_freq=100.0, k_sev=200.0), float), 1e-6, None)
         ee = np.clip(e * rel, 1e-6, None); ee *= n.sum() / ee.sum(); init = np.log(ee)
@@ -82,7 +82,7 @@ for l in LINES:
         logs.append(dict(linea=l, fold=fname, alberi_freq_cv=nr, alberi_costo_cv=nc))
         for k, p in preds.items():
             rows.append(dict(linea=l, fold=fname, variante=k, forma=P.d2(y, p * y.sum() / p.sum()), own=P.d2_own(va.row_id, p)))
-        print(l, fname, "alberi freq", nr, "costo", nc, flush=True)
+        print(l, fname, "freq trees", nr, "cost trees", nc, flush=True)
 r = pd.DataFrame(rows)
 b = r[r.variante == "sub_17"].set_index(["linea", "fold"])
 for c in ("forma", "own"):
@@ -92,4 +92,4 @@ out = Path(P.RESULTS); r.to_csv(out / f"p2_bench14_{tag}.csv", index=False); pd.
 pd.set_option("display.width", 220)
 s = r[r.variante != "sub_17"].groupby(["linea", "variante"]).agg(forma=("d_forma", "mean"), own=("d_own", "mean"),
     pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{len(x)}"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/{len(x)}"))
-print("Δ e·4 contro sub_17"); print(s.round(2).to_string())
+print("Δ e·4 vs sub_17"); print(s.round(2).to_string())

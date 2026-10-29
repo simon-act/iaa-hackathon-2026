@@ -1,6 +1,6 @@
-"""Submission di prova (verifica della pipeline): previsione = livello 2025 della linea × esposizione.
-Nessuna relatività di rischio: serve solo a controllare formato e livello.
-Uso: python -I baseline_submission.py <model_dir> <interim_dir> <raw_dir> <out_csv>
+"""Test submission (pipeline check): prediction = 2025 line level × exposure.
+No risk relativities: it only checks format and level.
+Usage: python -I baseline_submission.py <model_dir> <interim_dir> <raw_dir> <out_csv>
 """
 import sys
 from pathlib import Path
@@ -14,7 +14,7 @@ subs, chk = [], []
 for line in ("motor", "buildings", "contents"):
     te = pd.read_parquet(model / f"test_{line}.parquet", columns=["row_id", "exposure"])
     subs.append(pd.DataFrame({"row_id": te["row_id"], "prediction": lvl[line] * te["exposure"]}))
-    # controllo locale sul 2024: y = ultimate per riga (non riportato al 2025) + eccedenze reali
+    # local check on 2024: y = ultimate per row (not trended to 2025) + actual excess amounts
     m = pd.read_parquet(model / f"model_{line}.parquet")
     m = m[m["year"] == 2024]
     exc = m[[c for c in m.columns if c.startswith("excess_")]].sum(axis=1)
@@ -24,7 +24,7 @@ for line in ("motor", "buildings", "contents"):
                     d2_rate_x_expo=d2_tweedie(y, rate * m["exposure"])))
 sub = pd.concat(subs, ignore_index=True)
 ss = pd.read_parquet(raw / "sample_submission.parquet")
-assert set(sub.row_id) == set(ss.row_id) and len(sub) == len(ss), "row_id non coincidono con sample_submission"
+assert set(sub.row_id) == set(ss.row_id) and len(sub) == len(ss), "row_id do not match sample_submission"
 assert (sub.prediction >= 0).all()
 sub = ss[["row_id"]].merge(sub, on="row_id", how="left")
 sub.to_csv(out, index=False)

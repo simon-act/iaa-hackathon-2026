@@ -1,14 +1,14 @@
-"""Giudice senza spalmatura (19/10 sera, dalla review esterna).
+"""Judge without smoothing (19/10 evening, from the external review).
 
-target_b = Σ_p [costo denunciato × IBNER + IBNR atteso spalmato ∝ esposizione×(1−π)] × on-level × rec_adj + LL × esposizione.
-Le due componenti spalmate (IBNR e LL) sono uguali per righe con la stessa esposizione e completezza, quindi un D² su
-target_b premia previsioni più piatte del vero. Qui si separano:
-  target_rep = Σ_p costo_p × IBNER_p(AY) × onlevel_p × rec_adj     (solo sinistri denunciati, sviluppati)
-  pi_eff     = Σ_p s_p(linea, AY) × π_p,riga                         (quota attesa di costo già denunciata)
-              con s_p = quota del perilo nel costo ultimate della linea×AY (tabella di sviluppo)
-Giudice "proprio": D²( target_rep , (pred − LL×esposizione) × pi_eff × c ), con c che riallinea il livello per
-linea×fold (si giudica solo la forma; il livello si tara a parte). È l'approccio "offset di completezza".
-Scrive <results>/judge_own.parquet (row_id, line, year, exposure, target_b, target_rep, pi_eff, ll_expo).
+target_b = Σ_p [reported cost × IBNER + expected IBNR spread ∝ exposure×(1−π)] × on-level × rec_adj + LL × exposure.
+The two spread components (IBNR and LL) are equal for rows with the same exposure and completeness, so a D² on
+target_b rewards predictions flatter than the truth. Here they are separated:
+  target_rep = Σ_p cost_p × IBNER_p(AY) × onlevel_p × rec_adj     (reported claims only, developed)
+  pi_eff     = Σ_p s_p(line, AY) × π_p,row                         (expected share of cost already reported)
+              with s_p = peril share of the line×AY ultimate cost (development table)
+"Own" judge: D²( target_rep , (pred − LL×exposure) × pi_eff × c ), with c realigning the level by
+line×fold (only the shape is judged; the level is calibrated separately). This is the "completeness offset" approach.
+Writes <results>/judge_own.parquet (row_id, line, year, exposure, target_b, target_rep, pi_eff, ll_expo).
 """
 import sys
 from pathlib import Path
@@ -46,7 +46,7 @@ def build():
         o = pd.DataFrame({"row_id": df["row_id"].to_numpy(), "line": line, "year": yrs,
                           "exposure": df["exposure"].to_numpy(), "target_b": df["target_b"].to_numpy(),
                           "target_rep": rep, "pi_eff": pie, "ll_expo": ll * df["exposure"].to_numpy()})
-        # controllo: target_b − LL − target_rep = IBNR spalmato ≥ 0
+        # check: target_b − LL − target_rep = spread IBNR ≥ 0
         o["ibnr"] = o["target_b"] - o["ll_expo"] - o["target_rep"]
         out.append(o)
         g = o.groupby("year")[["target_b", "target_rep", "ibnr", "ll_expo", "exposure"]].sum()

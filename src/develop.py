@@ -1,15 +1,15 @@
-"""Passo 1c — sviluppo a ultimate per linea × perilo × anno di accadimento (valutazione 31/12/2024).
+"""Step 1c — development to ultimate by line × peril × accident year (valuation 31/12/2024).
 
-Componenti:
-  1. ritardo di denuncia F(l) = P(lag <= l) stimato con lo stimatore a tempo inverso per
-     dati troncati a destra (un sinistro accaduto il giorno d è visibile solo se lag <= V-d)
-  2. completezza attesa pi per riga di polizza e per AY = media di F(V-d) sui giorni coperti
-  3. IBNR numero = reported / pi - reported
-  4. severità dei tardivi: relatività rel(w) = E[sev | lag > w] / E[sev] su AY maturi
-  5. recuperi futuri sugli aperti: tasso osservato sui chiusi dello stesso perilo
-  6. IBNER: credibilità tra severità osservata (peso Z = quota chiusi) e severità a priori
-     (livello degli AY maturi riportato con l'inflazione del perilo o della linea)
-Uso: python -I develop.py <interim_dir>
+Components:
+  1. reporting delay F(l) = P(lag <= l), estimated with the reverse-time estimator for
+     right-truncated data (a claim occurring on day d is visible only if lag <= V-d)
+  2. expected completeness pi per policy row and per AY = mean of F(V-d) over the covered days
+  3. IBNR count = reported / pi - reported
+  4. severity of late claims: relativity rel(w) = E[sev | lag > w] / E[sev] on mature AYs
+  5. future recoveries on open claims: rate observed on closed claims of the same peril
+  6. IBNER: credibility blend of observed severity (weight Z = closed share) and prior severity
+     (level of mature AYs trended with the peril or line inflation)
+Usage: python -I develop.py <interim_dir>
 """
 import json
 import sys
@@ -21,21 +21,21 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).parent))
 from market_config import CFG, LINES  # noqa: E402
 
-V = None      # fissati in main dagli anni di polizza
+V = None      # set in main from the policy years
 DAYS = None
 YEARS = None
-MATURE_OPEN_MAX = 0.10      # un AY è "maturo" per un perilo se gli aperti sono < 10%
+MATURE_OPEN_MAX = 0.10      # an AY is "mature" for a peril if open claims are < 10%
 MAX_LAG = 1500
 
 
 def reporting_cdf(lag: np.ndarray, window: np.ndarray) -> np.ndarray:
-    """Stimatore a tempo inverso (Lagakos et al. 1988) per lag troncati a destra.
+    """Reverse-time estimator (Lagakos et al. 1988) for right-truncated lags.
     g(l) = #{lag = l} / #{lag <= l <= window};  F(l) = prod_{k > l} (1 - g(k))."""
     n = np.bincount(lag, minlength=MAX_LAG + 2)[: MAX_LAG + 2].astype(float)
-    # rischio in tempo inverso a l: sinistri con lag <= l e finestra >= l
+    # reverse-time risk set at l: claims with lag <= l and window >= l
     lag_le = np.cumsum(n)                                    # #{lag <= l}
     w_lt = np.bincount(np.minimum(window, MAX_LAG + 1), minlength=MAX_LAG + 2)[: MAX_LAG + 2]
-    # #{lag <= l, window < l}: window >= lag sempre, quindi = #{window < l}
+    # #{lag <= l, window < l}: window >= lag always, hence = #{window < l}
     win_lt = np.concatenate([[0], np.cumsum(w_lt)[:-1]]).astype(float)
     risk = lag_le - win_lt
     g = np.divide(n, risk, out=np.zeros_like(n), where=risk > 0)
@@ -67,9 +67,9 @@ def main(interim: str) -> None:
     interim = Path(interim)
     c = pd.read_parquet(interim / "claims_clean.parquet")
     out_rows, curves, rel_curves, notes = [], {}, {}, {}
-    # Parte 2 (23/10): mercato con pochi anni (nessun AY maturo) -> severità dei tardivi, inflazione e IBNER per età di
-    # sviluppo presi dal mercato di partenza (config "development": {"source_interim": ...}); il ritardo di denuncia resta
-    # stimato sul mercato nuovo (lo stimatore a tempo inverso gestisce la troncatura).
+    # Part 2 (23/10): market with few years (no mature AY) -> late-claim severity, inflation and IBNER by development
+    # age taken from the source market (config "development": {"source_interim": ...}); the reporting delay is still
+    # estimated on the new market (the reverse-time estimator handles truncation).
     src_dir = CFG.get("development", {}).get("source_interim")
     src = None
     if src_dir:
@@ -79,19 +79,19 @@ def main(interim: str) -> None:
         src["last"] = int(src["dev"]["ay"].max())
         notes["source_market"] = str(sd)
 
-    for line in LINES:   # era una tupla fissa (revisione Qwen 19/10: Parte 2 con linee diverse)
+    for line in LINES:   # used to be a fixed tuple (Qwen review 19/10: Part 2 with different lines)
         pol = pd.read_parquet(interim / f"train_{line}.parquet",
                               columns=["row_id", "period_start", "period_end", "exposure", "year"])
         cl = c[c["line"] == line]
         comp_cols = {}
-        # inflazione di linea dai perili a coda corta (AY maturi, solo chiusi)
+        # line inflation from short-tail perils (mature AYs, closed claims only)
         for peril, g in cl.groupby("peril"):
-            # 1. ritardo di denuncia
+            # 1. reporting delay
             F = reporting_cdf(g["report_lag_days"].clip(0, MAX_LAG).to_numpy(),
                               g["days_to_valuation"].clip(0, MAX_LAG + 1).to_numpy())
             if src is not None and CFG.get("development", {}).get("reporting_from_source"):
-                # Parte 2: curve di denuncia del mercato nuovo uguali a quelle di partenza (docs/30 §2) -> si usa la curva
-                # stimata sui 160 mila sinistri di partenza (coda oltre i 2 anni osservabili, meno rumore sui perili piccoli)
+                # Part 2: reporting curves of the new market equal to the source ones (see docs/WORKLOG.md) -> use the curve
+                # estimated on the 160k source claims (tail beyond the 2 observable years, less noise on small perils)
                 gs = src["claims"][(src["claims"]["line"] == line) & (src["claims"]["peril"] == peril)]
                 curves[f"{line}|{peril}|nuovo"] = F[[0, 7, 14, 30, 60, 90, 180, 365, 730]].round(5).tolist()
                 F = reporting_cdf(gs["report_lag_days"].clip(0, MAX_LAG).to_numpy(),
@@ -100,9 +100,9 @@ def main(interim: str) -> None:
             comp_day = completeness_by_day(F)
             comp_cols[peril] = row_completeness(pol["period_start"], pol["period_end"], comp_day)
 
-            # 4. severità dei tardivi
-            mat = g[g["ay"] <= YEARS[-1] - 2]   # AY maturi: era "<= 2022" fisso (revisione Qwen 19/10)
-            if len(mat) < 30 and src is not None:   # Parte 2: relatività dei tardivi dal mercato di partenza
+            # 4. severity of late claims
+            mat = g[g["ay"] <= YEARS[-1] - 2]   # mature AYs: used to be a fixed "<= 2022" (Qwen review 19/10)
+            if len(mat) < 30 and src is not None:   # Part 2: late-claim relativities from the source market
                 sc = src["claims"]
                 mat = sc[(sc["line"] == line) & (sc["peril"] == peril) & (sc["ay"] <= src["last"] - 2)]
             s = mat.sort_values("report_lag_days")
@@ -113,13 +113,13 @@ def main(interim: str) -> None:
             mean_all = sev_s.mean()
             rel = np.where(idx < len(sev_s), np.divide(tail_sum[np.minimum(idx, len(sev_s) - 1)],
                                                          tail_n[np.minimum(idx, len(sev_s) - 1)]) / mean_all, 1.0)
-            # stabilizza la coda: almeno 30 sinistri oltre w, altrimenti ultimo valore stabile
+            # stabilise the tail: at least 30 claims beyond w, otherwise last stable value
             ok = (len(sev_s) - idx) >= 30
             last = rel[ok][-1] if ok.any() else 1.0
             rel = np.where(ok, rel, last)
             rel_curves[f"{line}|{peril}"] = rel[[0, 30, 90, 180, 365, 730]].round(3).tolist()
 
-            # 5. recuperi futuri attesi sugli aperti
+            # 5. expected future recoveries on open claims
             closed = g[~g["is_open"]]
             rec_ratio = float(closed["recoveries"].sum() / closed["incurred_to_date"].sum()) if len(closed) else 0.0
 
@@ -130,10 +130,10 @@ def main(interim: str) -> None:
                 pi = float(np.average(comp_cols[peril][pol["year"].to_numpy() == ay], weights=pa["exposure"]))
                 n_rep = len(gy)
                 n_ult = n_rep / pi
-                # costo osservato con recuperi futuri attesi sugli aperti
+                # observed cost with expected future recoveries on open claims
                 opn = gy["is_open"].to_numpy()
                 cost_rep = float(gy["net_capped"].sum() - rec_ratio * gy.loc[opn, "incurred_to_date"].clip(upper=gy.loc[opn, "net_capped"] / max(1 - rec_ratio, 1e-9)).sum())
-                # relatività di severità per gli IBNR: media di rel(w) pesata per (1-F(w)) sui giorni dell'AY
+                # severity relativity for IBNR: mean of rel(w) weighted by (1-F(w)) over the AY's days
                 days_ay = DAYS[DAYS.year == ay]
                 w = np.minimum((V - days_ay).days.to_numpy(), MAX_LAG + 1)
                 wt = 1 - F[w]
@@ -147,7 +147,7 @@ def main(interim: str) -> None:
         comp.to_parquet(interim / f"completeness_{line}.parquet", index=False)
 
     d = pd.DataFrame(out_rows)
-    # 6. IBNER: severità a priori dagli AY maturi + inflazione
+    # 6. IBNER: prior severity from mature AYs + inflation
     d["mature"] = d["open_share"] < MATURE_OPEN_MAX
     infl = {}
     for (line, peril), g in d.groupby(["line", "peril"]):
@@ -162,8 +162,8 @@ def main(interim: str) -> None:
             if src is not None and f"{line}|{peril}" in src["report"].get("inflation", {}):
                 infl.setdefault((line, peril), (float(src["report"]["inflation"][f"{line}|{peril}"][0]), "mercato di partenza (nessun AY maturo)"))
             infl.setdefault((line, peril), (pooled, "mediana della linea (perilo senza 3 AY maturi)"))
-    # 18/10 — S3: per i perili senza 3 AY maturi la mediana della linea può essere sbagliata (lesioni: +6,4% della
-    # linea contro +1,9% stimato sul perilo); la config permette un valore per perilo, documentato
+    # 18/10 — S3: for perils without 3 mature AYs the line median can be wrong (injury: +6.4% for the
+    # line vs +1.9% estimated on the peril); the config allows a per-peril value, documented
     for key, v in CFG.get("development", {}).get("inflation_override", {}).items():
         l, p_ = key.split("|")
         infl[(l, p_)] = (float(v), "valore da config (perilo senza AY maturi)")
@@ -173,7 +173,7 @@ def main(interim: str) -> None:
     prior = []
     for _, r in d.iterrows():
         g = d[(d["line"] == r["line"]) & (d["peril"] == r["peril"])]
-        # riferimento: AY più maturo (minimo open share), riportato all'AY corrente
+        # reference: most mature AY (minimum open share), trended to the current AY
         ref = g.sort_values(["open_share", "ay"]).iloc[0] if not g["mature"].any() else g[g["mature"]].iloc[0]
         base = g[g["mature"]] if g["mature"].any() else g[g["ay"] == ref["ay"]]
         lvl = np.exp(np.average(np.log(base["sev_rep"]) + np.log1p(r["inflation"]) * (r["ay"] - base["ay"]),
@@ -181,11 +181,11 @@ def main(interim: str) -> None:
         prior.append(lvl)
     d["sev_prior"] = prior
     d["Z"] = 1 - d["open_share"]
-    # severità ultimate dei denunciati (IBNER) e degli IBNR (relatività dei tardivi)
+    # ultimate severity of reported claims (IBNER) and of IBNR (late-claim relativities)
     d["sev_rep_ult"] = d["Z"] * d["sev_rep"] + (1 - d["Z"]) * d["sev_prior"]
     d["ibner_factor"] = d["sev_rep_ult"] / d["sev_rep"]
     if src is not None:
-        # Parte 2: nessun AY maturo -> fattore IBNER del mercato di partenza alla stessa età di sviluppo (stesso perilo)
+        # Part 2: no mature AY -> IBNER factor of the source market at the same development age (same peril)
         sdv = src["dev"].set_index(["line", "peril", "ay"])["ibner_factor"]
         fac = [float(sdv.get((l, p_, src["last"] - (YEARS[-1] - ay)), 1.0)) for l, p_, ay in zip(d["line"], d["peril"], d["ay"])]
         d["ibner_factor"] = fac
@@ -200,7 +200,7 @@ def main(interim: str) -> None:
     d["dev_factor"] = d["cost_ult"] / d["cost_rep"]
     d.to_parquet(interim / "development.parquet", index=False)
 
-    # large loss: eccedenza oltre soglia per esposizione (per linea e AY)
+    # large loss: excess over threshold per unit of exposure (by line and AY)
     ll = (c.groupby(["line", "ay"])["excess_over_cap"].sum().rename("excess").reset_index())
     ex = d.groupby(["line", "ay"])["exposure"].first().rename("exposure").reset_index()
     ll = ll.merge(ex, on=["line", "ay"], how="right").fillna({"excess": 0})

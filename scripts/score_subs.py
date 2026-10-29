@@ -1,7 +1,7 @@
-"""Punteggio interno (OOF, fold 2023/2024, pesi Kaggle) di ogni submission caricata, accanto al pubblico Kaggle (19/10).
-Per le sub che sono trasformazioni (livello, potenza) la trasformazione è applicata alle OOF del modello di base.
-Giudice di ciascuna = target_b della configurazione con cui è stata fatta (quello usato allora per decidere).
-Scrive results_s3/subs_internal_vs_lb.csv e results_s3/all_models_scores.csv.
+"""Internal score (OOF, folds 2023/2024, Kaggle weights) of each uploaded submission, next to the Kaggle public score (19/10).
+For submissions that are transformations (level, power) the transformation is applied to the base model's OOF.
+Judge for each = target_b of the configuration it was built with (the one used at the time to decide).
+Writes results_s3/subs_internal_vs_lb.csv and results_s3/all_models_scores.csv.
 """
 import json
 import sys
@@ -33,7 +33,7 @@ def score(o, pred=None):
 
 
 def by_line(o, mult):
-    """mult: dict linea -> funzione(pred array) -> pred array (trasformazione per linea)."""
+    """mult: dict line -> function(pred array) -> pred array (per-line transformation)."""
     p = o["pred"].to_numpy().copy()
     for l, fn in mult.items():
         for f in ("F2023", "F2024"):
@@ -51,7 +51,7 @@ def lv(c):
 
 
 def mix(o, parts, weights):
-    """blend per linea da OOF di componenti allineate su row_id."""
+    """per-line blend from the OOF of components aligned on row_id."""
     p = o["pred"].to_numpy().copy()
     for l, w in weights.items():
         m = (o["line"] == l).to_numpy()
@@ -61,7 +61,7 @@ def mix(o, parts, weights):
 
 def main():
     S = {}
-    # --- configurazione originale (results/) ---
+    # --- original configuration (results/) ---
     g = rd("results", "glm_b"); b = rd("results", "gbm_b")
     S["sub_01"] = score(g, 0.5 * g["pred"].to_numpy() + 0.5 * b["pred"].to_numpy())
     S["sub_03"] = score(rd("results", "fs_peril_r4"))
@@ -78,10 +78,10 @@ def main():
     pe = pd.to_datetime(mod["period_end"].reindex(s7["row_id"]).to_numpy())
     early = mb & ~((pe.month == 12) & (pe.day >= 30))
     p8 = p7.copy(); p8[early] *= 0.85
-    for f in ("F2023", "F2024"):   # livello di linea fisso come nella sonda
+    for f in ("F2023", "F2024"):   # line level fixed as in the probe
         m = mb & (s7["fold"] == f).to_numpy(); p8[m] *= p7[m].sum() / p8[m].sum()
     S["sub_08"] = score(s7, p8)
-    S["sub_09"] = S["sub_07"]          # stesso modello, stima finale su tutte le polizze
+    S["sub_09"] = S["sub_07"]          # same model, final fit on all policies
     S["sub_10"] = score(s7, by_line(s7, {"motor": lv(1.04)}))
     S["sub_11"] = score(s7, by_line(s7, {"buildings": lv(1.04)}))
     S["sub_12"] = score(s7, by_line(s7, {"contents": lv(1.04)}))
@@ -91,7 +91,7 @@ def main():
     S["sub_17"] = score(rd("results_v3", "blend_opt"))
     s3 = rd("results_s3", "blend_opt")
     S["sub_18"] = score(s3)
-    S["sub_19"] = score(s3, by_line(s3, {"motor": lv(581.9 / 568.9)}))   # Pareto: stesso modello, carico LL auto diverso
+    S["sub_19"] = score(s3, by_line(s3, {"motor": lv(581.9 / 568.9)}))   # Pareto: same model, different motor LL load
     S["sub_20"] = score(s3, by_line(s3, {"buildings": lv(1.02)}))
     S["sub_21"] = score(s3, by_line(s3, {"motor": pw(0.95), "buildings": pw(1.05), "contents": pw(0.95)}))
     a4 = rd("results_s4", "fs2_v2_cred").set_index("row_id").reindex(s3["row_id"])["pred"].to_numpy()

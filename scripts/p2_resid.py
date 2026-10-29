@@ -1,8 +1,8 @@
-"""Parte 2 (26/10): dove perde la FORMA di p2_sub_10. OOF di sub_10 (spec v4) sui fold K1–K5 del banco, poi per ogni variabile
-A/E per livello con credibilità (K = costo atteso di 300 righe medie) stimato sugli altri 4 fold e applicato al quinto
-(incrociato, livello del fold invariato). Guadagno di D² forma e own (e·4) e fold vinti su 5. Stesso test anche sul solo prior
-del developed × livello (colonna 'prior'): quanto la risposta dell'emerging a ogni variabile differisce da quella del developed.
-Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_resid.py"""
+"""Part 2 (26/10): where the SHAPE of p2_sub_10 loses. OOF of sub_10 (spec v4) on bench folds K1–K5, then for each variable
+A/E by level with credibility (K = expected cost of 300 average rows) estimated on the other 4 folds and applied to the fifth
+(cross-fitted, fold level unchanged). Gain in shape and own D² (e·4) and folds won out of 5. Same test also on the developed
+prior × level alone (column 'prior'): how much the emerging response to each variable differs from the developed one.
+Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_resid.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -76,5 +76,5 @@ for l in P.LINES:
     t = r[(r.linea == l)].pivot_table(index="var", columns="base", values=["forma", "own"]).round(1)
     t.columns = [f"{a}_{b}" for a, b in t.columns]
     t = t.join(r[(r.linea == l) & (r.base == "sub10")].set_index("var")[["vinti", "livelli"]])
-    print(f"\n=== {l}: guadagno incrociato e·4 di un A/E a una variabile (sub10 = sopra sub_10; prior = sopra il solo prior)")
+    print(f"\n=== {l}: cross-fitted gain e·4 of a one-variable A/E (sub10 = on top of sub_10; prior = on top of the prior alone)")
     print(t.sort_values("forma_sub10", ascending=False).head(15).to_string())

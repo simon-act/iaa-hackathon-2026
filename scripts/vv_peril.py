@@ -1,6 +1,6 @@
-"""21/10: residuo sul valore del veicolo (A/E 0,93 → 1,07 nel modello di sub_40): da quale perilo, frequenza o severità?
-Stima il freq×sev auto di sub_40 (fs2_v2fb, senza credibilità) sui due fold e scompone per perilo e fascia di valore:
-A/E frequenza = n denunciati / (λ × π); A/E severità = costo denunciato tagliato / (n × s). Output results_s3/vv_peril.csv"""
+"""21/10: residual on vehicle value (A/E 0.93 → 1.07 in the sub_40 model): which peril, frequency or severity?
+Fits the sub_40 motor freq×sev (fs2_v2fb, without credibility) on the two folds and breaks it down by peril and value band:
+frequency A/E = n reported / (λ × π); severity A/E = capped reported cost / (n × s). Output results_s3/vv_peril.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -25,6 +25,6 @@ for fname, (tys, vy) in P.FOLDS.items():
         g["quota_costo"] = cost.sum()
         for b, r in g.iterrows():
             out.append(dict(fold=fname, peril=p, band=b, n=int(r.n), AE_freq=round(r.AE_freq, 3), AE_sev=round(r.AE_sev, 3)))
-    print(fname, "fatto", flush=True)
+    print(fname, "done", flush=True)
 R = pd.DataFrame(out); R.to_csv(P.RESULTS / "vv_peril.csv", index=False)
 print(R.pivot_table(index=["peril", "band"], columns="fold", values=["n", "AE_freq", "AE_sev"]).to_string())

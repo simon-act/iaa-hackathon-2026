@@ -1,7 +1,7 @@
-"""Parte 2 (25/10): penalità dei GLM di correzione sul banco a 7 verifiche (stessi fold di p2_bench.py).
-Oggi la penalità è scelta su un 10% di polizze (auto genere+nb: 0,01; contenuto genere: 1,0). Griglia fissa, confronto con la
-scelta automatica (= sub_07). Regola: una penalità fissa entra solo se batte l'automatica in ≥ 5/7 verifiche su forma e su own.
-Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench3.py → results_p2/p2_bench3.csv"""
+"""Part 2 (25/10): penalty of the correction GLMs on the 7-check bench (same folds as p2_bench.py).
+Currently the penalty is chosen on a 10% policy holdout (motor gender+nb: 0.01; contents gender: 1.0). Fixed grid, compared with the
+automatic choice (= sub_07). Rule: a fixed penalty is adopted only if it beats the automatic one in ≥ 5/7 checks on shape and on own.
+Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench3.py → results_p2/p2_bench3.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -26,7 +26,7 @@ for l, (vars_, grid) in SPEC.items():
         for k, p in preds.items():
             rows.append(dict(linea=l, fold=fname, variante=k, forma=P.d2(y, p * y.sum() / p.sum()),
                              own=P.d2_own(va.row_id, p), unc=P.d2_unc(va.row_id, p)))
-        print(l, fname, "fatto", flush=True)
+        print(l, fname, "done", flush=True)
 r = pd.DataFrame(rows)
 b = r[r.variante == "auto"].set_index(["linea", "fold"])
 for c in ("forma", "own", "unc"):
@@ -37,5 +37,5 @@ pd.set_option("display.width", 220)
 s = r[r.variante != "auto"].groupby(["linea", "variante"]).agg(
     forma=("d_forma", "mean"), own=("d_own", "mean"), unc=("d_unc", "mean"),
     pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{len(x)}"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/{len(x)}"))
-print("Δ e·4 rispetto alla penalità automatica (sub_07)"); print(s.round(1).to_string())
+print("Δ e·4 vs the automatic penalty (sub_07)"); print(s.round(1).to_string())
 c = pd.DataFrame(coefs); print(c[c.fold == "F2024"][["linea", "variante", "alpha", "coef"]].to_string(index=False))

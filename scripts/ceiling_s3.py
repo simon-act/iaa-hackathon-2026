@@ -1,12 +1,12 @@
-"""21/10 (domanda di Simone): errore spiegabile, non spiegabile e dove siamo. Rifà src/ceiling.py (17/10) sulla
-configurazione attuale (s3), con più semi e più valori della frailty φ, e mette accanto il punteggio vero sui fold.
-Verità simulata = freq×sev per perilo stimato sul fold (numero atteso λ_p, severità s_p) × frailty G ~ Gamma(1, φ).
-Target simulato come target_b: sinistri tagliati (forme ricampionate dai sinistri chiusi veri AY 2021–22), denunciati con
-prob. π, + IBNR atteso uniforme + caricamento LL. Previsioni confrontate:
-  noi_senza_storia = media vera senza G; cred_fold / cred_test = credibilità sulla storia simulata (storia dei fold /
-  storia del test: +1 anno rispetto al fold 2024, +2 rispetto al 2023), k = 1/φ; oracolo = media vera con G.
-Uscita: results_s3/ceiling_s3.csv (per linea, fold, φ, seme) e stampa riassuntiva con la media pesata come Kaggle.
-Uso: IAA_MARKET=configs/parte1_s3.json python scripts/ceiling_s3.py"""
+"""21/10 (Simone's question): explainable vs unexplainable error, and where we stand. Reruns src/ceiling.py (17/10) on the
+current configuration (s3), with more seeds and more values of the frailty φ, and shows the actual fold score alongside.
+Simulated truth = per-peril freq×sev fitted on the fold (expected count λ_p, severity s_p) × frailty G ~ Gamma(1, φ).
+Simulated target built like target_b: capped claims (shapes resampled from actual closed claims AY 2021–22), reported with
+prob. π, + uniform expected IBNR + LL load. Predictions compared:
+  noi_senza_storia = true mean without G; cred_fold / cred_test = credibility on the simulated history (fold history /
+  test history: +1 year vs the 2024 fold, +2 vs 2023), k = 1/φ; oracolo = true mean with G.
+Output: results_s3/ceiling_s3.csv (by line, fold, φ, seed) and a printed summary with the Kaggle-style weighted mean.
+Usage: IAA_MARKET=configs/parte1_s3.json python scripts/ceiling_s3.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -54,11 +54,11 @@ for line in P.LINES:
                     fpart += lam * s * pi
                 y += ll; mu += ll; muG += ll
                 r = {"noi_senza_storia": mu, "oracolo": muG}
-                for tag, g in Ghat.items():   # la credibilità agisce solo sulla parte legata alla frequenza
+                for tag, g in Ghat.items():   # credibility acts only on the frequency-driven part
                     q = mu + fpart * (g - 1); r[tag] = q * mu.sum() / q.sum()
                 for k, v in r.items():
                     out.append(dict(line=line, fold=fname, phi=phi, seed=seed, what=k, d2=P.d2(y, v)))
-        print(line, fname, "fatto", flush=True)
+        print(line, fname, "done", flush=True)
         pd.DataFrame(out).to_csv(P.RESULTS / "ceiling_s3.csv", index=False)
 R = pd.DataFrame(out)
 g = R.groupby(["what", "phi", "line", "fold"], dropna=False)["d2"].mean().reset_index()

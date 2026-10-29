@@ -1,13 +1,13 @@
-"""Passo 2a — feature di modellazione per linea (training 2021-24 e test 2025).
+"""Step 2a — modelling features by line (training 2021-24 and test 2025).
 
-Aggiunge a data/model/{model,test}_<line>.parquet:
-  - esperienza sinistri della polizza negli anni PRECEDENTI (solo AY < anno della riga):
-    numero, costo, numero nell'anno prima, anni osservati;
-  - esperienza del cliente sulle ALTRE linee negli anni precedenti;
-  - numero di linee che il cliente ha nell'anno (motor/buildings/contents);
-  - variabili derivate (età veicolo/edificio, mese di inizio, frazione d'anno, ecc.).
-Le colonne che non entrano nel modello sono elencate in DROP con il motivo.
-Uso: python -I features.py <interim> <model_dir>
+Adds to data/model/{model,test}_<line>.parquet:
+  - the policy's claims experience in PREVIOUS years (only AY < row year):
+    count, cost, count in the prior year, years observed;
+  - the customer's experience on the OTHER lines in previous years;
+  - number of lines the customer holds in the year (motor/buildings/contents);
+  - derived variables (vehicle/building age, start month, fraction of year, etc.).
+Columns that do not enter the model are listed in DROP with the reason.
+Usage: python -I features.py <interim> <model_dir>
 """
 import json
 import sys
@@ -19,7 +19,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).parent))
 from market_config import LINES  # noqa: E402
 
-# escluse dal modello, con motivo (governance / leakage)
+# excluded from the model, with reason (governance / leakage)
 DROP = {
     "renewal_decision": "solo nel training: informazione futura",
     "written_premium": "prezzo attuale dell'assicuratore: modello circolare (testato a parte)",
@@ -34,7 +34,7 @@ ID_COLS = ["row_id", "policy_id", "customer_id", "address_id"]
 
 
 def experience(claims: pd.DataFrame, keys: pd.DataFrame, by: str, line_filter, prefix: str) -> pd.DataFrame:
-    """Per ogni (by, year) in keys: sinistri con AY < year (e opzionalmente di certe linee)."""
+    """For each (by, year) in keys: claims with AY < year (optionally restricted to certain lines)."""
     c = claims[line_filter(claims)][[by, "ay", "net_capped"]]
     agg = c.groupby([by, "ay"]).agg(n=("net_capped", "size"), cost=("net_capped", "sum")).reset_index()
     out = []
@@ -57,17 +57,17 @@ def main(interim: str, model_dir: str) -> None:
     claims = pd.read_parquet(interim / "claims_clean.parquet")
     pol_line = claims["policy_id"].str[0].map({"M": "motor", "B": "buildings", "C": "contents"})
     claims = claims.assign(line=pol_line)
-    # customer_id dei sinistri: dalle righe abbinate
+    # customer_id of the claims: from the matched rows
     rows = []
     for line in LINES:
         p = pd.read_parquet(interim / f"train_{line}.parquet", columns=["row_id", "customer_id", "address_id"])
         rows.append(p)
     rc = pd.concat(rows)
     claims = claims.merge(rc, on="row_id", how="left")
-    # storia dell'indirizzo: tutti i sinistri (ogni linea, ogni cliente) sull'indirizzo della riga, solo anni precedenti
+    # address history: all claims (every line, every customer) at the row's address, previous years only
     addr_agg = claims.groupby(["address_id", "ay"]).agg(n=("net_capped", "size"), cost=("net_capped", "sum")).reset_index()
 
-    # clienti per indirizzo per anno (training + test, tutte le linee)
+    # customers per address per year (training + test, all lines)
     occ = []
     for line in LINES:
         for kind in ("train", "test"):
@@ -77,7 +77,7 @@ def main(interim: str, model_dir: str) -> None:
     occ = pd.concat(occ).drop_duplicates()
     addr_cust = occ.groupby(["address_id", "year"])["customer_id"].nunique().rename("addr_n_customers").reset_index()
 
-    # linee detenute dal cliente per anno (training + test)
+    # lines held by the customer per year (training + test)
     hold = []
     for line in LINES:
         for kind in ("train", "test"):
@@ -94,7 +94,7 @@ def main(interim: str, model_dir: str) -> None:
     for line in LINES:
         for kind, fname in (("train", f"model_{line}"), ("test", f"test_{line}")):
             df = pd.read_parquet(model_dir / f"{fname}.parquet")
-            # idempotente: rimuove feature di un run precedente
+            # idempotent: removes features from a previous run
             old = [c for c in df.columns if c.startswith(("pol_prev", "cust_other_prev", "cust_has_", "pol_years", "addr_"))
                    or c in ("cust_n_lines", "start_month", "starts_jan1", "ends_dec", "customer_age",
                             "licence_age", "mileage_k", "si_per_bedroom")]
@@ -105,16 +105,16 @@ def main(interim: str, model_dir: str) -> None:
             df = df.merge(ep, on=["policy_id", "year"], how="left").merge(ec, on=["customer_id", "year"], how="left")
             for c in [x for x in df.columns if x.startswith(("pol_prev", "cust_other_prev"))]:
                 df[c] = df[c].fillna(0)
-            # anni in cui la polizza è stata osservata prima (dentro 2021..year-1)
+            # years in which the policy was observed before (within 2021..year-1)
             first = pd.read_parquet(interim / f"train_{line}.parquet", columns=["policy_id", "year"]).groupby("policy_id")["year"].min()
             df["pol_years_seen"] = (df["year"] - df["policy_id"].map(first)).clip(lower=0).fillna(0)
-            # tassi per anno osservato: confrontabili tra training (1,5 anni di storia in media) e test (fino a 4)
+            # rates per observed year: comparable between training (1.5 years of history on average) and test (up to 4)
             yrs = df["pol_years_seen"].clip(lower=1)
             df["pol_prev_rate"] = df["pol_prev_n"] / yrs
             df["pol_prev_cost_rate"] = df["pol_prev_cost"] / yrs
             df["cust_other_prev_rate"] = df["cust_other_prev_n"] / (df["year"] - FIRST_YEAR).clip(lower=1)
             df["pol_years_seen"] = df["pol_years_seen"].clip(upper=3)
-            # storia indirizzo: n e costo sinistri con AY < anno; tasso per anno di storia disponibile (NaN nel 2021)
+            # address history: count and cost of claims with AY < year; rate per available history year (NaN in 2021)
             ad = []
             for y in sorted(df["year"].unique()):
                 past = addr_agg[addr_agg["ay"] < y].groupby("address_id")[["n", "cost"]].sum()
@@ -132,7 +132,7 @@ def main(interim: str, model_dir: str) -> None:
             df["start_month"] = ps.dt.month
             df["starts_jan1"] = (ps.dt.month == 1) & (ps.dt.day == 1)
             df["ends_dec"] = pe.dt.month == 12
-            # colonne derivate solo se le sorgenti esistono (revisione Qwen 19/10: Parte 2 con colonne rinominate/assenti)
+            # derived columns only if the sources exist (Qwen review 19/10: Part 2 with renamed/missing columns)
             if "birth_year" in df:
                 df["customer_age"] = df["year"] - df["birth_year"]
             if line == "motor" and {"driver_age", "years_licensed"} <= set(df.columns):

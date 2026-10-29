@@ -1,4 +1,4 @@
-"""Independent code review by a local LLM (Qwen via Ollama) — 19/10 sera.
+"""Independent code review by a local LLM (Qwen via Ollama) — evening of 19/10.
 
 Three lenses on every chunk of the pipeline code (code_snapshot/):
   leakage    : information from the scored year / future / test / holdout entering a fit or a feature
@@ -231,7 +231,7 @@ def write_summary(rows, model, secs):
               f"- **Codice:** `{str(x.get('quote'))[:300]}`", f"- **Test proposto:** {x.get('test')}",
               f"- **Seconda passata:** {x.get('verdict_reason', '–')}", ""]
     (HERE / "SINTESI.md").write_text("\n".join(L))
-    print(f"SINTESI.md scritta ({len(rows)} segnalazioni, {secs / 60:.0f} min)", flush=True)
+    print(f"SINTESI.md written ({len(rows)} findings, {secs / 60:.0f} min)", flush=True)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # AI ledger: who did what, and how it was checked
 
-Team Simone, IAA AI Assisted Hackathon 2026. The actuary gave the direction: the order of work, the rules, the checks to run, the key challenges to the results and every final decision. AI executed the work inside those rules, proposed alternatives and logged every step. Every step is logged in `LOG_AI.md` (one per folder that was changed) and in `docs/`. An interactive version of this ledger, with the numbers drawn from the files below, is the dashboard "IAA Hackathon Workflow" shown in the video.
+Team Simone, IAA AI Assisted Hackathon 2026. The actuary gave the direction: the order of work, the rules, the checks to run, the key challenges to the results and every final decision. AI executed the work inside those rules and proposed alternatives. The work is summarised day by day in `docs/WORKLOG.md`; the actuary's decisions, with their origin and evidence, are in `docs/DECISIONS_actuary.md`. An interactive version of this ledger, with the numbers drawn from the files below, is the dashboard "IAA Hackathon Workflow" (`docs/dashboard_IAA_2026_offline.html`).
 
 ## The agents
 
@@ -14,12 +14,12 @@ Team Simone, IAA AI Assisted Hackathon 2026. The actuary gave the direction: the
 
 | Stage | What AI did | How it was verified | Evidence |
 |---|---|---|---|
-| Exploratory data analysis | profiled every table; automated audit of the new market; found exposure in days, sums insured 1,000× too large, 598 exact duplicate claims, claims before inception | each fix checked on the ratio gap, the same policy in other years and premiums; independent recomputation of Part 2 from the raw files (48 of 52 checks passed, 4 explained) | `docs/02`, `docs/30` §11, `results_p2/audit_controlli.csv` |
-| Target and reserving | reporting-delay curves (reverse-time estimator), IBNR, IBNER, trends, large-loss load; in Part 2, development borrowed from the developed market | target reconciles exactly with the development table; backtest of the borrowed delay curves: actual/predicted 0.97–1.07 on 15 perils | `docs/02`, `results_p2/audit_backtest_denuncia.csv` |
-| Feature engineering | Qwen loops proposed features and constraints; relative deductible; leakage search | a feature stays only if it beats random decoy columns and improves both validation years; two leaking columns excluded by an automated test | `docs/22`, `hackathon_checks/tests/test_excluded_features.py` |
-| Modelling | additive frequency × severity per peril, experience rating, a Qwen-written boosting partner; Part 2: Part 1 model as prior, emerging level and targeted corrections | frozen judges (two time folds, policy holdout), three judges; Part 2 seven-check bench with a rule fixed in advance (wins ≥ 5 of 7 on shape and own judge), final pieces re-checked on a stricter bench (time direction × disjoint customers) | `docs/22`, `docs/30`, `results_p2/p2_bench*.csv` |
-| Diagnostics | residual loops; error decomposition by simulation; leaderboard-noise study from our own public vs private scores | simulation calibrated on our data (about 83% of deviance is claim noise); public gaps under 0.0005 were coin flips on the Part 1 private board | `docs/06`, `docs/30` §11 |
-| Testing and governance | automated tests on the submission contract and excluded columns; reproducibility runs | final submissions regenerated from code with identical md5; no post-hoc tweaks to predictions; the AI never handled credentials | `hackathon_checks/tests`, `LOG_AI.md` |
+| Exploratory data analysis | profiled every table; automated audit of the new market; found exposure in days, sums insured 1,000× too large, 598 exact duplicate claims, claims before inception | each fix checked on the ratio gap, the same policy in other years and premiums; independent recomputation of Part 2 from the raw files (48 of 52 checks passed, 4 explained) | `docs/WORKLOG.md`, `results_p2/audit_controlli.csv` |
+| Target and reserving | reporting-delay curves (reverse-time estimator), IBNR, IBNER, trends, large-loss load; in Part 2, development borrowed from the developed market | target reconciles exactly with the development table; backtest of the borrowed delay curves: actual/predicted 0.97–1.07 on 15 perils | `docs/WORKLOG.md`, `results_p2/audit_backtest_denuncia.csv` |
+| Feature engineering | Qwen loops proposed features and constraints; relative deductible; leakage search | a feature stays only if it beats random decoy columns and improves both validation years; two leaking columns excluded by an automated test | `docs/WORKLOG.md`, `hackathon_checks/tests/test_excluded_features.py` |
+| Modelling | additive frequency × severity per peril, experience rating, a Qwen-written boosting partner; Part 2: Part 1 model as prior, emerging level and targeted corrections | frozen judges (two time folds, policy holdout), three judges; Part 2 seven-check bench with a rule fixed in advance (wins ≥ 5 of 7 on shape and own judge), final pieces re-checked on a stricter bench (time direction × disjoint customers) | `docs/WORKLOG.md`, `results_p2/p2_bench*.csv` |
+| Diagnostics | residual loops; error decomposition by simulation; leaderboard-noise study from our own public vs private scores | simulation calibrated on our data (about 83% of deviance is claim noise); public gaps under 0.0005 were coin flips on the Part 1 private board | `docs/WORKLOG.md` |
+| Testing and governance | automated tests on the submission contract and excluded columns; reproducibility runs | final submissions regenerated from code with identical md5; no post-hoc tweaks to predictions; the AI never handled credentials | `hackathon_checks/tests`, `docs/WORKLOG.md` |
 
 ## Autonomous experiments (local Qwen)
 
@@ -31,15 +31,15 @@ Team Simone, IAA AI Assisted Hackathon 2026. The actuary gave the direction: the
 | Part 1 severity | 113 | 1 | 87 | 4 | 21 |
 | Part 1 residuals | 64 | 1 | 62 | 0 | 1 |
 | Part 1 claims history | 94 | 0 | 84 | 0 | 10 |
-| Part 2 emerging market | 28 | 2 | 25 | 0 | 1 |
+| Part 2 emerging market | 124 | 4 | 110 | 0 | 10 |
 
-Source: each loop's `results.tsv`. Guardrails refuse code that reads the validation target, imports modules or changes the function contract. A kept change enters a submission only after it is re-run on our three judges (Part 1) or the seven-check bench (Part 2). One Qwen model is in the Part 1 final blend, after the actuary found and fixed its wrong monotone constraint on vehicle age.
+Source: each loop's `results.tsv`. Guardrails refuse code that reads the validation target, imports modules or changes the function contract. A kept change enters a submission only after it is re-run on our three judges (Part 1) or the seven-check bench (Part 2). One Qwen model is in the Part 1 final blend, after its wrong monotone constraint on vehicle age was found and fixed.
 
 ## AI errors caught
 
 | Error | Found by | Fix |
 |---|---|---|
-| Qwen boosting model: wrong monotone constraint on vehicle age | actuary review | fixed before it entered the blend |
+| Qwen boosting model: wrong monotone constraint on vehicle age | Claude, re-checking the Qwen code review | fixed before it entered the blend |
 | Office-premium table used the risk premium of an older submission | independent recomputation | rebuilt from the final submission |
 | Report said contents gender effect +12%; the final model has +9% | independent recomputation | corrected |
 | A reused staging folder copied a stale model file to the Mac | md5 check after every copy | new staging folder and md5 check for every copy |
@@ -51,5 +51,5 @@ Source: each loop's `results.tsv`. Guardrails refuse code that reads the validat
 2. Change the model or an assumption, never the predictions afterwards.
 3. A change is kept only if it improves the internal judges across folds; the leaderboard is only a check (in Part 1 the plain structural model held best on the private board).
 4. The agent states its plan and expected effect before every test.
-5. Competition data never in the repository; the repository stays private; credentials only through the shell, never seen by the AI.
+5. Competition data never in the repository; the repository stays private until submission; credentials only through the shell, never seen by the AI.
 6. A written log in every folder an agent changes.

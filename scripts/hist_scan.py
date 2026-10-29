@@ -1,7 +1,7 @@
-"""21/10 sera: la storia (polizza, cliente sulle altre linee, indirizzo) lascia residui nel blend di sub_41?
-Per ogni variabile di storia: fasce, A/E sul giudice senza spalmatura (A = target_rep, E = (pred − LL) × π), fattore per
-fascia stimato su un anno (con credibilità n/(n+200) sinistri) e applicato all'altro, livello invariato; Δ D² own e
-ufficiale nei due versi. Output results_s3/hist_scan.csv"""
+"""21/10 evening: does the history (policy, customer on the other lines, address) leave residuals in the sub_41 blend?
+For each history variable: bands, A/E on the own (no spreading) judge (A = target_rep, E = (pred − LL) × π), band factor
+estimated on one year (with credibility n/(n+200) claims) and applied to the other, level unchanged; own and
+official Δ D² in both directions. Output results_s3/hist_scan.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd

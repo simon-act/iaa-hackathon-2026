@@ -1,4 +1,4 @@
-"""Parte 2: piccole varianti del trasferimento sul fold F2024 (forma = D² ufficiale a livello riallineato). Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_sweep.py"""
+"""Part 2: small variants of the transfer on fold F2024 (shape judge = official D² at realigned level). Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_sweep.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -23,7 +23,7 @@ for l in P.LINES:
         res[f"peril_gbm{r}"] = TR.src_peril(tr, va, l, rounds=r)
     for k, p in res.items():
         rows.append(dict(linea=l, variante=k, forma=P.d2(y, p * y.sum() / p.sum()), own=P.d2_own(va.row_id, p)))
-    print(l, "fatto", flush=True)
+    print(l, "done", flush=True)
 r = pd.DataFrame(rows)
 b = r[r.variante == "src_level"].set_index("linea")
 r["d_forma_e4"] = (r.forma - r.linea.map(b.forma)) * 1e4; r["d_own_e4"] = (r.own - r.linea.map(b.own)) * 1e4

@@ -1,6 +1,6 @@
 {
  "name": "parte2",
- "_nota": "Parte 2, mercato emerging (dati in data/raw_p2, mai nel repo). Differenze trovate dall'audit (docs/30_parte2_audit_auto.md): codici locali del tipo di costruzione, età solo a fasce, niente credit_band / chilometraggio / telematica, genere nuovo, professione a testo libero, 2 anni di polizze.",
+ "_nota": "Part 2, emerging market (data in data/raw_p2, never in the repo). Differences found by the audit (docs/WORKLOG.md): local construction-type codes, age in bands only, no credit_band / mileage / telematics, a new gender category, free-text occupation, 2 years of policies.",
  "raw": "data/raw_p2",
  "interim": "data/interim_p2",
  "model_dir": "data/model_p2",

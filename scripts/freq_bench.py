@@ -1,11 +1,11 @@
-"""Banco prova della FREQUENZA per perilo del freq×sev (20/10).
-Replica la parte di frequenza di models_extra._fs2 (offset = log(esposizione × completezza) − trend, encoding di
-make_model, cedimento a 3 foglie, iterazioni = 300/150/80 × mult secondo i sinistri) e la valuta da sola:
-D² Poisson dei sinistri DENUNCIATI dell'anno dopo (fold 2023: stima 2021–22; fold 2024: stima 2021–23), previsione =
-exp(margine + offset dell'anno valutato), livello riallineato per perilo e fold (si giudica la forma).
-Nessun IBNR spalmato: i conteggi sono confrontati con la completezza attesa. Holdout escluso.
-Uso: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/freq_bench.py <linea> <config1,config2,...>
-Configurazioni: vedi CONFIGS. Output: results_s3/freq_bench_<linea>.csv (accumula)."""
+"""Test bench for the per-peril FREQUENCY of the freq×sev (20/10).
+Replicates the frequency part of models_extra._fs2 (offset = log(exposure × completeness) − trend, make_model
+encoding, 3-leaf subsidence, iterations = 300/150/80 × mult depending on claim counts) and evaluates it on its own:
+Poisson D² of claims REPORTED in the following year (fold 2023: fit 2021–22; fold 2024: fit 2021–23), prediction =
+exp(margin + offset of the evaluated year), level realigned by peril and fold (only the shape is judged).
+No spread IBNR: counts are compared with the expected completeness. Holdout excluded.
+Usage: IAA_MARKET=configs/parte1_s3.json python3 -I scripts/freq_bench.py <line> <config1,config2,...>
+Configurations: see CONFIGS. Output: results_s3/freq_bench_<line>.csv (appended)."""
 import sys, time
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -105,7 +105,7 @@ def run(line, cfgs):
                 row = {"linea": line, "perilo": p, "fold": f"F{last + 1}", "config": cname, "d2": d2, "quota_costo": float(share.get(p, 0)),
                        "giri": rounds, "sec": round(time.time() - t0, 1)}
                 out.append(row)
-                fpart = P.RESULTS / f"freq_bench_{line}.csv"     # salvataggio riga per riga (il container si riavvia)
+                fpart = P.RESULTS / f"freq_bench_{line}.csv"     # save row by row (the container restarts)
                 pd.DataFrame([row]).to_csv(fpart, mode="a", header=not fpart.exists(), index=False)
                 print(line, p, f"F{last + 1}", cname, round(d2, 5), rounds, f"{time.time() - t0:.0f}s", flush=True)
     o = pd.read_csv(fpart).drop_duplicates(["perilo", "fold", "config"], keep="last")

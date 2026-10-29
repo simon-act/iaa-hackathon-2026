@@ -1,7 +1,7 @@
-"""22/10 notte, T1: i contatti col servizio clienti segnalano i sinistri denunciati DOPO la fine dell'anno?
-Simulazione: per le righe dell'anno Y (2022, 2023) il cutoff è il 31/12/Y; un sinistro con loss_date nel periodo della riga
-e report_date > cutoff è "tardivo" (al momento del prezzo dell'anno dopo non si vede). Domanda: fra le righe senza
-sinistri denunciati entro il cutoff, i contatti predicono i tardivi? Uso: python3 scripts/contacts_late.py"""
+"""22/10 night, T1: do customer-service contacts flag claims reported AFTER year end?
+Simulation: for rows of year Y (2022, 2023) the cutoff is 31/12/Y; a claim with loss_date in the row period
+and report_date > cutoff is "late" (not visible when pricing the following year). Question: among rows with no
+claims reported by the cutoff, do contacts predict the late claims? Usage: python3 scripts/contacts_late.py"""
 import pandas as pd, numpy as np
 cl = pd.read_parquet("data/raw/public/claims.parquet")
 cl["loss_date"] = pd.to_datetime(cl.loss_date); cl["report_date"] = pd.to_datetime(cl.report_date)
@@ -23,11 +23,11 @@ for line in ["motor", "buildings", "contents"]:
         g["quota_tardivi_tot"] = g.tardivi / r.n_late.sum()
         g = g.assign(linea=line, anno=Y, n_late_tot=r.n_late.sum(), n_rep_tot=r.n_rep.sum())
         out.append(g.reset_index())
-        # i contatti delle righe con tardivi vs righe senza niente
-        print(line, Y, "tardivi/denunciati:", round(r.n_late.sum() / max(r.n_rep.sum(), 1), 4),
-              "contatti medi: 0 sinistri", round(z[z.n_late == 0].customer_service_contacts.mean(), 3),
-              "| solo tardivi", round(z[z.n_late > 0].customer_service_contacts.mean(), 3),
-              "| denunciati", round(r[r.n_rep > 0].customer_service_contacts.mean(), 3))
+        # contacts of rows with late claims vs rows with no claims at all
+        print(line, Y, "late/reported:", round(r.n_late.sum() / max(r.n_rep.sum(), 1), 4),
+              "mean contacts: 0 claims", round(z[z.n_late == 0].customer_service_contacts.mean(), 3),
+              "| late only", round(z[z.n_late > 0].customer_service_contacts.mean(), 3),
+              "| reported", round(r[r.n_rep > 0].customer_service_contacts.mean(), 3))
 o = pd.concat(out); o.to_csv("results_s3/contacts_late.csv", index=False)
 print(o.pivot_table(index=["linea", "cs"], columns="anno", values="tasso").round(4))
 print(o.pivot_table(index=["linea", "cs"], columns="anno", values="quota_tardivi_tot").round(3))

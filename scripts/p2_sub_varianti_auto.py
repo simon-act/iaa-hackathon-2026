@@ -1,9 +1,9 @@
-"""Parte 2 (28/10): due varianti di p2_sub_20 che cambiano solo l'auto (fabbricato e contenuto = sub_20):
-  premcost : premio relativo nel GLM di costo (entrambe le metà) e nel GBM sul numero di sinistri, senza correzione di frequenza
-             sul premio (bench17 'prem costo': +35,0 / +16,9, 5/7 · 5/7 contro sub_18)
-  v2prem60 : pipeline di sub_20 sopra il prior auto con premio relativo stimato sul 60% del developed (bench22: 7/7 · 5/7 contro la
-             base sullo stesso campione, 3/7 contro il prior attuale)
-Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_sub_varianti_auto.py <premcost|v2prem60> <nome uscita>"""
+"""Part 2 (28/10): two variants of p2_sub_20 that change motor only (buildings and contents = sub_20):
+  premcost : relative premium in the cost GLM (both halves) and in the GBM on claim count, without frequency correction
+             on the premium (bench17 'prem costo': +35.0 / +16.9, 5/7 · 5/7 vs sub_18)
+  v2prem60 : sub_20 pipeline on top of the motor prior with relative premium fitted on 60% of the developed market (bench22: 7/7 · 5/7 vs the
+             base on the same sample, 3/7 vs the current prior)
+Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_sub_varianti_auto.py <premcost|v2prem60> <output name>"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -30,4 +30,4 @@ r0 = s.prediction.copy(); s.loc[k, "prediction"] = s.loc[k, "row_id"].map(m)
 assert s.prediction.notna().all() and (s.prediction >= 0).all()
 s.to_csv(ROOT / "submissions_p2" / f"{name}.csv", index=False)
 r = (s.prediction / r0)[k]
-print(var, "auto rispetto a sub_20 p5/50/95", np.percentile(r, [5, 50, 95]).round(3), "totale %.4f" % (s.prediction[k].sum() / r0[k].sum()))
+print(var, "motor vs sub_20 p5/50/95", np.percentile(r, [5, 50, 95]).round(3), "total %.4f" % (s.prediction[k].sum() / r0[k].sum()))

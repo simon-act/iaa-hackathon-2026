@@ -1,11 +1,11 @@
-"""Parte 2 (27/10): due idee nuove contro p2_sub_16 (spec v9), banco 7 verifiche, regola ≥ 5/7 forma E own.
-1. GBM di correzione alla Dutang–Spedicato–Guibert (Variance 2025, transfer con init_score): Tweedie 1,5 sul target con
-   init_score = log(previsione di sub_16 sul train), lr 0,02, 4 foglie, min 1000 righe, early stopping su 20% delle polizze
-   del train; previsione = sub_16 × exp(correzione), livello del fold invariato. Fabbricato: sulla parte prior (0,9), poi + 0,1 scratch.
-2. Correzione sulla FREQUENZA: GLM Poisson (glum, ridge, alpha scelto come in src_glm) sul numero di sinistri con offset = numero
-   atteso dal prior (Σ f_p × pi_p × deflattore), fattori applicati al costo e riportati a media 1 sul train.
-   Base: auto con la correzione di costo di sub_10 (nb, genere); contenuto come sub_10.
-Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench13.py"""
+"""Part 2 (27/10): two new ideas vs p2_sub_16 (spec v9), 7-check bench, rule ≥ 5/7 shape AND own.
+1. Correction GBM à la Dutang–Spedicato–Guibert (Variance 2025, transfer with init_score): Tweedie 1.5 on the target with
+   init_score = log(sub_16 prediction on train), lr 0.02, 4 leaves, min 1000 rows, early stopping on 20% of the train
+   policies; prediction = sub_16 × exp(correction), fold level unchanged. Buildings: on the prior part (0.9), then + 0.1 scratch.
+2. FREQUENCY correction: Poisson GLM (glum, ridge, alpha chosen as in src_glm) on claim counts with offset = expected
+   count from the prior (Σ f_p × pi_p × deflator), factors applied to cost and rescaled to mean 1 on train.
+   Base: motor with the sub_10 cost correction (nb, gender); contents as sub_10.
+Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench13.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd, lightgbm as lgb
@@ -37,7 +37,7 @@ def peril_ov(tr, va, l):
 
 
 def base16(tr, va, l):
-    """(previsione sub_16 su va, sulla parte senza scratch per tr e va, funzione finale)"""
+    """(sub_16 prediction on va, on the part without scratch for tr and va, final function)"""
     if l == "motor":
         a = lambda d: 0.5 * glm(tr, d, l, ["new_business", "gender"]) + 0.5 * glm(tr, d, l, ["new_business", "gender", "fuel_type", "cover_type"])
         return a(tr), a(va), (lambda p: p)
@@ -83,7 +83,7 @@ for l in P.LINES:
                 p, info = freq_corr(tr, va, l, vs, b10); preds[k] = p; logs.append(dict(linea=l, fold=fname, prova=k, **{kk: str(v) for kk, v in info.items()}))
         for k, p in preds.items():
             rows.append(dict(linea=l, fold=fname, variante=k, forma=P.d2(y, p * y.sum() / p.sum()), own=P.d2_own(va.row_id, p)))
-        print(l, fname, "alberi", it, flush=True)
+        print(l, fname, "trees", it, flush=True)
 r = pd.DataFrame(rows)
 b = r[r.variante == "sub_16"].set_index(["linea", "fold"])
 for c in ("forma", "own"):
@@ -92,5 +92,5 @@ out = Path(P.RESULTS); r.to_csv(out / "p2_bench13.csv", index=False); pd.DataFra
 pd.set_option("display.width", 220)
 s = r[r.variante != "sub_16"].groupby(["linea", "variante"]).agg(forma=("d_forma", "mean"), own=("d_own", "mean"),
     pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{len(x)}"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/{len(x)}"))
-print("Δ e·4 contro sub_16"); print(s.round(2).to_string())
+print("Δ e·4 vs sub_16"); print(s.round(2).to_string())
 print(r[r.variante != "sub_16"].pivot_table(index=["linea", "variante"], columns="fold", values="d_forma").round(1).to_string())

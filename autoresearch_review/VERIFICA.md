@@ -1,16 +1,16 @@
-# Verifica delle segnalazioni di Qwen (19/10, 23:45) — Claude
+# Verification of Qwen's findings (19/10, 23:45) — Claude
 
-La revisione è durata 79 minuti e ha prodotto 125 segnalazioni. Nella seconda passata Qwen ne ha smontate da solo 93 (FALSE_POSITIVE). Ne restano 3 reali e 8 incerte; 21 non sono state ricontrollate, quasi tutte di gravità bassa. Ognuna delle 11 è stata controllata a mano nel container.
+The review took 79 minutes and produced 125 findings. In the second pass Qwen itself refuted 93 of them (FALSE_POSITIVE). That leaves 3 real and 8 uncertain; 21 were not re-checked, almost all of low severity. Each of the 11 was checked by hand in the container.
 
-| # | Segnalazione | Verifica | Azione |
+| # | Finding | Verification | Action |
 |---|---|---|---|
-| 1 | develop.py:71 — linee in una tupla fissa invece di `LINES` | **Reale** (Parte 2 con linee diverse) | Corretto: `for line in LINES`. Parte 1 identica |
-| 2 | develop.py:86 — AY maturi `<= 2022` fisso | **Reale**: con un mercato 2023–25 nessun AY sarebbe maturo | Corretto: `<= YEARS[-1] − 2`. Parte 1 (2022) e mercato finto (2022) identici |
-| 3 | experience.py:28 — `sev` della credibilità stimata su tutti gli anni, compresi quelli valutati nei fold | **Reale ma trascurabile**: è uno scalare per linea; con i soli anni di stima cambia dello 0,5–2% (auto 4.181 contro 4.087/4.125), un effetto sul D² molto più piccolo di k 6→12 (≤ 0,0002) | Documentato, non toccato |
-| 4–5 | clean_claims.py:92 — colonna `recoveries` data per scontata | Incerta → **robustezza Parte 2** | Se manca: recuperi = 0, con avviso |
-| 6–8 | features.py:135–138 — `birth_year`, `driver_age`, `years_licensed`, `annual_mileage` dati per scontati | Incerta → **robustezza Parte 2** | Colonne derivate calcolate solo se le sorgenti esistono |
-| 9 | build_datasets.py:115 — `credit_band` nel report | Solo il report di controllo: le rinomine della config passano prima | Nessuna |
-| 10 | models_extra.py:44 — `SEV_DRIVERS` fissi | Il codice filtra già con `if c in base_cols` | Nessuna |
-| 11 | holdout_weights.py:27 — `row_id` dato per scontato | `row_id` è creato dalla pipeline (clean_policies), non viene dal mercato | Nessuna |
+| 1 | develop.py:71 — lines in a fixed tuple instead of `LINES` | **Real** (Part 2 with different lines) | Fixed: `for line in LINES`. Part 1 identical |
+| 2 | develop.py:86 — mature AYs fixed at `<= 2022` | **Real**: with a 2023–25 market no AY would be mature | Fixed: `<= YEARS[-1] − 2`. Part 1 (2022) and mock market (2022) identical |
+| 3 | experience.py:28 — credibility `sev` estimated on all years, including those scored in the folds | **Real but negligible**: it is one scalar per line; using only the fitting years changes it by 0.5–2% (motor 4,181 vs 4,087/4,125), an effect on D² much smaller than k 6→12 (≤ 0.0002) | Documented, not changed |
+| 4–5 | clean_claims.py:92 — `recoveries` column assumed to exist | Uncertain → **Part 2 robustness** | If missing: recoveries = 0, with a warning |
+| 6–8 | features.py:135–138 — `birth_year`, `driver_age`, `years_licensed`, `annual_mileage` assumed to exist | Uncertain → **Part 2 robustness** | Derived columns computed only if their sources exist |
+| 9 | build_datasets.py:115 — `credit_band` in the report | Only the control report: the config renames are applied before it | None |
+| 10 | models_extra.py:44 — fixed `SEV_DRIVERS` | The code already filters with `if c in base_cols` | None |
+| 11 | holdout_weights.py:27 — `row_id` assumed to exist | `row_id` is created by the pipeline (clean_policies), it does not come from the market data | None |
 
-Bilancio: nessun leakage rilevante e nessun bug che cambi i numeri della Parte 1. Restano 4 fragilità vere per la Parte 2, ora corrette. Il tasso di falsi positivi è alto (93 su 104 high/medium), ma la seconda passata li filtra bene: delle 11 rimaste, 7 erano punti veri, anche se piccoli.
+Summary: no relevant leakage and no bug that changes the Part 1 numbers. 4 genuine Part 2 fragilities remain, now fixed. The false-positive rate is high (93 of 104 high/medium), but the second pass filters them well: of the 11 that remained, 7 were genuine points, albeit small.

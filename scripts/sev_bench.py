@@ -1,10 +1,10 @@
-"""Banco prova della SEVERITÀ per perilo del freq×sev (20/10): distribuzioni e parametri.
-Dati: autoresearch_sev/claims_sev.parquet (un sinistro per riga, sev = costo tagliato, sviluppato, al livello 2025).
-Fold: stima AY ≤ 2022 → valuta 2023; AY ≤ 2023 → 2024. Metrica: D² Gamma per perilo (devianza Gamma: l'errore relativo
-conta uguale per sinistri piccoli e grandi), poi media per linea pesata col costo del perilo.
-"base" = la severità di fs2: GBM Gamma a 1 split su SEV_DRIVERS (+ encoding make_model in auto) se > 1500 sinistri,
-GLM Gamma su log SI per i perili piccoli della casa, altrimenti la media.
-Uso: python3 -I scripts/sev_bench.py <config1,config2,...>  (output results_s3/sev_bench.csv)"""
+"""Test bench for the per-peril SEVERITY of the freq×sev (20/10): distributions and parameters.
+Data: autoresearch_sev/claims_sev.parquet (one claim per row, sev = capped, developed cost at 2025 level).
+Folds: fit AY ≤ 2022 → evaluate 2023; AY ≤ 2023 → 2024. Metric: Gamma D² per peril (Gamma deviance: relative error
+counts equally for small and large claims), then per-line mean weighted by peril cost.
+"base" = the fs2 severity: 1-split Gamma GBM on SEV_DRIVERS (+ make_model encoding for motor) if > 1500 claims,
+Gamma GLM on log SI for the small home perils, otherwise the mean.
+Usage: python3 -I scripts/sev_bench.py <config1,config2,...>  (output results_s3/sev_bench.csv)"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -17,7 +17,7 @@ import models_extra as M  # noqa: E402
 
 C = pd.read_parquet(ROOT / "autoresearch_sev/claims_sev.parquet")
 DRIV = M.SEV_DRIVERS
-# 22/10 sera: franchigia relativa al valore del bene (obbligatoria fissa: 250 auto, 350 casa)
+# 22/10 evening: deductible relative to insured value (fixed compulsory deductible: 250 motor, 350 home)
 C["xs_rel"] = (C["voluntary_excess"].astype(float) + np.where(C["line"] == "motor", 250, 350)) / np.where(
     C["line"] == "motor", C["vehicle_value_group"].astype(float), C["sum_insured"].astype(float).clip(lower=1))
 ALLX = [c for c in C.columns if c not in ("row_id", "line", "peril", "ay", "is_open", "exposure", "sev")]
@@ -69,7 +69,7 @@ def fit_predict(tr, va, line, p, cfg):
         ly = np.log(y); params.update(objective="huber" if lg == "huber" else "regression", alpha=1.0)
         m = lgb.train(params, lgb.Dataset(Xtr, label=ly, init_score=np.full(len(y), ly.mean())), num_boost_round=rounds)
         r = ly - (m.predict(Xtr, raw_score=True) + ly.mean())
-        return np.exp(m.predict(Xva, raw_score=True) + ly.mean()) * np.mean(np.exp(r))   # smearing di Duan
+        return np.exp(m.predict(Xva, raw_score=True) + ly.mean()) * np.mean(np.exp(r))   # Duan smearing
     m = lgb.train(params, lgb.Dataset(Xtr, label=y, init_score=np.full(len(y), np.log(mean))), num_boost_round=rounds)
     return np.exp(m.predict(Xva, raw_score=True) + np.log(mean))
 

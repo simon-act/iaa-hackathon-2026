@@ -1,5 +1,5 @@
-"""OOF (fold 2023/2024) del blend di sub_41, dai componenti salvati (21/10 sera). Approssimazioni: GBM auto senza target gross
-(qwen_gbm73fix_cred). Fabbricato con la credibilità senza cedimento come nella finale. Output results_s3/oof/base41.parquet"""
+"""OOF (folds 2023/2024) of the sub_41 blend, from the saved components (21/10 evening). Approximations: motor GBM without the gross target
+(qwen_gbm73fix_cred). Buildings with credibility excluding subsidence, as in the final run. Output results_s3/oof/base41.parquet"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -23,5 +23,5 @@ o = pd.concat(out, ignore_index=True); o.to_parquet(R / "oof/base41.parquet", in
 W = {"motor": 254986, "buildings": 184155, "contents": 187498}
 for f in P.FOLDS:
     z = o[o.fold == f]
-    print(f, "uff", round(sum(P.d2(z[z.line == l].target_b, z[z.line == l].pred) * W[l] for l in W) / sum(W.values()), 5),
+    print(f, "official", round(sum(P.d2(z[z.line == l].target_b, z[z.line == l].pred) * W[l] for l in W) / sum(W.values()), 5),
           "own", round(sum(P.d2_own(z[z.line == l].row_id, z[z.line == l].pred.to_numpy()) * W[l] for l in W) / sum(W.values()), 5))

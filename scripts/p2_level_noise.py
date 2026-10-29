@@ -1,10 +1,10 @@
-"""Parte 2 (25/10): quanto è affidabile il livello stimato su 2 anni con la dimensione dell'emerging? (proposta dopo la revisione)
-Dentro il developed: ogni regione (12) fa da "mercato", si estraggono a caso tante polizze quante nel train emerging,
-livello = costo per anno-polizza (target_b, già al livello 2025) stimato sul 2022–23, confrontato col 2024.
-Stimatori: media dei 2 anni pesata per esposizione (come nel modello); solo l'anno più recente; pesi 1:2.
-Misure: sd dell'errore log(livello vero 2024 / stimato) con e senza sottocampionamento (la differenza è il rumore dovuto alla
-dimensione); confronto con la variazione 2023→2024 vista nell'emerging.
-Uso: IAA_MARKET=configs/parte1_s3.json python3 scripts/p2_level_noise.py → results_p2/p2_level_noise.csv"""
+"""Part 2 (25/10): how reliable is the level estimated on 2 years given the size of the emerging market? (proposed after the review)
+Within the developed market: each region (12) acts as a "market"; as many policies as in the emerging train are drawn at random,
+level = cost per policy-year (target_b, already at the 2025 level) estimated on 2022–23, compared with 2024.
+Estimators: exposure-weighted mean of the 2 years (as in the model); most recent year only; weights 1:2.
+Metrics: sd of the error log(true 2024 level / estimated) with and without subsampling (the difference is the noise due to
+size); comparison with the 2023→2024 change seen in the emerging market.
+Usage: IAA_MARKET=configs/parte1_s3.json python3 scripts/p2_level_noise.py → results_p2/p2_level_noise.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -18,7 +18,7 @@ for l in P.LINES:
     for reg, g in df.groupby("region"):
         g = g[g.year.isin([2022, 2023, 2024])]
         pols = g.policy_id.unique()
-        for seed in range(-1, 30):           # -1 = regione intera, senza sottocampionamento
+        for seed in range(-1, 30):           # -1 = whole region, no subsampling
             if seed >= 0:
                 pick = np.random.default_rng(seed).choice(pols, size=min(len(pols), N_EMERG[l]), replace=False)
                 s = g[g.policy_id.isin(set(pick))]
@@ -31,7 +31,7 @@ for l in P.LINES:
             for k, v in est.items():
                 rows.append(dict(linea=l, regione=reg, seed=seed, stimatore=k, err=np.log(bc[2024] / v),
                                  salto=np.log(bc[2023] / bc[2022])))
-    print(l, "fatto", flush=True)
+    print(l, "done", flush=True)
 r = pd.DataFrame(rows)
 r.to_csv(Path(P.RESULTS).parent / "results_p2" / "p2_level_noise.csv", index=False)
 sub, full = r[r.seed >= 0], r[r.seed < 0]

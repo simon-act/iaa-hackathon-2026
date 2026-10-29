@@ -1,6 +1,6 @@
-# dati della competizione: mai nel repository (regolamento §2.5)
+# competition data: never in the repository (rules §2.5)
 data/
-# output pesanti e rigenerabili
+# large, regenerable outputs
 results/oof/
 results/*.parquet
 results/**/*.parquet
@@ -12,25 +12,25 @@ logs/
 __pycache__/
 *.pyc
 .DS_Store
-# credenziali
+# credentials
 .kaggle/
 kaggle.json
 access_token
-# loop Qwen: ha il suo repository
+# Qwen loop: has its own repository
 autoresearch/.git/
 autoresearch/runs/
 autoresearch/.git_loop_qwen_disabled/
-# 18/10: catene alternative e previsioni (contengono il target derivato dai dati)
+# 18 Oct: alternative chains and predictions (contain the target derived from the data)
 *.parquet
 results_*/oof/
-# pagine guida: contengono righe di esempio dei dati → restano artifact privati
+# guide pages: contain sample rows of the data → kept as private artifacts
 viz/*_guida.html
 results_s3/spie_scan.csv
 submissions_p2/*.csv
 results_p2/oof_parts/
 results_p2/*.parquet
 
-# 25/10: premio commerciale per riga delle 20 polizze di riferimento (contiene dati della gara) -> solo locale e nel report
+# 25 Oct: per-row office premium of the 20 reference policies (contains competition data) -> local only and in the report
 results_p2/office_premium_reference*.csv
 results_p2_llc/
 results_p2_llp/

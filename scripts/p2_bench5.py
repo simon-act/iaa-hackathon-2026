@@ -1,10 +1,10 @@
-"""Parte 2 (25/10): "più credibilità ai dati nuovi", in due modi strutturati, sul banco a 7 verifiche (fold di p2_bench2).
-Motivo: i rapporti emerging / prior per perilo sono molto diversi (fabbricato: acqua 0,59, incendio 1,32, tempesta 0,98; auto:
-cristalli 0,73, furto 0,94), mentre sub_07 usa un solo fattore di livello per linea.
-1. Livello per perilo (frequenza e severità) con credibilità verso la linea: k = sinistri a cui il perilo pesa il 50%;
-   k (freq, sev) = (25, 50) più credibilità, (100, 200), (400, 800) meno. Poi le stesse correzioni di sub_07 (genere, nb) sopra.
-2. Miscela col modello solo emerging (scratch): w = 0,1 / 0,2 / 0,3 / 0,5 sopra sub_07 (fabbricato: già 0,1 in sub_07).
-Regola: entra se vince in ≥ 5/7 verifiche su forma e own. Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench5.py"""
+"""Part 2 (25/10): "more credibility to the new data", in two structured ways, on the 7-check bench (folds from p2_bench2).
+Rationale: emerging / prior ratios by peril differ widely (buildings: water 0.59, fire 1.32, storm 0.98; motor:
+glass 0.73, theft 0.94), while sub_07 uses a single level factor per line.
+1. Peril level (frequency and severity) with credibility toward the line: k = claim count at which the peril gets 50% weight;
+   k (freq, sev) = (25, 50) more credibility, (100, 200), (400, 800) less. Then the same sub_07 corrections (gender, nb) on top.
+2. Blend with the emerging-only model (scratch): w = 0.1 / 0.2 / 0.3 / 0.5 on top of sub_07 (buildings: already 0.1 in sub_07).
+Rule: adopted if it wins ≥ 5/7 checks on shape and own. Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench5.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -50,7 +50,7 @@ for l in P.LINES:
         for k, p in preds.items():
             rows.append(dict(linea=l, fold=fname, variante=k, forma=P.d2(y, p * y.sum() / p.sum()),
                              own=P.d2_own(va.row_id, p), unc=P.d2_unc(va.row_id, p)))
-        print(l, fname, "fatto", flush=True)
+        print(l, fname, "done", flush=True)
 r = pd.DataFrame(rows)
 b = r[r.variante == "sub_07"].set_index(["linea", "fold"])
 for c in ("forma", "own", "unc"):
@@ -59,5 +59,5 @@ r.to_csv(Path(P.RESULTS) / "p2_bench5.csv", index=False); pd.DataFrame(logs).to_
 pd.set_option("display.width", 220)
 s = r[r.variante != "sub_07"].groupby(["linea", "variante"]).agg(forma=("d_forma", "mean"), own=("d_own", "mean"), unc=("d_unc", "mean"),
     pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{len(x)}"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/{len(x)}"))
-print("Δ e·4 contro sub_07"); print(s.round(1).to_string())
+print("Δ e·4 vs sub_07"); print(s.round(1).to_string())
 print(r.pivot_table(index=["linea", "variante"], columns="fold", values="d_forma").round(1).to_string())

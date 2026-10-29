@@ -1,7 +1,7 @@
-"""Parte 2 (27/10): i migliori modelli della Parte 1 come prior (scripts/p2_export_p1.py), con sopra tutta la pipeline di p2_sub_19.
-Confronto con il prior di riferimento (stesso campione del developed). Regola ≥ 5/7 forma E own.
-Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench19.py <linea> <suffisso di riferimento> <suffisso1,suffisso2,...>
-(suffisso "" = prior attuale; es. _p1v2_s60)"""
+"""Part 2 (27/10): the best Part 1 models as prior (scripts/p2_export_p1.py), with the full p2_sub_19 pipeline on top.
+Compared with the reference prior (same developed sample). Rule ≥ 5/7 shape AND own.
+Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench19.py <line> <reference suffix> <suffix1,suffix2,...>
+(suffix "" = current prior; e.g. _p1v2_s60)"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -51,6 +51,6 @@ r = pd.DataFrame(rows); b = r[r.variante == (ref or "attuale")].set_index("fold"
 for c in ("forma", "own"):
     r[f"d_{c}"] = (r[c].to_numpy() - b.loc[r.fold, c].to_numpy()) * 1e4
 r.to_csv(Path(P.RESULTS) / f"p2_bench19_{l}{ref}.csv", index=False)
-print(l, "rif", ref or "attuale"); print(r[r.variante != (ref or "attuale")].groupby("variante").agg(forma=("d_forma", "mean"), own=("d_own", "mean"),
+print(l, "ref", ref or "attuale"); print(r[r.variante != (ref or "attuale")].groupby("variante").agg(forma=("d_forma", "mean"), own=("d_own", "mean"),
       pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/7"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/7")).round(2).to_string())
 print(r[r.variante != (ref or "attuale")].pivot_table(index="variante", columns="fold", values="d_forma").round(1).to_string())

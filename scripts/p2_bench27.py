@@ -1,8 +1,8 @@
-"""Parte 2 (28/10, A2): banco più onesto. I fold K del banco a 7 verifiche dividono per polizza ma condividono gli anni (stesso anno
-in train e valid): le 7 verifiche valgono forse 3–4. Qui: solo direzione del tempo (train un anno, valid l'altro) × 3 gruppi di CLIENTI
-disgiunti (nessun cliente in train e valid) = 6 verifiche.
-Regola fissata prima dei risultati: entra se media > 0 su forma E own, ≥ 4/6 su entrambi, e media > 0 in entrambe le direzioni del tempo.
-Varianti = pezzi di p2_sub_21 tolti uno alla volta, e sub_20. Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench27.py <linea> [varianti,..]"""
+"""Part 2 (28/10, A2): more honest bench. The K folds of the 7-check bench split by policy but share the years (same year
+in train and valid): the 7 checks are worth perhaps 3–4. Here: time direction only (train on one year, valid on the other) × 3 disjoint
+CUSTOMER groups (no customer in both train and valid) = 6 checks.
+Rule fixed before the results: adopted if mean > 0 on shape AND own, ≥ 4/6 on both, and mean > 0 in both time directions.
+Variants = components of p2_sub_21 removed one at a time, and sub_20. Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench27.py <line> [variants,..]"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -82,7 +82,7 @@ for c in ("forma", "own"):
 r["dir"] = r.fold.str.slice(0, 9)
 tag = "" if ONLY is None else "_" + str(abs(hash(",".join(ONLY))) % 1000)
 r.to_csv(Path(P.RESULTS) / f"p2_bench27_{l}{tag}.csv", index=False)
-print(l, "(Δ della variante contro sub_21: negativo = sub_21 meglio, cioè il pezzo tolto serve)")
+print(l, "(Δ of the variant vs sub_21: negative = sub_21 better, i.e. the removed component is useful)")
 s = r[r.variante != "sub_21"].groupby("variante").agg(forma=("d_forma", "mean"), own=("d_own", "mean"),
     vinte_forma=("d_forma", lambda x: f"{(x > 0).sum()}/6"), vinte_own=("d_own", lambda x: f"{(x > 0).sum()}/6"))
 s = s.join(r[r.variante != "sub_21"].pivot_table(index="variante", columns="dir", values="d_forma").add_prefix("forma "))

@@ -1,7 +1,7 @@
-"""22/10 sera: GBM con la franchigia relativa (xs_rel) dentro il blend di sub_41, Δ e·4 sui tre giudici, due fold.
-Auto: qwen_gbm73fix_cred → qwen_gbm73fix_xs_cred; fabbricato e contenuto: GBM di sub_41 → qwen_gbm73_gross_xs_cred
-(nel contenuto si mostra anche il confronto con qwen_gbm73_gross_cred, stessa costruzione del target).
-Uso: IAA_MARKET=configs/parte1_s3.json python3 scripts/blend_gbmxs.py"""
+"""22/10 evening: GBM with the relative deductible (xs_rel) inside the sub_41 blend, Δ e·4 on the three judges, two folds.
+Motor: qwen_gbm73fix_cred → qwen_gbm73fix_xs_cred; buildings and contents: sub_41 GBM → qwen_gbm73_gross_xs_cred
+(for contents the comparison with qwen_gbm73_gross_cred, same target construction, is also shown).
+Usage: IAA_MARKET=configs/parte1_s3.json python3 scripts/blend_gbmxs.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -16,7 +16,7 @@ def part(n, l, f):
 
 
 ref = pd.read_parquet(R / "oof/fs2_v2_cred.parquet", columns=["row_id", "line", "fold", "exposure", "target_b"])
-# (freq×sev, GBM, varianti (freq×sev, GBM), peso, esclusione cedimento)
+# (freq×sev, GBM, variants (freq×sev, GBM), weight, subsidence exclusion)
 SPEC = {"motor": ("fs2_v2fb_cred", "qwen_gbm73fix_cred", [("fs2_v2fb_cred", "qwen_gbm73fix_xs_cred"), ("fs2_v2fb_xs_cred", "qwen_gbm73fix_cred"),
                                                           ("fs2_v2fb_xs_cred", "qwen_gbm73fix_xs_cred"),
                                                           ("fs2_v2fb_2ph_cred", "qwen_gbm73fix_cred")], 0.9, False),
@@ -40,7 +40,7 @@ for l, (a, b, alts, w, ex) in SPEC.items():
         p0 = blend(a, b); j0 = (P.d2(s.target_b, p0), P.d2_own(rid, p0), P.d2_unc(rid, p0))
         for an, bn in alts:
             if not (ok(an) and ok(bn)):
-                print(l, f, "manca", an, bn); continue
+                print(l, f, "missing", an, bn); continue
             p = blend(an, bn); j = (P.d2(s.target_b, p), P.d2_own(rid, p), P.d2_unc(rid, p))
             rows.append(dict(line=l, fold=f, fs=an, gbm=bn, uff=(j[0] - j0[0]) * 1e4, own=(j[1] - j0[1]) * 1e4, unc=(j[2] - j0[2]) * 1e4))
 r = pd.DataFrame(rows); r.to_csv(R / "blend_gbmxs.csv", index=False)

@@ -1,9 +1,9 @@
-"""Parte 2 (24/10): estrapolazione del meteo. Nel mercato emerging il clima esce dal range del developed (giorni di grandine
-fino a ~40 contro p99 = 19) e il prior (GBM a 1 split) resta piatto oltre il range: sul 2023–24 l'A/E dei cristalli/grandine
-sale da 0,86 a 1,14 con i giorni di grandine. Correzione: per un perilo meteo, frequenza del prior × exp(β·(x − media)),
-β stimato sui dati emerging con un Poisson a una variabile e offset = numero atteso dal prior; il livello del perilo non cambia.
-Fold: β sul 2023, valutazione sul 2024 (forma / senza spalmatura / grandi sinistri veri), con prior × livello e con genere.
-Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_weather.py [scrivi]   ('scrivi' = salva source_pred_<linea>_meteo.parquet con β su 2023+24)"""
+"""Part 2 (24/10): weather extrapolation. In the emerging market the climate goes beyond the range of the developed market (hail days
+up to ~40 vs p99 = 19) and the prior (1-split GBM) stays flat beyond the range: on 2023–24 the glass/hail A/E
+rises from 0.86 to 1.14 with hail days. Correction: for a weather peril, prior frequency × exp(β·(x − mean)),
+β estimated on the emerging data with a one-variable Poisson and offset = expected count from the prior; the peril level does not change.
+Fold: β on 2023, evaluation on 2024 (shape judge / no large-loss spreading / actual large losses), with prior × level and with gender.
+Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_weather.py [scrivi]   ('scrivi' = save source_pred_<line>_meteo.parquet with β fitted on 2023+24)"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -47,14 +47,14 @@ def run_fold():
         for per, var in cands:
             st = s_all.reindex(tr.row_id)
             b, xm, nn = fit_beta(tr, st, per, var)
-            # normalizzazione: la media pesata del moltiplicatore sul train = 1 (livello del perilo invariato)
+            # normalisation: the weighted mean of the multiplier on train = 1 (peril level unchanged)
             w = st[f"f_{per}"].to_numpy(); mt = np.exp(b * (tr[var].to_numpy(float) - xm)); norm = float(np.sum(w * mt) / np.sum(w))
             both = pd.concat([tr, va])
             adj = adjust(s_all.reindex(both.row_id), both, per, var, b, xm, norm)
             TR._PRIOR_OVERRIDE = adj
             preds[f"{per}~{var} (β={b:+.3f})"] = TR.src_level(tr, va, l)
             TR._PRIOR_OVERRIDE = None
-            print(l, per, var, "β", round(b, 4), "sinistri", int(nn), flush=True)
+            print(l, per, var, "β", round(b, 4), "claims", int(nn), flush=True)
         for k, p in preds.items():
             rows.append(dict(linea=l, variante=k, forma=P.d2(y, p * y.sum() / p.sum()), own=P.d2_own(va.row_id, p), unc=P.d2_unc(va.row_id, p)))
     r = pd.DataFrame(rows)
@@ -77,7 +77,7 @@ def write_final(keep):
             b, xm, nn = fit_beta(df, st, per, var)
             w = st[f"f_{per}"].to_numpy(); mt = np.exp(b * (df[var].to_numpy(float) - xm)); norm = float(np.sum(w * mt) / np.sum(w))
             adj = adjust(adj, both, per, var, b, xm, norm)
-            print("finale", l, per, var, "β", round(b, 4), flush=True)
+            print("final", l, per, var, "β", round(b, 4), flush=True)
         adj.reset_index().to_parquet(P.RESULTS / f"source_pred_{l}_meteo.parquet", index=False)
 
 

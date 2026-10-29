@@ -109,7 +109,7 @@ def fit_predict(train, valid, line):
     # sum_insured: higher sum => higher cost (positive)
     monotone_constraints = [0] * len(cols)
     for i, c in enumerate(cols):
-        if c in ["flood_zone", "building_age", "sum_insured"]:   # 20/10 Claude: tolto vehicle_age (effetto a campana: 0,87 → 1,09 a 5–8 anni → 0,97 oltre 12)
+        if c in ["flood_zone", "building_age", "sum_insured"]:   # 20/10 Claude: removed vehicle_age (hump-shaped effect: 0.87 → 1.09 at 5–8 years → 0.97 beyond 12)
             monotone_constraints[i] = 1
     
     # Bag multiple seeds

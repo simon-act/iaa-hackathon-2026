@@ -1,9 +1,9 @@
-"""Pesi della combinazione di modelli per linea, scelti sulle previsioni out-of-fold.
+"""Per-line model blend weights, chosen on out-of-fold predictions.
 
-Combinazione geometrica o aritmetica? Aritmetica (media pesata delle previsioni), pesi ≥ 0 che sommano a 1.
-Onestà: i pesi stimati su un fold vengono valutati sull'altro (cross-fold); i pesi finali usano entrambi i fold.
-Uso: python -I blend.py modello1 modello2 [...]
-Output: results/blend_weights.json e una riga in results/results.tsv (blend_opt)
+Geometric or arithmetic blend? Arithmetic (weighted mean of predictions), weights ≥ 0 summing to 1.
+Honesty: weights estimated on one fold are evaluated on the other (cross-fold); the final weights use both folds.
+Usage: python -I blend.py model1 model2 [...]
+Output: results/blend_weights.json and one row in results/results.tsv (blend_opt)
 """
 import json
 import sys
@@ -60,7 +60,7 @@ def main():
         W[line] = dict(zip(names, wall.round(3).tolist()))
         out.loc[m, "pred"] = sum(w * p[m] for w, p in zip(wall, P_))
     r = score(out)
-    # punteggio onesto: per ogni fold, pesi stimati sull'altro fold
+    # honest score: for each fold, weights estimated on the other fold
     honest = base.copy(); honest["pred"] = 0.0
     for line in P.LINES:
         for f_eval, wkey in (("F2024", "w23"), ("F2023", "w24")):

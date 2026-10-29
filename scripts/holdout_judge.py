@@ -1,5 +1,5 @@
-"""23/10: candidate finali sull'holdout congelato (righe 2024 del 10% di polizze mai usate), blend per linea come in
-build_final. Giudici: ufficiale e senza spalmatura. Uso: IAA_MARKET=configs/parte1_s3.json python3 scripts/holdout_judge.py"""
+"""23/10: final candidates on the frozen holdout (2024 rows of the 10% of policies never used), per-line blend as in
+build_final. Judges: official and own (no spreading). Usage: IAA_MARKET=configs/parte1_s3.json python3 scripts/holdout_judge.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd

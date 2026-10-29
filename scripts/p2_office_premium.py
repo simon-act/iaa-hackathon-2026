@@ -1,13 +1,13 @@
-"""Parte 2: premio commerciale (office premium) delle 20 polizze di riferimento dal premio di rischio previsto.
+"""Part 2: office premium of the 20 reference policies from the predicted risk premium.
 
-Formula (ipotesi dichiarate nel report):
-    premio = (premio di rischio + spesa fissa × esposizione + riass. cat × premio di rischio [solo casa e contenuto])
-             / (1 − spese variabili − commissione del canale − imposta − margine di profitto)
-- spesa fissa "per polizza" riportata all'esposizione della riga (una riga di 0,1 anni non paga una spesa annua intera);
-- riassicurazione catastrofale = quota del premio di rischio delle linee property (fabbricato e contenuto), 0 in auto;
-- commissione per canale; nel mercato emerging il comparatore non ha un valore (vuoto) → 0, segnalato;
-- imposta e profitto come quote del premio commerciale.
-Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_office_premium.py submissions_p2/<file>.csv"""
+Formula (assumptions stated in the report):
+    premium = (risk premium + fixed expense × exposure + cat reinsurance × risk premium [property and contents only])
+             / (1 − variable expenses − channel commission − tax − profit margin)
+- "per policy" fixed expense scaled to the row's exposure (a row of 0.1 years does not pay a full annual expense);
+- catastrophe reinsurance = share of the risk premium of the property lines (buildings and contents), 0 in motor;
+- commission by channel; in the emerging market the aggregator has no value (blank) → 0, flagged;
+- tax and profit as shares of the office premium.
+Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_office_premium.py submissions_p2/<file>.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd

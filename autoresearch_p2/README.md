@@ -1,7 +1,7 @@
-# Loop Karpathy — Parte 2 (mercato emerging), 25/10
+# Karpathy loop — Part 2 (emerging market), 25/10
 
-Qwen (locale, Ollama) modifica `experiment.py`; `eval_experiment.py` (congelato) lo valuta su 7 verifiche (2023→2024, 2024→2023,
-5 gruppi di polizze) contro "prior del developed × livello"; si tiene solo se migliora sia il giudice senza spalmatura sia la forma
-ufficiale. Dati: `data_p2.parquet` (costruito da `build_data.py`, NON nel repo). Avvio: `Avvia loop p2.command`; stop: `touch STOP`.
-Risultati: `results.tsv`, `loop.log`, storia git della cartella. Nessun risultato del loop entra in una sub senza ri-verifica sul banco
-completo (`scripts/p2_bench.py`).
+Qwen (local, Ollama) edits `experiment.py`; `eval_experiment.py` (frozen) scores it on 7 checks (2023→2024, 2024→2023,
+5 policy groups) against "developed-market prior × level"; a change is kept only if it improves both the judge without IBNR
+spreading and the official-like shape. Data: `data_p2.parquet` (built by `build_data.py`, NOT in the repo). Launch:
+`python run_loop.py`; stop: `touch STOP`. Results: `results.tsv`, `loop.log`, the folder's git history. No loop result enters a
+submission without re-verification on the full bench (`scripts/p2_bench.py`).

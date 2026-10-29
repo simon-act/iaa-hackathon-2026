@@ -1,4 +1,4 @@
-"""Funzioni condivise di p2_resid.py (27/10)."""
+"""Shared functions for p2_resid.py (27/10)."""
 import numpy as np, pandas as pd
 
 DROP = {"row_id", "policy_id", "customer_id", "address_id", "period_start", "period_end", "exposure", "exposure_raw",

@@ -1,6 +1,7 @@
-"""Prepara i dati del loop Parte 2 (una volta): righe emerging 2023–24 con variabili ammesse, prior del developed (totale e per
-perilo, results_p2/source_pred_<linea>.parquet), colonne del giudice. Dati di gara: data_p2.parquet NON va nel repo.
-Uso: IAA_MARKET=configs/parte2.json python3 autoresearch_p2/build_data.py"""
+"""Builds the data for the Part 2 loop (run once): emerging-market rows 2023–24 with the allowed variables, the prior from
+the developed market (total and per peril, results_p2/source_pred_<line>.parquet) and the judge columns.
+Competition data: data_p2.parquet must NOT be committed to the repo.
+Usage: IAA_MARKET=configs/parte2.json python3 autoresearch_p2/build_data.py"""
 import sys
 from pathlib import Path
 import pandas as pd

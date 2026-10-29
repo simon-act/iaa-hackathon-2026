@@ -1,7 +1,7 @@
-"""Metrica della gara: Tweedie D² con power 1,5 rispetto a una previsione costante.
+"""Competition metric: Tweedie D² with power 1.5 relative to a constant prediction.
 
-D² = 1 - D(y, mu) / D(y, mu0), con D la deviance Tweedie e mu0 la costante ottima
-(media pesata). Coincide con sklearn.metrics.d2_tweedie_score(power=1.5).
+D² = 1 - D(y, mu) / D(y, mu0), with D the Tweedie deviance and mu0 the optimal constant
+(weighted mean). Matches sklearn.metrics.d2_tweedie_score(power=1.5).
 """
 import numpy as np
 

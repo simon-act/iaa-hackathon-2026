@@ -1,7 +1,7 @@
-"""Parte 2 (27/10, idea di Simone: ripartire dal modello migliore sul privato della Parte 1, sub_26 = fs2_v2_cred, che usa il premio
-relativo prem_rel = log premio lordo di sconto − mediana dell'anno). Il prior attuale (fs2_all_ll) non lo usa. Qui prem_rel come
-correzione sui dati emerging sopra p2_sub_18: sulla frequenza (TR.freq_correction) e, in auto, anche nel GLM di costo.
-Regola ≥ 5/7 forma E own. Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench17.py <linea>"""
+"""Part 2 (27/10, idea: restart from the best model on the Part 1 private score, sub_26 = fs2_v2_cred, which uses the relative
+premium prem_rel = log premium before discount − median of the year). The current prior (fs2_all_ll) does not use it. Here prem_rel is
+a correction on the emerging data on top of p2_sub_18: on frequency (TR.freq_correction) and, in motor, also in the cost GLM.
+Rule ≥ 5/7 shape AND own. Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench17.py <line>"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd

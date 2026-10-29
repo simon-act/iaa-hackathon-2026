@@ -1,5 +1,5 @@
-"""21/10: quanto vale la storia della polizza sui dati veri (per tarare la frailty φ della simulazione del tetto).
-fs2 (ll_si) con variabili di storia + credibilità k=8, contro fs2 senza variabili di storia e senza credibilità. Fold 2023/2024."""
+"""21/10: how much the policy history is worth on the real data (to calibrate the frailty φ of the ceiling simulation).
+fs2 (ll_si) with history variables + credibility k=8, vs fs2 without history variables and without credibility. Folds 2023/2024."""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd

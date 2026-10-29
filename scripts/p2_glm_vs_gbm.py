@@ -1,7 +1,7 @@
-"""Parte 2 (27/10): dove il prior GLM e il prior GBM del developed differiscono, e a chi danno ragione i dati emerging.
-Per ogni variabile e classe: rapporto GLM/GBM (medio, pesato sul costo previsto), A/E del target emerging contro ciascun prior
-(livello della linea riallineato), sinistri. Indice 'chi vince' = Σ_classi E·[(A/E_gbm − 1)² − (A/E_glm − 1)²] / Σ E: > 0 = il GLM
-segue meglio i dati. Uscita: results_p2_llc/p2_glm_vs_gbm.csv. Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_glm_vs_gbm.py"""
+"""Part 2 (27/10): where the developed GLM prior and GBM prior differ, and which one the emerging data support.
+For each variable and class: GLM/GBM ratio (mean, weighted by predicted cost), A/E of the emerging target against each prior
+(line level realigned), claims. 'Who wins' index = Σ_classes E·[(A/E_gbm − 1)² − (A/E_glm − 1)²] / Σ E: > 0 = the GLM
+tracks the data better. Output: results_p2_llc/p2_glm_vs_gbm.csv. Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_glm_vs_gbm.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -31,5 +31,5 @@ for l in P.LINES:
 r = pd.DataFrame(rows); r.to_csv(Path(P.RESULTS) / "p2_glm_vs_gbm.csv", index=False)
 pd.set_option("display.width", 250); pd.set_option("display.max_colwidth", 140)
 for l in P.LINES:
-    print(f"\n=== {l}: variabili dove GLM e GBM divergono di più (diverg = sd del log rapporto); vince_glm > 0 = i dati stanno col GLM")
+    print(f"\n=== {l}: variables where GLM and GBM diverge most (diverg = sd of the log ratio); vince_glm > 0 = the data side with the GLM")
     print(r[r.linea == l].sort_values("diverg", ascending=False).head(10)[["var", "diverg", "vince_glm", "vince_glm_senza_top", "dettaglio"]].round(4).to_string(index=False))

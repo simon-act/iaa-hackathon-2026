@@ -1,7 +1,7 @@
-"""Parte 2 (27/10): ensemble di sub_10 / sub_14 con le varianti quasi passate (richiesta di Simone, punto 5).
-Fabbricato: media 50/50 di storm (sub_14) e storm+subsidence (bench10, 4/7); auto: media 50/50 di sub_10 e +fuel+cover (bench11,
-4/7 forma, 6/7 own). Banco 7 verifiche contro sub_10; regola ≥ 5/7 forma E own.
-Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench12.py"""
+"""Part 2 (27/10): ensemble of sub_10 / sub_14 with the near-passing variants (review item 5).
+Buildings: 50/50 average of storm (sub_14) and storm+subsidence (bench10, 4/7); motor: 50/50 average of sub_10 and +fuel+cover (bench11,
+4/7 shape, 6/7 own). 7-check bench vs sub_10; rule ≥ 5/7 shape AND own.
+Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench12.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -46,5 +46,5 @@ r.to_csv(Path(P.RESULTS) / "p2_bench12.csv", index=False)
 pd.set_option("display.width", 220)
 s = r[r.variante != "sub_10"].groupby(["linea", "variante"]).agg(forma=("d_forma", "mean"), own=("d_own", "mean"),
     pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{len(x)}"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/{len(x)}"))
-print("Δ e·4 contro sub_10"); print(s.round(2).to_string())
+print("Δ e·4 vs sub_10"); print(s.round(2).to_string())
 print(r[r.variante != "sub_10"].pivot_table(index=["linea", "variante"], columns="fold", values="d_forma").round(1).to_string())

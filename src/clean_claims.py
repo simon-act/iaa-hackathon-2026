@@ -1,6 +1,6 @@
-"""Passo 1b — pulizia sinistri, abbinamento alla riga di polizza, taglio large loss.
+"""Step 1b — claims cleaning, matching to the policy row, large-loss capping.
 
-Uso: python -I clean_claims.py <raw_dir> <interim_dir>
+Usage: python -I clean_claims.py <raw_dir> <interim_dir>
 Output in <interim_dir>: claims_clean.parquet, claims_excluded.parquet, report_clean_claims.json
 """
 import json
@@ -12,8 +12,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).parent))
 from market_config import CFG, LINES  # noqa: E402
 
-VALUATION = None   # fissata in main: ultimo giorno dell'ultimo anno di polizza
-# soglia large loss per linea (~ P99,9 del costo netto per sinistro)
+VALUATION = None   # set in main: last day of the last policy year
+# large-loss threshold by line (~ P99.9 of net cost per claim)
 CAP = CFG["cap"]
 
 
@@ -21,12 +21,12 @@ LONG_TAIL = {("motor", "bodily_injury"), ("buildings", "subsidence")}
 
 
 def fix_loss_date(c, raw, interim, rep):
-    """18/10 — data di accadimento spostata indietro di ~1–1,5 anni in ~0,4% dei sinistri (Parte 1).
-    Prova: nei perili brevi il ritardo di denuncia ha mediana 8 giorni e quasi nulla tra 180 e 365 giorni,
-    poi un gruppo separato tra 365 e 730 (423 sinistri), e 409 sinistri finiscono fuori da ogni polizza
-    (dicembre 2020 o prima della decorrenza) con ritardo mediano 266–481 giorni.
-    Correzione: data = denuncia − ritardo mediano del perilo, per (a) perili brevi con ritardo > soglia,
-    (b) qualunque perilo se la data originale non cade in nessuna riga della polizza."""
+    """18/10 — loss date shifted back by ~1–1.5 years in ~0.4% of claims (Part 1).
+    Evidence: for short-tail perils the reporting delay has a median of 8 days and almost nothing between 180 and 365 days,
+    then a separate cluster between 365 and 730 (423 claims), and 409 claims fall outside any policy
+    (December 2020 or before inception) with a median delay of 266–481 days.
+    Correction: date = report date − median peril delay, for (a) short-tail perils with delay > threshold,
+    (b) any peril if the original date does not fall in any row of the policy."""
     thr = float(CFG["fixes"]["loss_date_fix"]) if not isinstance(CFG["fixes"]["loss_date_fix"], bool) else 300.0
     c = c.copy()
     c["lag0"] = (c["report_date"] - c["loss_date"]).dt.days
@@ -70,7 +70,7 @@ def main(raw: str, interim: str) -> None:
     dup = c.sort_values("claim_id").duplicated(subset=key, keep="first").reindex(c.index)
     c = drop(dup, "duplicato esatto (stessa polizza, data, perilo, importi, denuncia)")
 
-    # abbinamento alla riga: policy_id + loss_date dentro il periodo
+    # match to the row: policy_id + loss_date within the period
     rows = []
     for line in LINES:
         p = pd.read_parquet(interim / f"train_{line}.parquet",
@@ -88,9 +88,9 @@ def main(raw: str, interim: str) -> None:
     c = drop(c["row_id"].isna() & (c["loss_date"].dt.year < first_year), f"accaduto prima del {first_year} (nessuna polizza attiva)")
     c = drop(c["row_id"].isna(), "accaduto prima della decorrenza della polizza")
 
-    # importi
-    if "recoveries" not in c:   # revisione Qwen 19/10: mercato senza colonna recuperi -> 0, segnalato
-        print("ATTENZIONE: colonna recoveries assente, recuperi = 0", flush=True); c["recoveries"] = 0.0
+    # amounts
+    if "recoveries" not in c:   # Qwen review 19/10: market without a recoveries column -> 0, flagged
+        print("WARNING: recoveries column missing, recoveries = 0", flush=True); c["recoveries"] = 0.0
     c["net_incurred"] = c["incurred_to_date"] - c["recoveries"]
     c["net_paid"] = c["paid_to_date"] - c["recoveries"]
     c["cap"] = c["line"].map(CAP)
@@ -110,7 +110,7 @@ def main(raw: str, interim: str) -> None:
                                             net_incurred=("net_incurred", "sum"),
                                             net_capped=("net_capped", "sum"))
                       .round(0).to_dict(orient="index"))
-    # riconciliazione: raw - esclusi = puliti
+    # reconciliation: raw - excluded = clean
     ex = pd.concat(excluded, ignore_index=True)
     rep["reconciliation_ok"] = bool(rep["claims_raw"] - len(ex) == len(c))
     c.drop(columns=["cap"]).to_parquet(interim / "claims_clean.parquet", index=False)

@@ -1,15 +1,15 @@
-"""Parte 2 — audit automatico di un mercato nuovo, confrontato con la Parte 1.
+"""Part 2 — automated audit of a new market, compared with Part 1.
 
-Risponde alla domanda dei giudici "come avete capito cosa è cambiato?" in modo riproducibile:
+Answers the judges' question "how did you work out what changed?" in a reproducible way:
     python -I audit_new_market.py <raw_nuovo> <raw_parte1> <out.md> [--lines motor,buildings,contents]
 
-Per ogni tabella: righe, colonne mancanti / nuove / cambiate di tipo rispetto alla Parte 1.
-Per ogni colonna in comune: tasso di mancanti, PSI tra i due mercati (numeriche a 10 classi, categoriche per livello),
-livelli nuovi delle categoriche, quantili. Controlli di qualità già visti nella Parte 1 (esposizione ≠ date, somma
-assicurata in unità sbagliate, ID senza zeri iniziali, codici non documentati, sinistri duplicati / respinti / prima
-della decorrenza, lag di denuncia). Livelli tecnici per linea e perilo: frequenza, severità, burning cost, quota aperti,
-grandi sinistri, con il rapporto nuovo / Parte 1. Scrive un markdown con una sezione "cosa è cambiato" ordinata per PSI.
-Nessuna decisione viene presa qui: il file è l'input per la discussione e per configs/<mercato>.json.
+For each table: rows, columns missing / new / with changed type relative to Part 1.
+For each common column: missing rate, PSI between the two markets (numeric in 10 bins, categorical by level),
+new levels of categoricals, quantiles. Data-quality checks already seen in Part 1 (exposure ≠ dates, sum
+insured in wrong units, IDs without leading zeros, undocumented codes, duplicated / repudiated claims / claims before
+inception, reporting lag). Technical levels by line and peril: frequency, severity, burning cost, open share,
+large losses, with the new / Part 1 ratio. Writes a markdown file with a "what changed" section sorted by PSI.
+No decision is taken here: the file is the input for the discussion and for configs/<market>.json.
 """
 import json
 import sys
@@ -80,7 +80,7 @@ def compare_columns(new: dict, old: dict, md: list, top=40):
                 continue
             x, y = a[c], b[c]
             if pd.api.types.is_datetime64_any_dtype(x) or str(x.dtype).startswith("date") or "date" in c or c.startswith("period_"):
-                continue   # le date si leggono dai controlli di qualità (anni coperti), non con il PSI
+                continue   # dates are read from the data-quality checks (years covered), not via PSI
             r = {"tabella": k, "colonna": c, "mancanti nuovo %": round(100 * x.isna().mean(), 2),
                  "mancanti P1 %": round(100 * y.isna().mean(), 2), "PSI": round(psi(y, x), 4)}
             if pd.api.types.is_numeric_dtype(x) and x.nunique() > 10:
@@ -140,7 +140,7 @@ def quality_checks(t: dict, lines, md: list, label: str):
              "recoveries > incurred": int((c["recoveries"] > c["incurred_to_date"]).sum()) if "recoveries" in c else None,
              "anni di accadimento": f"{ld.dt.year.min()}–{ld.dt.year.max()}",
              "perili per linea": {l: sorted(c.loc[c["line"] == l, "peril"].dropna().unique().tolist()) for l in c["line"].dropna().unique()}}
-        # sinistri senza polizza attiva alla data di accadimento
+        # claims without an active policy at the loss date
         pol = pd.concat([t[f"policies_{l}"][["policy_id", "period_start", "period_end"]] for l in lines if f"policies_{l}" in t])
         m = c[["claim_id", "policy_id", "loss_date"]].merge(pol, on="policy_id", how="left")
         ok = (pd.to_datetime(m["loss_date"]) >= pd.to_datetime(m["period_start"])) & (pd.to_datetime(m["loss_date"]) <= pd.to_datetime(m["period_end"]))
@@ -151,7 +151,7 @@ def quality_checks(t: dict, lines, md: list, label: str):
 
 
 def levels(t: dict, lines, md: list):
-    """frequenza, severità, burning cost per linea e perilo (sinistri denunciati, non sviluppati)"""
+    """frequency, severity, burning cost by line and peril (reported claims, not developed)"""
     if "claims" not in t:
         return None
     c = t["claims"].copy()
@@ -201,7 +201,7 @@ def main(raw_new, raw_old, out_md, lines):
         md.append(ln[["linea", "perilo", "freq per anno"]].to_markdown(index=False))
     elif ln is not None:
         md.append(ln.drop(columns=["freq per anno"]).round(4).to_markdown(index=False))
-    # sintesi automatica
+    # automatic summary
     md.append("\n## 5. Sintesi automatica (da verificare a mano)\n")
     def names(df):
         g = df.groupby("colonna")["tabella"].apply(lambda t: ", ".join(sorted(set(x.split("_")[0] for x in t))))
@@ -218,7 +218,7 @@ def main(raw_new, raw_old, out_md, lines):
         md.append("- Burning cost nuovo / Parte 1 per linea: " + ", ".join(f"{r.linea} {r['burning cost nuovo/P1']:.2f}" for _, r in tot.iterrows()))
     Path(out_md).write_text("\n".join(md))
     cols.to_csv(Path(out_md).with_suffix(".csv"), index=False)
-    print(f"audit scritto in {out_md} ({len(cols)} colonne confrontate)")
+    print(f"audit written to {out_md} ({len(cols)} columns compared)")
 
 
 if __name__ == "__main__":

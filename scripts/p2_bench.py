@@ -1,9 +1,9 @@
-"""Parte 2 — banco interno più robusto del solo fold 2023 → 2024 (24/10, richiesta di Simone: niente overfitting sulla classifica).
-Fold: F2024 (stima 2023 → valuta 2024), F2023 (stima 2024 → valuta 2023, all'indietro), K1–K5 (5 gruppi di polizze sui due anni:
-gli effetti trasversali come genere e nuovo business si vedono senza confonderli con l'anno).
-Varianti, tutte sul prior del developed: livello; + genere; + nuovo business; + genere + nuovo business; + regione;
-0,9 prior + 0,1 scratch. Misure: D² a livello riallineato (forma), senza spalmatura, grandi sinistri veri; Δ e·4 contro "livello".
-Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench.py [linee] ; output results_p2/p2_bench.csv"""
+"""Part 2 — internal bench, more robust than the single 2023 → 2024 fold (24/10, request: no overfitting to the public leaderboard).
+Folds: F2024 (fit 2023 → evaluate 2024), F2023 (fit 2024 → evaluate 2023, backwards), K1–K5 (5 policy groups across both years:
+cross-sectional effects such as gender and new business are seen without confounding them with the year).
+Variants, all on the developed prior: level; + gender; + new business; + gender + new business; + region;
+0.9 prior + 0.1 scratch. Metrics: D² at realigned level (shape judge), no large-loss spreading, actual large losses; Δ e·4 vs "level".
+Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench.py [lines] ; output results_p2/p2_bench.csv"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -16,7 +16,7 @@ VARS = {"genere": ["gender"], "nuovo_business": ["new_business"], "genere+nb": [
 def folds(df):
     yield "F2024", df[df.year == 2023], df[df.year == 2024]
     yield "F2023", df[df.year == 2024], df[df.year == 2023]
-    g = pd.util.hash_array((df["policy_id"] + "_k").to_numpy()) % 5   # hash diverso da quello della penalità del GLM
+    g = pd.util.hash_array((df["policy_id"] + "_k").to_numpy()) % 5   # hash different from the one used for the GLM penalty
     for k in range(5):
         yield f"K{k + 1}", df[g != k], df[g == k]
 
@@ -40,7 +40,7 @@ for l in lines:
         for k, p in preds.items():
             rows.append(dict(linea=l, fold=fname, variante=k, forma=P.d2(y, p * y.sum() / p.sum()),
                              own=P.d2_own(va.row_id, p), unc=P.d2_unc(va.row_id, p)))
-        print(l, fname, "fatto", flush=True)
+        print(l, fname, "done", flush=True)
 r = pd.DataFrame(rows)
 b = r[r.variante == "livello"].set_index(["linea", "fold"])
 for c in ("forma", "own", "unc"):

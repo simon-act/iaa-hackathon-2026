@@ -1,14 +1,14 @@
-"""Mercato finto per provare la catena della Parte 2 PRIMA che escano i dati veri.
+"""Fake market to test the Part 2 pipeline BEFORE the real data are released.
 
-Prende i dati grezzi della Parte 1, tiene il 15% delle polizze e introduce differenze "realistiche" di un mercato
-emergente, tutte note, così possiamo verificare che l'audit le trovi e che l'adattamento le gestisca:
-  - storia più corta: solo 2022–2024 (il test resta il 2025 delle polizze tenute)
-  - frequenza diversa per regione (×0,6 … ×1,6) e severità ×1,35 (inflazione / valuta)
-  - sum_insured in migliaia (÷1000) per tutte le righe casa (unità diversa)
-  - motor: telematics_score assente; ncb_years rinominata no_claims_years; colonna nuova vehicle_segment
-  - construction_type con un livello nuovo "adobe" (10% delle righe)
-  - sinistri: stato "declined" al posto di "repudiated"; 2% di sinistri duplicati in più
-Uso: python -I scripts/make_fake_market.py data/raw data/fake_market [quota_polizze=0.15]
+Takes the Part 1 raw data, keeps 15% of the policies and introduces "realistic" emerging-market differences,
+all known, so we can check that the audit finds them and the adaptation handles them:
+  - shorter history: only 2022–2024 (the test remains 2025 for the kept policies)
+  - frequency varying by region (×0.6 … ×1.6) and severity ×1.35 (inflation / currency)
+  - sum_insured in thousands (÷1000) for all home rows (different unit)
+  - motor: telematics_score missing; ncb_years renamed no_claims_years; new column vehicle_segment
+  - construction_type with a new level "adobe" (10% of rows)
+  - claims: status "declined" instead of "repudiated"; 2% extra duplicated claims
+Usage: python -I scripts/make_fake_market.py data/raw data/fake_market [quota_polizze=0.15]
 """
 import hashlib
 import sys
@@ -60,7 +60,7 @@ def main(raw, out, share=0.15):
     allpol = set().union(*keep_pol.values())
     c = pd.read_parquet(raw / "claims.parquet")
     c = c[c["policy_id"].isin(allpol) & (pd.to_datetime(c["loss_date"]).dt.year >= 2022)].copy()
-    # frequenza per regione: tengo ogni sinistro con probabilità fac/1.6 (così il max è 1), poi severità ×1,35
+    # frequency by region: keep each claim with probability fac/1.6 (so the max is 1), then severity ×1.35
     pol_addr = pd.concat([pd.read_parquet(raw / f"policies_{l}.parquet", columns=["policy_id", "address_id"]) for l in LINES]).drop_duplicates("policy_id")
     reg = pol_addr.merge(addresses[["address_id", "region"]], on="address_id", how="left").set_index("policy_id")["region"]
     pk = c["policy_id"].map(reg).map(fac).fillna(1.0) / 1.6
@@ -80,7 +80,7 @@ def main(raw, out, share=0.15):
     ss = pd.concat([pd.read_parquet(out / f"test_{l}.parquet", columns=["row_id"]) for l in LINES]); ss["prediction"] = 0.0
     ss.to_parquet(out / "sample_submission.parquet", index=False)
     pd.Series(fac).to_json(out / "_fattori_regione_veri.json")
-    print("mercato finto scritto in", out, "| fattori regione:", fac)
+    print("fake market written to", out, "| region factors:", fac)
 
 
 if __name__ == "__main__":

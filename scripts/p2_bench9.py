@@ -1,10 +1,10 @@
-"""Parte 2 (25/10 sera, domanda di Simone): modello unico sui due mercati con un flag "mercato" invece di prior + correzioni.
-GBM Tweedie (p=1,5) su costo/esposizione con peso = esposizione, addestrato su TUTTO il developed + il train del fold emerging,
-variabili comuni (età a fasce, professione normalizzata, regione tolta) + genere (mancante nel developed) + flag mercato.
-Varianti: 'additivo' (alberi a 1 split: effetto mercato solo di livello per variabile... cioè un livello) e 'interazioni'
-(15 foglie: il modello può imparare dove i mercati differiscono). Previsione sul valid emerging, riportata al livello del train
-emerging del fold. Confronto con sub_07 sul banco a 7 verifiche (fold di p2_bench2), regola ≥ 5/7 su forma e own.
-Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench9.py [linee]"""
+"""Part 2 (25/10 evening): single model on both markets with a "market" flag instead of prior + corrections.
+GBM Tweedie (p=1.5) on cost/exposure with weight = exposure, trained on ALL of the developed market + the emerging train of the fold,
+common variables (banded age, normalised occupation, region dropped) + gender (missing in the developed market) + market flag.
+Variants: 'additivo' (1-split trees: the market effect is level-only per variable, i.e. a level) and 'interazioni'
+(15 leaves: the model can learn where the markets differ). Prediction on the emerging valid set, rescaled to the level of the fold's
+emerging train. Compared with sub_07 on the 7-check bench (folds from p2_bench2), rule ≥ 5/7 on shape and own.
+Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_bench9.py [lines]"""
 import os, sys, json
 from pathlib import Path
 import numpy as np, pandas as pd, lightgbm as lgb
@@ -34,7 +34,7 @@ for l in lines:
     dv["gender"] = np.nan if "gender" not in dv else dv["gender"]
     dv["market"] = 0.0; em = em.assign(market=1.0)
     cols = feats + ["market"]
-    print(l, "variabili", len(cols), flush=True)
+    print(l, "variables", len(cols), flush=True)
     for fname, tr, va in folds(em):
         y = va[P.TARGET].to_numpy()
         if VARS[l]:
@@ -60,4 +60,4 @@ r.to_csv(Path(P.RESULTS) / "p2_bench9.csv", index=False)
 pd.set_option("display.width", 220)
 s = r[r.variante != "sub_07"].groupby(["linea", "variante"]).agg(forma=("d_forma", "mean"), own=("d_own", "mean"), unc=("d_unc", "mean"),
     pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{len(x)}"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/{len(x)}"))
-print("Δ e·4 contro sub_07"); print(s.round(1).to_string())
+print("Δ e·4 vs sub_07"); print(s.round(1).to_string())

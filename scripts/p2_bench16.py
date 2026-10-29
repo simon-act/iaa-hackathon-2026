@@ -1,9 +1,9 @@
-"""Parte 2 (27/10): innesto della curva del GLM sul prior GBM in auto, solo sulle variabili di esperienza dove i due divergono e i
-dati emerging stanno col GLM (scripts/p2_glm_vs_gbm.py: anni di patente, NCB, età; GBM troppo ripido: neopatentati A/E 0,84,
-NCB alto 1,13–1,14). prior' = prior GBM × Π_v r_v(classe)^w, r_v = media (pesata) di GLM/GBM nella classe di v, calcolata solo
-dai due prior (nessun target) su tutte le righe emerging. w = 1 e 0,5 (decisione: w = 1). Poi tutta la pipeline di sub_18
-(GLM 50/50 fuel+cover e GBM sul numero di sinistri). Contro sub_18; regola ≥ 5/7 forma E own.
-Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench16.py"""
+"""Part 2 (27/10): grafting the GLM curve onto the motor GBM prior, only on the experience variables where the two diverge and the
+emerging data side with the GLM (scripts/p2_glm_vs_gbm.py: licence years, NCB, age; GBM too steep: new drivers A/E 0.84,
+high NCB 1.13–1.14). prior' = GBM prior × Π_v r_v(class)^w, r_v = (weighted) mean of GLM/GBM within the class of v, computed only
+from the two priors (no target) on all emerging rows. w = 1 and 0.5 (decision: w = 1). Then the full sub_18 pipeline
+(50/50 GLM fuel+cover and GBM on claim count). Vs sub_18; rule ≥ 5/7 shape AND own.
+Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench16.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -24,8 +24,8 @@ for v in VARS:
     m = pd.DataFrame({"b": b, "x": lr * wgt, "w": wgt}).groupby("b").sum(); f = (m.x / m.w)
     fac += pd.Series(b).map(f).to_numpy()
     print(v, f.round(3).to_dict())
-# 27/10 (dopo il primo giro): stima congiunta dei tre fattori (WLS del log rapporto sulle tre variabili insieme), perché sommare
-# tre medie a una variabile conta più volte lo stesso effetto (le variabili sono correlate)
+# 27/10 (after the first round): joint estimate of the three factors (WLS of the log ratio on the three variables together), because summing
+# three one-variable means counts the same effect several times (the variables are correlated)
 Xj = pd.get_dummies(pd.DataFrame({v: binned(allx[v]).to_numpy() for v in VARS}), drop_first=True).astype(float).to_numpy()
 Xj = np.c_[np.ones(len(Xj)), Xj]; sw = np.sqrt(wgt)
 beta = np.linalg.lstsq(Xj * sw[:, None], lr * sw, rcond=None)[0]; fac_j = Xj @ beta - beta[0]

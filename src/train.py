@@ -1,11 +1,11 @@
-"""FILE SPERIMENTALE (passo 2): feature, modello, iperparametri. Il giudice è prepare.py.
+"""EXPERIMENTAL FILE (step 2): features, model, hyperparameters. The judge is prepare.py.
 
-Modelli disponibili:
-  gbm_b  LightGBM Tweedie (p=1,5) sul target (b), offset log(esposizione)
-  glm_b  GLM Tweedie (p=1,5) sul tasso target/esposizione, pesi = esposizione, poche variabili binnate
-Uso:
-  python -I train.py eval gbm_b          # punteggio sui fold temporali
-  python -I train.py submit gbm_b out.csv # stima su 2021-24 (senza holdout) e previsione 2025
+Available models:
+  gbm_b  LightGBM Tweedie (p=1.5) on target (b), offset log(exposure)
+  glm_b  Tweedie GLM (p=1.5) on the rate target/exposure, weights = exposure, few binned variables
+Usage:
+  python -I train.py eval gbm_b          # score on the time folds
+  python -I train.py submit gbm_b out.csv # fit on 2021-24 (without holdout) and 2025 prediction
 """
 import json
 import sys
@@ -19,24 +19,24 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).parent))
 import prepare as P  # noqa: E402
 
-# target molto rumoroso -> foglie grandi, regolarizzazione forte, categoriche smussate
+# very noisy target -> large leaves, strong regularisation, smoothed categoricals
 GBM_PARAMS = dict(objective="tweedie", tweedie_variance_power=1.5, learning_rate=0.03, num_leaves=15,
                   min_data_in_leaf=2000, min_sum_hessian_in_leaf=50, feature_fraction=0.6, bagging_fraction=0.8,
                   bagging_freq=1, lambda_l2=50.0, max_cat_to_onehot=8, cat_smooth=100, cat_l2=50,
                   min_data_per_group=2000, max_cat_threshold=16, max_bin=63, verbose=-1, num_threads=2, seed=7)
-NUM_ROUNDS = {"motor": 600, "buildings": 600, "contents": 600}   # aggiornati dopo early stopping su F2023
+NUM_ROUNDS = {"motor": 600, "buildings": 600, "contents": 600}   # updated after early stopping on F2023
 STATE = P.RESULTS / "train_state.json"
 
 
 def to_frame(df: pd.DataFrame, cols: list, cats: dict | None = None):
     X = df[cols].copy()
     cats = cats if cats is not None else {}
-    fitted = cats is not None and len(cats) > 0   # frame di validazione/test: le categoriche sono quelle del training
+    fitted = cats is not None and len(cats) > 0   # validation/test frame: categoricals are those from training
     for c in cols:
         if X[c].dtype == bool:
             X[c] = X[c].astype(float)
         elif not pd.api.types.is_numeric_dtype(X[c]) and fitted and c not in cats:
-            # nel training era numerica o booleana; qui è object (es. booleana con mancanti): riporto a numero
+            # numeric or boolean in training; object here (e.g. boolean with missing values): convert back to number
             X[c] = pd.to_numeric(X[c].map({True: 1.0, False: 0.0, "True": 1.0, "False": 0.0}).where(X[c].notna()), errors="coerce")
         elif not pd.api.types.is_numeric_dtype(X[c]):
             v = X[c].astype(object).where(X[c].notna(), "missing").astype(str)
@@ -48,7 +48,7 @@ def to_frame(df: pd.DataFrame, cols: list, cats: dict | None = None):
 
 def features_for(df, line):
     cols = P.allowed_features(df)
-    # costanti per linea o inutili
+    # constant per line or useless
     cols = [c for c in cols if df[c].nunique(dropna=False) > 1]
     P.check_features(cols, df)
     return cols
@@ -58,8 +58,8 @@ def gbm_b(train, valid, line, num_rounds=None, es=False):
     cols = features_for(train, line)
     Xtr, cats = to_frame(train, cols)
     Xva, _ = to_frame(valid, cols, cats)
-    # partenza dal tasso medio del training (con init_score LightGBM non fa boost_from_average:
-    # partire da tasso 1 sottostimava il livello di ~7%)
+    # start from the mean training rate (with init_score LightGBM does not boost_from_average:
+    # starting from rate 1 underestimated the level by ~7%)
     base = np.log(train[P.TARGET].sum() / train["exposure"].sum())
     dtr = lgb.Dataset(Xtr, label=train[P.TARGET].to_numpy(), init_score=np.log(train["exposure"].to_numpy()) + base,
                       free_raw_data=False)
@@ -71,8 +71,8 @@ def gbm_b(train, valid, line, num_rounds=None, es=False):
         rounds = 2000
     m = lgb.train(GBM_PARAMS, dtr, num_boost_round=rounds, valid_sets=valid_sets, callbacks=callbacks)
     pred = np.exp(m.predict(Xva, raw_score=True) + np.log(valid["exposure"].to_numpy()) + base)
-    # ribilanciamento: con target asimmetrico e regolarizzazione forte il GBM sottostima la media
-    # (foglie in scala log, effetto Jensen): scala = somma reale / somma prevista sul training
+    # rebalancing: with a skewed target and strong regularisation the GBM underestimates the mean
+    # (leaves on log scale, Jensen effect): scale = actual sum / predicted sum on training
     pin = np.exp(m.predict(Xtr, raw_score=True) + np.log(train["exposure"].to_numpy()) + base)
     gbm_b.last_balance = float(train[P.TARGET].sum() / pin.sum())
     pred = pred * gbm_b.last_balance
@@ -97,7 +97,7 @@ GLM_FEATURES = {
 
 
 def _bin(train_col, cols_valid, q=8):
-    """numerici -> classi per quantili (stimate sul training) + classe missing; categoriche come stringhe."""
+    """numerics -> quantile bins (fitted on training) + missing bin; categoricals as strings."""
     if pd.api.types.is_numeric_dtype(train_col) and train_col.dtype != bool and train_col.nunique() > 12:
         edges = np.unique(np.nanquantile(train_col.astype(float), np.linspace(0, 1, q + 1)))
         f = lambda x: pd.cut(x.astype(float), edges, include_lowest=True).astype(str).where(x.notna(), "missing")
@@ -134,9 +134,9 @@ GLM_GBM_ROUNDS = 200
 
 
 def glm_gbm(train, valid, line):
-    """GBM che parte dal GLM: init_score = log(previsione GLM), impara solo la correzione."""
+    """GBM starting from the GLM: init_score = log(GLM prediction), learns only the correction."""
     from sklearn.model_selection import KFold
-    # previsione GLM out-of-fold sul training (per non dare al GBM un init troppo ottimista)
+    # out-of-fold GLM prediction on training (so as not to give the GBM an over-optimistic init)
     oof = np.zeros(len(train))
     for k, (i, j) in enumerate(KFold(3, shuffle=True, random_state=1).split(train)):
         oof[j] = glm_b(train.iloc[i], train.iloc[j], line)
@@ -160,7 +160,7 @@ def main():
     STATE.parent.mkdir(exist_ok=True)
     t0 = time.time()
     if model == "gbm_b" and mode == "es":
-        # early stopping sul fold F2023 per fissare il numero di alberi (poi fisso su F2024 e finale)
+        # early stopping on fold F2023 to fix the number of trees (then fixed on F2024 and final)
         best = {}
         for line in P.LINES:
             df = P.load(line); df = df[~P.is_holdout(df["policy_id"])]

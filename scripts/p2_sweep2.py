@@ -1,4 +1,4 @@
-"""Parte 2: combinazioni (correzione genere × mix con lo scratch) sul fold F2024. Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_sweep2.py"""
+"""Part 2: combinations (gender correction × blend with scratch) on fold F2024. Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_sweep2.py"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -18,7 +18,7 @@ for l in P.LINES:
         res[f"level+scratch_{w}"] = (1 - w) * base + w * sc * base.sum() / sc.sum()
     for k, p in res.items():
         rows.append(dict(linea=l, variante=k, forma=P.d2(y, p * y.sum() / p.sum()), own=P.d2_own(va.row_id, p), unc=P.d2_unc(va.row_id, p)))
-    print(l, "coef genere", TR.src_glm.last, flush=True)
+    print(l, "gender coef", TR.src_glm.last, flush=True)
 r = pd.DataFrame(rows)
 b = r[r.variante == "src_level"].set_index("linea")
 for c in ("forma", "own", "unc"):

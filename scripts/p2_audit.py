@@ -1,11 +1,11 @@
-"""Parte 2 — revisione indipendente di ipotesi e calcoli (25/10, richiesta di Simone: "rivedi tutte le ipotesi e tutti i calcoli e riprova").
-Ricalcola dai file grezzi (data/raw_p2) con codice nuovo, senza le funzioni della pipeline, e confronta con quanto usato:
-  A. dati: righe, row_id test = sample, esposizione dalle date, somme assicurate, sinistri esclusi;
-  B. sinistri denunciati per linea × anno = tabella di sviluppo; target_b = Σ ultimate al 2025 + carico grandi sinistri;
-  C. backtest delle curve di denuncia prese dal developed: AY 2023 visto al 31/12/2023 → previsione dei denunciati al
-     31/12/2024, contro il vero (stesso test sul developed come metro del rumore);
-  D. livello al 2025 per anno d'origine (2023 vs 2024) per linea e perilo.
-Uso: python3 scripts/p2_audit.py  → stampa + results_p2/audit_*.csv"""
+"""Part 2 — independent review of assumptions and calculations (25/10, request: "review all assumptions and all calculations and re-run").
+Recomputes from the raw files (data/raw_p2) with fresh code, without the pipeline functions, and compares with what was used:
+  A. data: rows, test row_id = sample, exposure from dates, sums insured, excluded claims;
+  B. reported claims by line × year = development table; target_b = Σ ultimate at 2025 + large-loss load;
+  C. backtest of the reporting curves taken from the developed market: AY 2023 seen at 31/12/2023 → forecast of reported claims at
+     31/12/2024, against actual (same test on the developed market as a noise benchmark);
+  D. 2025 level by origin year (2023 vs 2024) by line and peril.
+Usage: python3 scripts/p2_audit.py  → printout + results_p2/audit_*.csv"""
 from pathlib import Path
 import numpy as np, pandas as pd
 
@@ -21,7 +21,7 @@ def check(area, cosa, valore, ok, nota=""):
     print(f"[{'ok' if ok else '!!'}] {area} | {cosa}: {valore} {nota}")
 
 
-# ---------- A. dati
+# ---------- A. data
 samp = pd.read_parquet(RAW / "sample_submission.parquet")
 te_ids = pd.concat([pd.read_parquet(RAW / f"test_{l}.parquet", columns=["row_id"]) for l in LINES]).row_id
 check("A", "righe test = sample", f"{len(te_ids)} vs {len(samp)}", len(te_ids) == len(samp) and set(te_ids) == set(samp.row_id))
@@ -75,7 +75,7 @@ check("A", "sinistri: una sola riga di polizza per sinistro", f"{(mm.groupby('cl
 check("A", "sinistri: denuncia ≥ accadimento", f"{(c.report_date < c.loss_date).sum()} casi", (c.report_date < c.loss_date).sum() == 0)
 check("A", "sinistri: valutazione", f"ultima denuncia {c.report_date.max().date()}, ultimo accadimento {c.loss_date.max().date()}", True)
 
-# ---------- B. denunciato e target
+# ---------- B. reported claims and target
 dev = pd.read_parquet(INT / "development.parquet")
 clean["net"] = clean.net_capped
 g = clean.groupby(["line", "ay"]).net.sum()
@@ -103,11 +103,11 @@ for l in LINES:
         check("B", f"{l} {y}: Σ costo denunciato sulle righe = Σ sinistri", f"{rep_rows:,.0f} vs {n.net_capped.sum():,.0f}",
               abs(rep_rows / n.net_capped.sum() - 1) < 1e-6)
     tg = md.groupby("year").apply(lambda s: s.target_b.sum() / s.exposure.sum())
-    print(f"   {l}: target_b per anno di esposizione 2023 {tg[2023]:.1f} | 2024 {tg[2024]:.1f}")
+    print(f"   {l}: target_b by exposure year 2023 {tg[2023]:.1f} | 2024 {tg[2024]:.1f}")
 
-# ---------- C. backtest delle curve di denuncia (solo numeri: le riserve sui costi non hanno storia di valutazioni)
+# ---------- C. backtest of the reporting curves (counts only: cost reserves have no valuation history)
 def ecdf_lag(cl, ays, horizon):
-    """F(t) = quota denunciata entro t giorni, stimata sugli AY maturi con ritardo osservabile fino a 'horizon'."""
+    """F(t) = share reported within t days, estimated on mature AYs with lag observable up to 'horizon'."""
     x = cl[cl.ay.isin(ays)]
     lag = (x.report_date - x.loss_date).dt.days.to_numpy()
     lag = lag[lag <= horizon]
@@ -116,7 +116,7 @@ def ecdf_lag(cl, ays, horizon):
 
 
 def backtest(cl, ay, F, horizon):
-    """visto al 31/12/AY: N̂ = osservati / π̄(1); previsti al 31/12/AY+1 = N̂·π̄(2); π̄ con accadimenti uniformi nell'anno."""
+    """Seen at 31/12/AY: N̂ = observed / π̄(1); forecast at 31/12/AY+1 = N̂·π̄(2); π̄ assumes occurrences uniform over the year."""
     days = pd.date_range(f"{ay}-01-01", f"{ay}-12-31")
     v1, v2 = pd.Timestamp(f"{ay}-12-31"), pd.Timestamp(f"{ay + 1}-12-31")
     p1 = F[np.minimum((v1 - days).days, horizon)].mean(); p2 = F[np.minimum((v2 - days).days, horizon)].mean()
@@ -130,7 +130,7 @@ rows = []
 H = 1095
 for (l, p), x in clean.groupby(["line", "peril"]):
     xs = src[(src.line == l) & (src.peril == p)]
-    F = ecdf_lag(xs, [2021], H)           # AY 2021 del developed: ritardi osservabili fino a ~3 anni
+    F = ecdf_lag(xs, [2021], H)           # developed AY 2021: lags observable up to ~3 years
     o1, e2, o2 = backtest(x, 2023, F, H)
     so1, se2, so2 = backtest(xs, 2023, F, H)
     rows.append(dict(linea=l, perilo=p, visti_2023=o1, previsti_fine_2024=round(e2, 1), veri_fine_2024=o2, AE=round(o2 / e2, 3),
@@ -143,7 +143,7 @@ for _, r in bt.iterrows():
           abs(z) < 2.5)
 bt.to_csv(RES / "audit_backtest_denuncia.csv", index=False)
 
-# ---------- D. livello per anno d'origine
+# ---------- D. level by origin year
 on = pd.read_parquet(INT / "development_onlevel.parquet")
 piv = on.pivot_table(index=["line", "peril"], columns="ay", values="bc_onlevel")
 piv["rapporto_24_23"] = piv[2024] / piv[2023]

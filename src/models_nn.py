@@ -1,13 +1,13 @@
-"""Due modelli in più richiesti da Simone (17/10): GLM elastic net (stile glmnet) e CANN.
+"""Two additional models (17/10): elastic-net GLM (glmnet style) and CANN.
 
-glm_enet  — GLM Tweedie (p = 1,5, link log) con penalità elastic net (L1 + L2) via glum, come glmnet in R.
-            Variabili numeriche in 10 classi (curva a gradini, come una tariffa), categoriche in one-hot,
-            make_model lasciata grezza: è la penalità a decidere quanto credere a ogni modello d'auto.
-            Interazione suolo × siccità. Taratura: risposta = costo / esposizione, peso = esposizione.
-cann      — Combined Actuarial Neural Network (Wüthrich & Merz): la previsione del freq×sev (fs2_all_ll) è la base,
-            una piccola rete impara solo la correzione moltiplicativa exp(g(x)); g parte da 0, quindi la rete
-            all'inizio È il modello attuariale e si sposta solo dove i dati lo chiedono. Perdita Tweedie p = 1,5,
-            arresto anticipato su un 10% di polizze del training.
+glm_enet  — Tweedie GLM (p = 1.5, log link) with elastic-net penalty (L1 + L2) via glum, like glmnet in R.
+            Numeric variables in 10 bins (step curve, like a tariff), categoricals one-hot encoded,
+            make_model left raw: the penalty decides how much to trust each car model.
+            Soil × drought interaction. Fit: response = cost / exposure, weight = exposure.
+cann      — Combined Actuarial Neural Network (Wüthrich & Merz): the freq×sev prediction (fs2_all_ll) is the base,
+            a small network learns only the multiplicative correction exp(g(x)); g starts at 0, so the network
+            initially IS the actuarial model and moves only where the data require it. Tweedie loss p = 1.5,
+            early stopping on 10% of the training policies.
 """
 import sys
 from pathlib import Path
@@ -24,14 +24,14 @@ ENET_L1 = 0.5
 
 
 def _design_old(train, valid, line, nbins=10, min_count=2000):
-    raise NotImplementedError   # versione con stringhe Python: 6 GB sui dati auto, sostituita il 18/10
+    raise NotImplementedError   # Python-string version: 6 GB on motor data, replaced on 18/10
 
 
 def _cat_pair(fa, fb, min_count):
-    """fa, fb: Series categoriche (stesse etichette). Unisce i livelli rari, allinea la validazione."""
+    """fa, fb: categorical Series (same labels). Merges rare levels, aligns validation."""
     vc = fa.value_counts()
     rare = list(vc[vc < min_count].index)
-    if rare:   # livelli con poche righe: un grande sinistro basterebbe a dare un coefficiente enorme
+    if rare:   # levels with few rows: a single large loss would be enough to produce a huge coefficient
         if "rare" not in fa.cat.categories:
             fa = fa.cat.add_categories("rare")
         fa = fa.where(~fa.isin(rare), "rare")
@@ -43,7 +43,7 @@ def _cat_pair(fa, fb, min_count):
 
 
 def _design(train, valid, line, nbins=10, min_count=2000):
-    """Stesso disegno di prima (classi per quantile, livelli rari uniti), costruito con categorie invece di stringhe."""
+    """Same design as before (quantile bins, rare levels merged), built with categories instead of strings."""
     cols = [c for c in M._features(train, line)]
     Xtr, Xva = {}, {}
     for c in cols:
@@ -70,7 +70,7 @@ def glm_enet(train, valid, line, alpha=None, l1_ratio=ENET_L1):
     Xtr, Xva = _design(train, valid, line)
     e_tr, e_va = train["exposure"].to_numpy(), valid["exposure"].to_numpy()
     y = train[P.TARGET].to_numpy()
-    if alpha is None:   # scelta della penalità su un 10% di polizze del training
+    if alpha is None:   # penalty selection on 10% of the training policies
         h = pd.util.hash_array(train["policy_id"].to_numpy()) % 10 == 3
         best = (-1e9, None)
         for a in ENET_GRID:
@@ -104,7 +104,7 @@ def _nn_inputs(train, valid, line):
         return np.column_stack(out) if out else np.zeros((len(df), 0))
     A, B = numblock(train), numblock(valid)
     med = np.nanmedian(A, axis=0); A = np.where(np.isnan(A), med, A); B = np.where(np.isnan(B), med, B)
-    # trasformazione robusta: rango → scala normale approssimata sui quantili del training
+    # robust transform: rank → approximate normal scale on training quantiles
     mu, sd = A.mean(0), A.std(0) + 1e-6
     A, B = np.clip((A - mu) / sd, -5, 5), np.clip((B - mu) / sd, -5, 5)
     C_tr, C_va, card = [], [], []
@@ -112,7 +112,7 @@ def _nn_inputs(train, valid, line):
         a = train[c].astype(object).where(train[c].notna(), "na").astype(str)
         b = valid[c].astype(object).where(valid[c].notna(), "na").astype(str)
         vc = a.value_counts(); keep = vc[vc >= 50].index
-        lev = {v: i + 1 for i, v in enumerate(keep)}  # 0 = raro / nuovo
+        lev = {v: i + 1 for i, v in enumerate(keep)}  # 0 = rare / new
         C_tr.append(a.map(lev).fillna(0).astype(int).to_numpy()); C_va.append(b.map(lev).fillna(0).astype(int).to_numpy())
         card.append(len(lev) + 1)
     C_tr = np.column_stack(C_tr) if C_tr else np.zeros((len(train), 0), int)
@@ -139,7 +139,7 @@ def cann(train, valid, line, epochs=12, hidden=(32, 16), lr=2e-3, wd=1e-4, seed=
                 layers += [torch.nn.Linear(prev, h), torch.nn.Tanh()]; prev = h
             self.body = torch.nn.Sequential(*layers)
             self.out = torch.nn.Linear(prev, 1)
-            torch.nn.init.zeros_(self.out.weight); torch.nn.init.zeros_(self.out.bias)   # parte dal modello attuariale
+            torch.nn.init.zeros_(self.out.weight); torch.nn.init.zeros_(self.out.bias)   # starts from the actuarial model
 
         def forward(self, xn, xc):
             z = [xn] + [e(xc[:, i]) for i, e in enumerate(self.emb)]
@@ -148,7 +148,7 @@ def cann(train, valid, line, epochs=12, hidden=(32, 16), lr=2e-3, wd=1e-4, seed=
     def tweedie_loss(mu, y, p=1.5):
         return (-y * mu.pow(1 - p) / (1 - p) + mu.pow(2 - p) / (2 - p)).mean()
 
-    # validazione interna: 10% delle polizze del training
+    # internal validation: 10% of the training policies
     pol = train["policy_id"].to_numpy()
     h = pd.util.hash_array(pol) % 10 == 3
     t_idx, v_idx = np.where(~h)[0], np.where(h)[0]

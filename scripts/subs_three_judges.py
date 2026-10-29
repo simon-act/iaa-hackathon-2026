@@ -1,7 +1,7 @@
-"""Ogni sub caricata rifatta sulle previsioni fuori campione (fold 2023 e 2024) e misurata sui tre giudici della
-configurazione s3: ufficiale (target_b), senza spalmatura, con i grandi sinistri veri. D² per linea e fold, media
-pesata come Kaggle. Le sub 01–24 come in scripts/score_subs.py; le 25–40 dai pezzi OOF. Approssimazioni
-(pezzo OOF mancante): GBM auto corretto senza target gross (25–40); fabbricato senza credibilità senza cedimento (29–40).
+"""Each uploaded submission rebuilt from the out-of-sample predictions (folds 2023 and 2024) and measured on the three judges of the
+s3 configuration: official (target_b), own (no spreading), with actual large losses. D² by line and fold, Kaggle-style
+weighted mean. Submissions 01–24 as in scripts/score_subs.py; 25–40 from the OOF pieces. Approximations
+(missing OOF piece): corrected motor GBM without gross target (25–40); buildings without the subsidence-excluding credibility (29–40).
 Output results_s3/subs_three_judges.csv."""
 import json, sys
 from pathlib import Path
@@ -50,7 +50,7 @@ qb = SS.rd("results_s3", "qwen_gbm73_cred").set_index("row_id").reindex(s3["row_
 wts = json.loads((ROOT / "results_s3/blend_weights.json").read_text())["weights"]
 S["sub_23"] = al(s3, SS.mix(s3, [a4, qb], {l: [wts[l]["fs2_v2_cred"], wts[l]["qwen_gbm73_cred"]] for l in wts}))
 S["sub_24"] = al(s3, SS.by_line(s3, {"buildings": lambda p, m: (p ** 1.08) * p.sum() / (p ** 1.08).sum() * 1.02}))
-# --- 25-40 dai pezzi
+# --- 25-40 from the pieces
 R = ROOT / "results_s3"
 A0 = pd.read_parquet(R / "oof/fs2_v2_cred.parquet", columns=["row_id", "pred"]).set_index("row_id")["pred"].reindex(rid).to_numpy()
 B0 = pd.read_parquet(R / "oof/qwen_gbm73_cred.parquet", columns=["row_id", "pred"]).set_index("row_id")["pred"].reindex(rid).to_numpy()

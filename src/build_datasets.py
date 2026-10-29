@@ -1,15 +1,15 @@
-"""Passo 1e — dataset di modellazione.
+"""Step 1e — modelling datasets.
 
-(a) model_<line>.parquet: una riga per riga di polizza 2021-24 con feature (polizza + cliente +
-    indirizzo + meteo dell'anno), esposizione, per ogni perilo: n sinistri denunciati, costo netto
-    tagliato, completezza attesa pi (offset di frequenza = log(exposure * pi)).
-(b) stessa tabella con il target "ultimate per riga":
-      ult_capped = sum_perili [ costo denunciato * fattore IBNER(AY)
-                                + IBNR atteso = freq_ult(AY) * exposure * (1 - pi_riga) * sev_ult * rel_ibnr ]
-    e la versione riportata al 2025 (trend) + caricamento large loss della linea.
-    Controllo: somma per linea × AY = ultimate della tabella di sviluppo.
-test_<line>.parquet: stesse feature per il 2025 (meteo 2025).
-Uso: python -I build_datasets.py <raw_dir> <interim_dir> <out_dir>
+(a) model_<line>.parquet: one row per 2021-24 policy row with features (policy + customer +
+    address + weather of the year), exposure, and for each peril: number of reported claims, capped net
+    cost, expected completeness pi (frequency offset = log(exposure * pi)).
+(b) same table with the "ultimate per row" target:
+      ult_capped = sum_perils [ reported cost * IBNER factor(AY)
+                                + expected IBNR = freq_ult(AY) * exposure * (1 - pi_row) * sev_ult * rel_ibnr ]
+    and the version trended to 2025 + the line's large-loss loading.
+    Check: sum by line × AY = ultimate from the development table.
+test_<line>.parquet: same features for 2025 (2025 weather).
+Usage: python -I build_datasets.py <raw_dir> <interim_dir> <out_dir>
 """
 import json
 import sys
@@ -36,11 +36,11 @@ def main(raw, interim, out):
     raw, interim, out = Path(raw), Path(interim), Path(out)
     out.mkdir(parents=True, exist_ok=True)
     customers = pd.read_parquet(raw / "customers.parquet").drop(columns=["surname"])
-    if "date_of_birth" in customers.columns:   # Parte 2: il mercato emerging non ha la data di nascita
+    if "date_of_birth" in customers.columns:   # Part 2: the emerging market has no date of birth
         customers["birth_year"] = pd.to_datetime(customers["date_of_birth"]).dt.year
         customers = customers.drop(columns=["date_of_birth"])
     if "occupation" in customers.columns and CFG["fixes"].get("occupation_normalize"):
-        # Parte 2: professione a testo libero ("Retired", "retired", "Retired ") -> minuscolo senza spazi
+        # Part 2: free-text occupation ("Retired", "retired", "Retired ") -> lower case without spaces
         customers["occupation"] = customers["occupation"].astype("string").str.strip().str.lower()
     addresses = pd.read_parquet(raw / "addresses.parquet")
     weather = pd.read_parquet(raw / "weather.parquet")
@@ -67,7 +67,7 @@ def main(raw, interim, out):
                     df[col] = 0.0
                 df[col] = df[col].fillna(0.0)
 
-        # (b) ultimate per riga
+        # (b) ultimate per row
         dl = dev[dev["line"] == line].set_index(["peril", "ay"])
         ult = np.zeros(len(df)); ult25 = np.zeros(len(df))
         for p in perils:
@@ -76,8 +76,8 @@ def main(raw, interim, out):
             ibnr_n = r["freq_ult"].to_numpy() * df["exposure"].to_numpy() * (1 - df[f"pi_{p}"].to_numpy())
             ibnr_cost = ibnr_n * r["sev_rep_ult"].to_numpy() * r["rel_ibnr"].to_numpy()
             u = df[f"cost_{p}"].to_numpy() * ibner + ibnr_cost
-            # recuperi futuri sugli aperti sono già nel fattore? no: li applico a livello AY
-            # tramite il rapporto cost_rep/net_capped (vedi develop.py) -> correzione per AY
+            # are future recoveries on open claims already in the factor? no: applied at AY level
+            # via the cost_rep/net_capped ratio (see develop.py) -> per-AY correction
             df[f"ult_{p}"] = u
             onl = ((1 + r["freq_trend"].to_numpy()) * (1 + r["sev_trend"].to_numpy())) ** (TARGET_YEAR - df["year"].to_numpy())
             df[f"ult25_{p}"] = u * onl
@@ -85,14 +85,14 @@ def main(raw, interim, out):
         df["ult_capped"] = ult
         ll = float(lvl.loc[line, "ll_load_2025"])
         df["ult25_capped"] = ult25
-        df["target_b"] = ult25 + ll * df["exposure"]       # target (b) al livello 2025
+        df["target_b"] = ult25 + ll * df["exposure"]       # target (b) at the 2025 level
         df["n_total"] = df[[f"n_{p}" for p in perils]].sum(axis=1)
         df["cost_total"] = df[[f"cost_{p}" for p in perils]].sum(axis=1)
 
-        # riconciliazione con la tabella di sviluppo (prima della correzione recuperi)
+        # reconciliation with the development table (before the recoveries correction)
         chk = df.groupby("year")["ult_capped"].sum()
         devsum = dev[dev["line"] == line].groupby("ay")["cost_ult"].sum()
-        # la tabella di sviluppo include i recuperi futuri attesi sugli aperti: riallineo per AY
+        # the development table includes expected future recoveries on open claims: realign by AY
         adj = (devsum / chk).rename("rec_adj")
         df = df.merge(adj, left_on="year", right_index=True)
         for col in ["ult_capped", "ult25_capped"] + [f"ult_{p}" for p in perils] + [f"ult25_{p}" for p in perils]:

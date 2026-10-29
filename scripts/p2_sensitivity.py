@@ -1,7 +1,7 @@
-"""Parte 2 (25/10): sensibilità del livello 2025 alle ipotesi. Il livello del modello = Σ target_b / Σ prior sul train, quindi
-il tasso previsto si muove in proporzione a Σ target_b (per anno di esposizione, 2023+2024 pesati per esposizione).
-Ricalcolo dalla tabella di sviluppo (development_onlevel) con un'ipotesi cambiata alla volta.
-Uso: python3 scripts/p2_sensitivity.py → results_p2/sensitivity.csv"""
+"""Part 2 (25/10): sensitivity of the 2025 level to the assumptions. The model level = Σ target_b / Σ prior on train, so
+the predicted rate moves in proportion to Σ target_b (by exposure year, 2023+2024 exposure-weighted).
+Recomputed from the development table (development_onlevel) changing one assumption at a time.
+Usage: python3 scripts/p2_sensitivity.py → results_p2/sensitivity.csv"""
 from pathlib import Path
 import numpy as np, pandas as pd
 ROOT = Path(__file__).resolve().parents[1]

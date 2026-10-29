@@ -1,10 +1,10 @@
-"""Parte 2 (28/10, A3): modello unico developed + emerging CON il premio relativo (prem_rel = log premio lordo di sconto − mediana
-dell'anno, calcolato in ciascun mercato), contro p2_sub_21, sul banco onesto di p2_bench27 (tempo × clienti, 6 verifiche).
-Il bench9 del 25/10 (senza premio) aveva perso: auto −36,7, fabbricato −124,6, contenuto +13,7 (4/7). GBM Tweedie 1,5 su costo/esposizione,
-peso esposizione; developed armonizzato al 30% delle polizze (limite di tempo); flag mercato; previsione riportata al livello del train.
-Varianti: 'unico additivo' (alberi a 1 split, 800 giri) e 'unico interazioni' (15 foglie, 500 giri).
-Un fold per chiamata: python3 scripts/p2_bench28.py <linea> <indice fold 0-5>; con 'riepilogo' al posto dell'indice stampa i risultati.
-Regola di p2_bench27: media > 0 su forma e own, ≥ 4/6 su entrambi, media > 0 in entrambe le direzioni."""
+"""Part 2 (28/10, A3): single developed + emerging model WITH the relative premium (prem_rel = log premium before discount − median
+of the year, computed within each market), vs p2_sub_21, on the honest bench of p2_bench27 (time × customers, 6 checks).
+bench9 of 25/10 (without premium) had lost: motor −36.7, buildings −124.6, contents +13.7 (4/7). GBM Tweedie 1.5 on cost/exposure,
+exposure weight; developed harmonised to 30% of policies (time limit); market flag; prediction rescaled to the train level.
+Variants: 'unico additivo' (1-split trees, 800 rounds) and 'unico interazioni' (15 leaves, 500 rounds).
+One fold per call: python3 scripts/p2_bench28.py <line> <fold index 0-5>; with 'riepilogo' instead of the index it prints the results.
+Rule from p2_bench27: mean > 0 on shape and own, ≥ 4/6 on both, mean > 0 in both directions."""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd, lightgbm as lgb
@@ -80,4 +80,4 @@ else:
     r["dir"] = r.fold.str.slice(0, 9); n = r.fold.nunique()
     s = r[r.variante != "sub_21"].groupby("variante").agg(forma=("d_forma", "mean"), own=("d_own", "mean"),
         vinte_forma=("d_forma", lambda x: f"{(x > 0).sum()}/{n}"), vinte_own=("d_own", lambda x: f"{(x > 0).sum()}/{n}"))
-    print(l, "Δ contro sub_21"); print(s.join(r[r.variante != "sub_21"].pivot_table(index="variante", columns="dir", values="d_forma").add_prefix("forma ")).round(1).to_string())
+    print(l, "Δ vs sub_21"); print(s.join(r[r.variante != "sub_21"].pivot_table(index="variante", columns="dir", values="d_forma").add_prefix("forma ")).round(1).to_string())

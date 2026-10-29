@@ -1,7 +1,8 @@
-"""Griglia della frequenza per perilo, da far girare sul Mac (20/10). Stesso giudice e stessi dati del loop
-(eval_experiment.py): per ogni configurazione e per ogni linea, perilo e fold, D² Poisson dei conteggi (forma).
-Le configurazioni modificano i parametri di experiment_base.py (copia congelata della frequenza attuale del freq×sev).
-Salva riga per riga in grid_results.csv e riprende da dove era. Uso: .venv/bin/python -I autoresearch_freq/grid.py"""
+"""Per-peril frequency grid, run on the Mac (20/10). Same judge and same data as the loop (eval_experiment.py):
+for each configuration and for each line, peril and fold, Poisson D² of the counts (shape only).
+The configurations change the parameters of experiment_base.py (frozen copy of the current freq×sev frequency model).
+Writes grid_results.csv row by row and resumes where it stopped. Usage: .venv/bin/python -I autoresearch_freq/grid.py
+(config names: giri = boosting rounds, prof = depth; CSV columns: linea = line, perilo = peril, quota_costo = cost share)."""
 import importlib.util, json, sys, time
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -51,7 +52,7 @@ def main():
                            "quota_costo": meta["cost_share"][p], "sec": round(time.time() - t0, 1)}
                     pd.DataFrame([row]).to_csv(OUT, mode="a", header=not OUT.exists(), index=False)
                     print(row, flush=True)
-    print("GRIGLIA_FINITA", flush=True)
+    print("GRID_FINISHED", flush=True)
 
 
 if __name__ == "__main__":

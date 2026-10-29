@@ -1,6 +1,6 @@
 {
  "name": "parte2_llp",
- "_nota": "Come parte2.json, con il prior del carico grandi sinistri dalla coda di Pareto del developed (auto, soglia 50k), 25/10.",
+ "_nota": "As parte2.json, with the large-loss load prior from the Pareto tail of the developed claims (motor, threshold 50k), 25 Oct.",
  "raw": "data/raw_p2",
  "interim": "data/interim_p2_llp",
  "model_dir": "data/model_p2_llp",

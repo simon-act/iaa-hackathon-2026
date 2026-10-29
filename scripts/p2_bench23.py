@@ -1,6 +1,6 @@
-"""Parte 2 (28/10): ablazione di p2_sub_20. Ogni pezzo è stato scelto con il prior di allora; con il prior nuovo (casa: fs2_v2 di
-sub_26) qualcuno potrebbe non servire più. Si toglie un pezzo alla volta; se TOGLIERLO vince ≥ 5/7 su forma E own, il pezzo esce.
-Uso: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench23.py <linea>"""
+"""Part 2 (28/10): ablation of p2_sub_20. Each component was chosen with the prior of the time; with the new prior (property: fs2_v2 of
+sub_26) some may no longer be needed. Components are removed one at a time; if REMOVING one wins ≥ 5/7 on shape AND own, the component is dropped.
+Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench23.py <line>"""
 import sys
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -59,6 +59,6 @@ r = pd.DataFrame(rows); b = r[r.variante == "sub_20"].set_index("fold")
 for c in ("forma", "own"):
     r[f"d_{c}"] = (r[c].to_numpy() - b.loc[r.fold, c].to_numpy()) * 1e4
 r.to_csv(Path(P.RESULTS) / f"p2_bench23_{l}.csv", index=False)
-print(l, "(Δ = togliere il pezzo; positivo = il pezzo fa male)")
+print(l, "(Δ = removing the component; positive = the component hurts)")
 print(r[r.variante != "sub_20"].groupby("variante").agg(forma=("d_forma", "mean"), own=("d_own", "mean"),
       pos_forma=("d_forma", lambda x: f"{(x > 0).sum()}/7"), pos_own=("d_own", lambda x: f"{(x > 0).sum()}/7")).round(2).to_string())

@@ -1,14 +1,14 @@
-"""Modelli strutturali del passo 2b (dopo la ricostruzione del generatore).
+"""Structural models of step 2b (after reconstructing the data generator).
 
-fs_peril   frequenza × severità per perilo:
-           - frequenza: LightGBM Poisson ADDITIVO (alberi a 1 split = log-lineare con curve libere),
-             offset log(esposizione × completezza) − (2025−anno)·log(1+trend freq) → frequenza ultimate al 2025
-           - severità: media per perilo dei sinistri sviluppati (IBNER) e riportati al 2025, opzionalmente
-             con un GBM Gamma additivo molto regolarizzato sui perili con molti sinistri
-           - costo = Σ_perili freq × sev, + caricamento large loss; ribilanciato sul training
-fs_peril_const  come sopra ma severità costante per perilo (test dell'ipotesi "severità = rumore")
-glm2       GLM Tweedie migliorato (convergenza piena, più variabili, interazioni attuariali binnate)
-Tutte con la firma fit_predict(train, valid, line) di prepare.evaluate.
+fs_peril   frequency × severity by peril:
+           - frequency: ADDITIVE Poisson LightGBM (1-split trees = log-linear with free curves),
+             offset log(exposure × completeness) − (2025−year)·log(1+freq trend) → ultimate frequency at 2025
+           - severity: per-peril mean of developed (IBNER) claims trended to 2025, optionally
+             with a heavily regularised additive Gamma GBM on perils with many claims
+           - cost = Σ_perils freq × sev, + large-loss loading; rebalanced on training
+fs_peril_const  as above but with constant severity per peril (test of the "severity = noise" hypothesis)
+glm2       improved Tweedie GLM (full convergence, more variables, binned actuarial interactions)
+All with the fit_predict(train, valid, line) signature of prepare.evaluate.
 """
 import sys
 from pathlib import Path
@@ -32,7 +32,7 @@ DROP_NOISE = {"previous_insurer", "campaign_code", "branch_id", "marketing_segme
 def _tables():
     global _DEV, _CLAIMS, _LVL
     if _DEV is None:
-        inter = Path(P.CFG["interim"])   # 18/10: prima era fisso a data/interim (sbagliato per un mercato con config propria)
+        inter = Path(P.CFG["interim"])   # 18/10: previously hard-coded to data/interim (wrong for a market with its own config)
         _DEV = pd.read_parquet(inter / "development_onlevel.parquet")
         _CLAIMS = pd.read_parquet(inter / "claims_clean.parquet",
                                   columns=["row_id", "line", "peril", "ay", "net_capped"])
@@ -40,7 +40,7 @@ def _tables():
     return _DEV, _CLAIMS, _LVL
 
 
-# driver di severità plausibili (dalla ricostruzione del generatore); il resto è rumore
+# plausible severity drivers (from the generator reconstruction); the rest is noise
 SEV_DRIVERS = {"motor": ["make_model", "vehicle_age", "vehicle_value_group", "urban_density", "region"],
                "buildings": ["sum_insured", "si_per_bedroom", "property_type", "construction_type", "bedrooms", "region"],
                "contents": ["sum_insured", "si_per_bedroom", "high_value_items", "tenure", "region"]}
@@ -52,7 +52,7 @@ SEV_PARAMS = dict(objective="gamma", num_leaves=2, max_depth=1, learning_rate=0.
                   cat_smooth=100, min_data_per_group=1000, verbose=-1, num_threads=2, seed=12)
 
 
-FEATURE_WHITELIST = None   # Parte 2: se impostato, solo queste colonne (intersezione tra i mercati)
+FEATURE_WHITELIST = None   # Part 2: if set, only these columns (intersection across markets)
 
 
 def _features(train, line, drop_noise=True):
@@ -83,9 +83,9 @@ def _fs(train, valid, line, sev_model=True, freq_rounds=None, freq_rounds_mult=1
         base = np.log(max(n.sum(), 1) / np.exp(off).sum())
         rounds = freq_rounds or (300 if n.sum() > 5000 else 150 if n.sum() > 1000 else 80) * freq_rounds_mult
         m = lgb.train(FREQ_PARAMS, lgb.Dataset(Xtr, label=n, init_score=off + base), num_boost_round=rounds)
-        f_va = np.exp(m.predict(Xva, raw_score=True) + base) * e_va          # sinistri ultimate attesi al 2025
+        f_va = np.exp(m.predict(Xva, raw_score=True) + base) * e_va          # expected ultimate claims at 2025
         f_tr = np.exp(m.predict(Xtr, raw_score=True) + base) * e_tr
-        # severità: sinistri della riga, sviluppati e riportati al 2025
+        # severity: the row's claims, developed and trended to 2025
         cl = claims[(claims["line"] == line) & (claims["peril"] == p) & claims["row_id"].isin(train["row_id"])]
         sev_c = cl["net_capped"] * cl["ay"].map(d["ibner_factor"]) * (1 + st) ** (2025 - cl["ay"])
         pos_ = (sev_c > 0).to_numpy()
@@ -160,7 +160,7 @@ def glm2(train, valid, line):
     return pred * (train[P.TARGET].sum() / pin.sum())
 
 
-# variabili esca dalla ricostruzione del generatore (importanza ~0 in frequenza su tutti i perili, o rumore in severità)
+# decoy variables from the generator reconstruction (importance ~0 in frequency for all perils, or noise in severity)
 DECOYS = {"engine_size_cc", "body_type", "seats", "driver_assist", "fuel_type", "vehicle_colour", "transmission",
           "telematics_opt_in", "marital_status", "solar_panels", "document_preference", "customer_tenure",
           "listed_building", "marketing_consent", "cust_other_prev_rate", "cust_other_prev_n_last", "mortgage",
@@ -170,7 +170,7 @@ DECOYS = {"engine_size_cc", "body_type", "seats", "driver_assist", "fuel_type", 
 
 
 def gbm_clean(train, valid, line):
-    """GBM del passo 2 senza le variabili esca."""
+    """Step-2 GBM without the decoy variables."""
     import train as T
     orig = T.features_for
     T.features_for = lambda df, l: [c for c in orig(df, l) if c not in DECOYS]
@@ -180,7 +180,7 @@ def gbm_clean(train, valid, line):
         T.features_for = orig
 
 
-# GLM guidato dal generatore: solo i driver emersi (importanza > 1,5% in almeno un perilo) + driver di severità
+# generator-guided GLM: only the emerged drivers (importance > 1.5% in at least one peril) + severity drivers
 GLM_DGP = {
     "motor": ["cover_type", "make_model", "ncb_years", "customer_age", "years_licensed", "overnight_parking",
               "voluntary_excess", "hail_days", "driver_age", "urban_density", "annual_mileage", "region",
@@ -220,7 +220,7 @@ def glm_dgp(train, valid, line):
 
 
 def fs_peril_s(train, valid, line):
-    """freq×sev con più shrinkage sulla frequenza (i residui mostravano relatività troppo spinte)."""
+    """freq×sev with more shrinkage on frequency (residuals showed overly aggressive relativities)."""
     old = dict(FREQ_PARAMS)
     FREQ_PARAMS.update(learning_rate=0.05)
     try:
@@ -230,7 +230,7 @@ def fs_peril_s(train, valid, line):
 
 
 def fs_peril_r2(train, valid, line):
-    """freq×sev con il doppio dei round sulla frequenza (fs_peril_s con più shrinkage era peggio)."""
+    """freq×sev with twice the rounds on frequency (fs_peril_s with more shrinkage was worse)."""
     return _fs(train, valid, line, sev_model=True, freq_rounds_mult=2)
 
 
@@ -242,10 +242,10 @@ def fs_peril_r8(train, valid, line):
     return _fs(train, valid, line, sev_model=True, freq_rounds_mult=8)
 
 
-# ---------------------------------------------------------------- esplorazione 3
+# ---------------------------------------------------------------- exploration 3
 def _te_make_model(train, valid, y, e_exp, k, folds=5, seed=0):
-    """Encoding con credibilità di make_model: log( Z·(A/E) + (1−Z) ), Z = E/(E+k).
-    y = osservato (sinistri o costo), e_exp = atteso di riferimento. Out-of-fold sulle righe di training."""
+    """Credibility encoding of make_model: log( Z·(A/E) + (1−Z) ), Z = E/(E+k).
+    y = observed (claims or cost), e_exp = reference expected value. Out-of-fold on the training rows."""
     mm_tr = train["make_model"].astype(str).to_numpy(); mm_va = valid["make_model"].astype(str).to_numpy()
     def enc(idx_fit, keys):
         s = pd.DataFrame({"k": mm_tr[idx_fit], "a": y[idx_fit], "e": e_exp[idx_fit]}).groupby("k")[["a", "e"]].sum()
@@ -261,7 +261,7 @@ def _te_make_model(train, valid, y, e_exp, k, folds=5, seed=0):
 
 
 def _rounds_es(Xtr, n, init, yrs, params, max_rounds=4000):
-    """numero di alberi scelto con early stopping: stima sugli anni precedenti, valida sull'ultimo anno del training."""
+    """number of trees chosen with early stopping: fit on earlier years, validate on the last training year."""
     last = yrs.max(); a = yrs < last; b = yrs == last
     if a.sum() == 0 or n[b].sum() < 30:
         return None
@@ -276,8 +276,8 @@ SMALL_SEV_SI = {"buildings": ["fire", "flood", "subsidence"], "contents": ["floo
 
 
 def _ll_weights(train, valid, line):
-    """Caricamento large loss per casa ripartito per fascia di somma assicurata (i sinistri oltre soglia sono quasi
-    tutti nel quartile più alto di SI), con credibilità 50% verso il caricamento uniforme. Motor: uniforme."""
+    """Household large-loss loading allocated by sum-insured band (claims above the threshold are almost
+    all in the top SI quartile), with 50% credibility towards the uniform loading. Motor: uniform."""
     if line == "motor":
         return np.ones(len(train)), np.ones(len(valid))
     ex = [c for c in train.columns if c.startswith("excess_")]
@@ -293,12 +293,12 @@ def _ll_weights(train, valid, line):
 
 
 HIST = ("pol_prev", "cust_other_prev", "addr_prev")
-_DROP_CUST_LINES = {}   # 20/10: linee in cui togliere cust_other_prev_* (variante fs2_v2_nocust_cred)
-_YEAR_DECAY = None      # 21/10: peso degli anni di stima = decay^(ultimo anno − anno) in frequenza e severità (None = pesi uguali)
-_SEV_PERIL = {}         # 20/10: {linea: {perilo: {"_all": True} (severità su tutte le variabili del modello) o {"_mean": True}}}
-_FREQ_2PH = {}          # 22/10 sera: {linea: perili} con la franchigia applicata dopo (due fasi)
-_FREQ_XS = {}           # 22/10 sera: {linea: perili} con la franchigia relativa (xs_rel) nella frequenza
-_FREQ_OVERRIDE = {}     # 20/10: {linea: {perilo o "*": parametri LightGBM della frequenza, "_mult" = moltiplicatore dei giri}}
+_DROP_CUST_LINES = {}   # 20/10: lines where cust_other_prev_* is dropped (variant fs2_v2_nocust_cred)
+_YEAR_DECAY = None      # 21/10: weight of fitting years = decay^(last year − year) in frequency and severity (None = equal weights)
+_SEV_PERIL = {}         # 20/10: {line: {peril: {"_all": True} (severity on all model variables) or {"_mean": True}}}
+_FREQ_2PH = {}          # 22/10 evening: {line: perils} with the deductible applied afterwards (two phases)
+_FREQ_XS = {}           # 22/10 evening: {line: perils} with the relative deductible (xs_rel) in the frequency
+_FREQ_OVERRIDE = {}     # 20/10: {line: {peril or "*": LightGBM frequency parameters, "_mult" = rounds multiplier}}
 
 
 def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rounds=False, mult=4, ll_si=False,
@@ -309,7 +309,7 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
     cols = _features(train, line)
     if drop_hist:
         cols = [c for c in cols if not c.startswith(HIST)]
-    if drop_cust or _DROP_CUST_LINES.get(line):   # 20/10: effetto tra linee sovrastimato (A/E 0,88–0,94 auto e fabbricato)
+    if drop_cust or _DROP_CUST_LINES.get(line):   # 20/10: cross-line effect overestimated (A/E 0.88–0.94 motor and buildings)
         cols = [c for c in cols if not c.startswith("cust_other_prev")]
     has_mm = mm_te and "make_model" in cols
     base_cols = [c for c in cols if not (has_mm and c == "make_model")]
@@ -332,9 +332,9 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
             te_tr, te_va = _te_make_model(train, valid, n, np.exp(off + base), k=30.0)
             Xtr = Xtr0.assign(mm_freq_te=te_tr); Xva = Xva0.assign(mm_freq_te=te_va)
         two_ph = p in _FREQ_2PH.get(line, ())
-        if two_ph:   # 22/10 sera, "lordo poi netto": frequenza senza franchigia, fattore franchigia × classe di valore applicato dopo
+        if two_ph:   # 22/10 evening, "gross then net": frequency without deductible, deductible × value-band factor applied afterwards
             Xtr = Xtr.drop(columns=["voluntary_excess"], errors="ignore"); Xva = Xva.drop(columns=["voluntary_excess"], errors="ignore")
-        if p in _FREQ_XS.get(line, ()):   # 22/10 sera: franchigia relativa al valore del bene nella frequenza di questo perilo
+        if p in _FREQ_XS.get(line, ()):   # 22/10 evening: deductible relative to the insured value in this peril's frequency
             Xtr = Xtr.assign(xs_rel=_add_xs(train, line)["xs_rel"].to_numpy())
             Xva = Xva.assign(xs_rel=_add_xs(valid, line)["xs_rel"].to_numpy())
         params = dict(FREQ_PARAMS, **(fparams or {}))
@@ -350,7 +350,7 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
             f_tr, f_va = _freq_glm(train, valid, line, p, n, np.exp(off), e_tr, e_va, Xtr, Xva)
         else:
             if zero_keep:
-                # subsampling senza peso delle righe senza sinistri di questo perilo, poi livello riportato ai conteggi
+                # unweighted subsampling of rows without claims for this peril, then level brought back to the counts
                 sel = (n > 0) | (np.random.default_rng(7).random(len(n)) < zero_keep)
                 m = lgb.train(params, lgb.Dataset(Xtr[sel], label=n[sel], init_score=(off + base)[sel]), num_boost_round=rounds)
             else:
@@ -380,7 +380,7 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
             scols = list(base_cols) if sp.get("_all") else [c for c in SEV_DRIVERS[line] if c in base_cols]
             Str, Sva = Xtr0[scols], Xva0[scols]
             if has_mm and not sp.get("_all"):
-                # encoding di make_model sulla severità (solo righe con sinistri), credibilità k=20 sinistri
+                # make_model encoding on severity (rows with claims only), credibility k=20 claims
                 sev_row = np.zeros(len(train)); cnt = np.zeros(len(train))
                 sev_row[mask] = a["mean"].to_numpy() * a["size"].to_numpy(); cnt[mask] = a["size"].to_numpy()
                 ts_tr, ts_va = _te_make_model(train, valid, sev_row, cnt * mean_sev, k=20.0 * mean_sev, seed=1)
@@ -392,7 +392,7 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
             s_va = np.exp(ms.predict(Sva, raw_score=True) + np.log(mean_sev))
             s_tr = np.exp(ms.predict(Str, raw_score=True) + np.log(mean_sev))
         elif small_sev and p in SMALL_SEV_SI.get(line, []) and len(cl) > 150:
-            # severità ~ somma assicurata (legge di potenza), GLM Gamma con log-link su log(SI) standardizzato
+                # severity ~ sum insured (power law), Gamma GLM with log link on standardised log(SI)
             from sklearn.linear_model import GammaRegressor
             a = agg.loc[train.loc[mask, "row_id"]]
             lsi = np.log(train["sum_insured"].clip(lower=1).to_numpy())
@@ -402,7 +402,7 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
             lsv = np.log(valid["sum_insured"].clip(lower=1).to_numpy())
             s_tr = g.predict(((lsi - mu) / sd).reshape(-1, 1)); s_va = g.predict(((lsv - mu) / sd).reshape(-1, 1))
             log[p + "_sev_slope"] = round(float(g.coef_[0] / sd), 3)
-        if sp.get("_mix_glm") and len(cl) > 150:   # 21/10: media geometrica con un GLM Gamma sui driver (glm_sev_bench.py)
+        if sp.get("_mix_glm") and len(cl) > 150:   # 21/10: geometric mean with a Gamma GLM on the drivers (glm_sev_bench.py)
             a = agg.loc[train.loc[mask, "row_id"]]
             g_tr, g_va = _glm_sev(train, valid, mask, a, [c for c in SEV_DRIVERS[line] if c in train.columns])
             s_tr, s_va = np.sqrt(s_tr * g_tr), np.sqrt(s_va * g_va)
@@ -412,13 +412,13 @@ def _fs2(train, valid, line, mm_te=True, small_sev=True, subs_inter=True, es_rou
     _fs2.last_log = log
     ll = float(lvl.loc[line, "ll_load_2025"])
     w_tr, w_va = _ll_weights(train, valid, line) if ll_si else (np.ones(len(train)), np.ones(len(valid)))
-    if _LL_RISK:   # 20/10: caricamento large loss ripartito sul rischio previsto (Poisson dei grandi sinistri)
-        if _LL_RISK == "bi" and line == "motor":   # 22/10: grandi sinistri auto ripartiti sulla frequenza lesioni prevista
+    if _LL_RISK:   # 20/10: large-loss loading allocated on predicted risk (Poisson on large losses)
+        if _LL_RISK == "bi" and line == "motor":   # 22/10: motor large losses allocated on predicted bodily-injury frequency
             w_tr, w_va = _ll_risk_weights(train, valid, line, _fs2.parts_tr["bodily_injury"] * 1.0, parts["bodily_injury"][0] * 1.0, e_tr, e_va)
         else:
             w_tr, w_va = _ll_risk_weights(train, valid, line, total_tr, total_va, e_tr, e_va)
     c = train[P.TARGET].sum() / (total_tr + ll * e_tr * w_tr).sum()
-    _fs2.last_parts = {"perils": parts, "ll": ll * e_va * w_va, "c": c}   # numero atteso e severità per perilo (prima di c)
+    _fs2.last_parts = {"perils": parts, "ll": ll * e_va * w_va, "c": c}   # expected count and severity by peril (before c)
     return (total_va + ll * e_va * w_va) * c
 
 
@@ -439,19 +439,19 @@ def fs2_all_ll(train, valid, line):
 
 
 def qwen_gbm(train, valid, line):
-    """Miglior experiment.py trovato dal loop Qwen (copiato in qwen/experiment_best.py), con le stesse colonne
-    che gli passa il giudice del loop."""
+    """Best experiment.py found by the Qwen loop (copied to qwen/experiment_best.py), with the same columns
+    the loop's judge passes to it."""
     import importlib.util
     spec = importlib.util.spec_from_file_location("qwen_best", str(ROOT / "qwen" / "experiment_best.py"))
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
-    feats = [c for c in P.allowed_features(train) if not c.startswith("addr_")]   # come sul Mac (senza storia indirizzo)
+    feats = [c for c in P.allowed_features(train) if not c.startswith("addr_")]   # as on the Mac (without address history)
     tr = train[feats + ["exposure", P.TARGET]].reset_index(drop=True)
     va = valid[feats + ["exposure"]].reset_index(drop=True)
     return np.asarray(mod.fit_predict(tr, va, line), float)
 
 
 def gbm_te(train, valid, line):
-    """GBM senza esche con make_model sostituito dal suo indice di rischio lisciato (sul costo, credibilità)."""
+    """GBM without decoys, with make_model replaced by its smoothed risk index (on cost, credibility)."""
     import train as T
     if "make_model" not in train.columns:
         return gbm_clean(train, valid, line)
@@ -468,9 +468,9 @@ def gbm_te(train, valid, line):
 
 
 def _glm_sev(train, valid, mask, a, cols):
-    """GLM Gamma (glum) della severità media per riga sui driver: numeriche con > 10 valori in 10 classi per quantili,
-    categorie con < 50 righe raggruppate; peso = numero di sinistri; ridge scelta su un 20% delle righe con sinistri.
-    Come scripts/glm_sev_bench.py (che lavora per sinistro). Restituisce la severità su train e valid."""
+    """Gamma GLM (glum) of mean severity per row on the drivers: numerics with > 10 values in 10 quantile bins,
+    categories with < 50 rows grouped; weight = number of claims; ridge chosen on 20% of the rows with claims.
+    Like scripts/glm_sev_bench.py (which works per claim). Returns severity on train and valid."""
     from glum import GeneralizedLinearRegressor
     A, B = {}, {}
     trm = train.loc[mask]
@@ -503,8 +503,8 @@ def _glm_sev(train, valid, mask, a, cols):
 
 
 def _freq_glm(train, valid, line, peril, n, expo_adj, e_tr, e_va, Xtr, Xva):
-    """frequenza per perilo con GLM Poisson classico: variabili del generatore binnate (8 classi) + indice make_model,
-    tasso = n / (esposizione × completezza × trend), pesi = denominatore. Previsione = frequenza 2025 × esposizione."""
+    """per-peril frequency with a classic Poisson GLM: generator variables binned (8 bins) + make_model index,
+    rate = n / (exposure × completeness × trend), weights = denominator. Prediction = 2025 frequency × exposure."""
     from sklearn.linear_model import PoissonRegressor
     from sklearn.preprocessing import OneHotEncoder
     cols = [c for c in GLM_DGP[line] if c in train.columns and c != "make_model"]
@@ -527,7 +527,7 @@ def _freq_glm(train, valid, line, peril, n, expo_adj, e_tr, e_va, Xtr, Xva):
 
 
 def fs2_bag(train, valid, line):
-    """bagging del freq×sev: 3 semi, campionamento di righe e colonne diverso."""
+    """bagging of freq×sev: 3 seeds, different row and column sampling."""
     ps = []
     for sd in (101, 202, 303):
         ps.append(_fs2(train, valid, line, ll_si=True, fparams=dict(seed=sd, bagging_fraction=0.7, feature_fraction=0.8)))
@@ -535,22 +535,22 @@ def fs2_bag(train, valid, line):
 
 
 def glm_peril(train, valid, line):
-    """freq GLM Poisson per perilo × severità come fs2 (stessa struttura, stima diversa)."""
+    """per-peril Poisson GLM frequency × severity as in fs2 (same structure, different fit)."""
     return _fs2(train, valid, line, ll_si=True, freq_glm=True)
 
 
 def gbm_peril_deep(train, valid, line):
-    """freq per perilo con alberi profondi (interazioni libere) × severità come fs2."""
+    """per-peril frequency with deep trees (free interactions) × severity as in fs2."""
     return _fs2(train, valid, line, ll_si=True, mult=1,
                 fparams=dict(num_leaves=15, max_depth=-1, learning_rate=0.05, min_data_in_leaf=3000, lambda_l2=50.0))
 
 
 def fs2_nohist(train, valid, line):
-    """freq×sev senza variabili di storia sinistri (polizza, cliente, indirizzo): base per la credibilità."""
+    """freq×sev without claims-history variables (policy, customer, address): base for credibility."""
     return _fs2(train, valid, line, ll_si=True, drop_hist=True)
 
 
-# --- experience rating con credibilità sopra i modelli (src/experience.py); k scelto su entrambi i fold ---
+# --- experience rating with credibility on top of the models (src/experience.py); k chosen on both folds ---
 def _cred(fn, k):
     def f(train, valid, line):
         import experience as X
@@ -565,17 +565,17 @@ qwen_gbm_cred = _cred(qwen_gbm, 8)
 
 
 def fs2_zk30(train, valid, line):
-    """fs2_all_ll con subsampling senza peso (30%) delle righe senza sinistri nella frequenza."""
+    """fs2_all_ll with unweighted subsampling (30%) of rows without claims in the frequency."""
     return _fs2(train, valid, line, ll_si=True, zero_keep=0.3)
 
 
 def fs2_nocust(train, valid, line):
-    """fs2_all_ll senza la storia sinistri del cliente sulle altre linee (A/E 0,72 dove è alta: sovrappesata)."""
+    """fs2_all_ll without the customer's claims history on other lines (A/E 0.72 where it is high: overweighted)."""
     return _fs2(train, valid, line, ll_si=True, drop_cust=True)
 
 
 def qwen_gbm73(train, valid, line):
-    """Miglior experiment.py del loop Qwen all'iterazione 73 (5 semi, monotonia, esche tolte): qwen/experiment_best_v73.py."""
+    """Best experiment.py of the Qwen loop at iteration 73 (5 seeds, monotonicity, decoys removed): qwen/experiment_best_v73.py."""
     import importlib.util
     spec = importlib.util.spec_from_file_location("qwen_best73", str(ROOT / "qwen" / "experiment_best_v73.py"))
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
@@ -587,20 +587,20 @@ def qwen_gbm73(train, valid, line):
 
 
 def glm_enet(train, valid, line):
-    """GLM Tweedie elastic net (glmnet) — src/models_nn.py."""
+    """Elastic-net Tweedie GLM (glmnet) — src/models_nn.py."""
     import models_nn as N
     return N.glm_enet(train, valid, line)
 
 
 def cann(train, valid, line):
-    """CANN: freq×sev come base + rete neurale sulla correzione — src/models_nn.py."""
+    """CANN: freq×sev as base + neural network on the correction — src/models_nn.py."""
     import models_nn as N
     return N.cann(train, valid, line)
 
 
 def _gbm_clean_w(train, valid, line, kind):
-    """gbm_clean con pesi di stima: 'pi' = completezza media della riga (meno peso agli anni con molto IBNR),
-    'recent' = anni recenti pesano di più (×0,8 per ogni anno indietro)."""
+    """gbm_clean with fitting weights: 'pi' = mean completeness of the row (less weight to years with a lot of IBNR),
+    'recent' = recent years weigh more (×0.8 for each year back)."""
     import lightgbm as lgb
     import train as T
     cols = [c for c in T.features_for(train, line) if c not in DECOYS]
@@ -630,7 +630,7 @@ def gbm_clean_recent(train, valid, line):
 qwen_gbm73_cred = _cred(qwen_gbm73, 8)
 
 
-# --- Parte 2: modelli di trasferimento (src/transfer.py); richiedono results/<mercato>/source_pred_<linea>.parquet
+# --- Part 2: transfer models (src/transfer.py); they require results/<market>/source_pred_<line>.parquet
 def tr_scratch(train, valid, line):
     import transfer as TR
     return TR.scratch(train, valid, line)
@@ -656,7 +656,7 @@ tr_src_glm_cred = _cred(tr_src_glm, 8)
 tr_src_gbm_cred = _cred(tr_src_gbm, 8)
 
 
-# --- chilometraggio zero: dato vero (basso) invece che mancante (18/10, passo 2 pulizia) ---
+# --- zero mileage: a genuine (low) value instead of missing (18/10, step-2 cleaning) ---
 def _mil0(df):
     if "flag_mileage_zero" in df.columns and "annual_mileage" in df.columns:
         df = df.copy()
@@ -671,15 +671,15 @@ def _reuse_oof(name):
 
 
 def fs2_mil0_cred(train, valid, line):
-    """fs2_all_ll_cred con annual_mileage = 0 lasciato come valore (era → mancante). Le linee casa riusano l'OOF."""
+    """fs2_all_ll_cred with annual_mileage = 0 kept as a value (was → missing). The household lines reuse the OOF."""
     if line != "motor":
         return _reuse_oof("fs2_all_ll_cred").reindex(valid["row_id"]).to_numpy()
     return fs2_all_ll_cred(_mil0(train), _mil0(valid), line)
 
 
-# --- premio dell'assicuratore come variabile (18/10, richiesta di Simone) ---
+# --- insurer's premium as a variable (18/10) ---
 def _prem(df):
-    """log del premio annuo lordo di sconto, centrato sulla mediana dell'anno: toglie l'adeguamento tariffario annuo."""
+    """log of the annual premium gross of discount, centred on the year's median: removes the annual tariff adjustment."""
     df = df.copy()
     g = np.log(df["written_premium"].clip(lower=1) / (1 - df["discount_applied"].fillna(0)))
     df["prem_rel"] = g - g.groupby(df["year"]).transform("median")
@@ -687,7 +687,7 @@ def _prem(df):
 
 
 def fs2_prem_cred(train, valid, line):
-    """fs2_all_ll_cred + prem_rel in frequenza e severità."""
+    """fs2_all_ll_cred + prem_rel in frequency and severity."""
     SEV_DRIVERS[line] = SEV_DRIVERS[line] + ["prem_rel"]
     try:
         return fs2_all_ll_cred(_prem(train), _prem(valid), line)
@@ -696,16 +696,16 @@ def fs2_prem_cred(train, valid, line):
 
 
 def fs2_v2_cred(train, valid, line):
-    """Pulizia rivista (18/10): motor con chilometraggio 0 come valore; casa con il premio relativo come variabile."""
+    """Revised cleaning (18/10): motor with mileage 0 as a value; household with the relative premium as a variable."""
     return fs2_mil0_cred(train, valid, line) if line == "motor" else fs2_prem_cred(train, valid, line)
 
 
-glm_enet_cred = _cred(glm_enet, 8)   # stessa costruzione delle OOF glm_enet_cred (verificato: scarto 0)
+glm_enet_cred = _cred(glm_enet, 8)   # same construction as the glm_enet_cred OOF (verified: difference 0)
 
 
-# --- ablazioni della pulizia (18/10, richiesta di Simone: "rivaluta tutti gli interventi") ---
-# Ogni funzione toglie UNA correzione dalle variabili (train e valid) e rifà fs2_all_ll_cred; le linee non toccate
-# riusano le OOF. Il target resta quello pulito: misura quanto il modello perde se la correzione non ci fosse.
+# --- cleaning ablations (18/10, "re-assess every intervention") ---
+# Each function removes ONE correction from the variables (train and valid) and reruns fs2_all_ll_cred; untouched lines
+# reuse the OOF. The target stays the clean one: it measures how much the model loses without the correction.
 _CUST_COLS = None
 
 
@@ -756,13 +756,13 @@ def abl_cust_cred(train, valid, line):
 
 
 def abl_expo_cred(train, valid, line):
-    """esposizione dichiarata (sbagliata) nel training; la validazione resta pulita come il test."""
+    """declared (wrong) exposure in training; validation stays clean like the test set."""
     tr = train.copy(); tr["exposure"] = tr["exposure_raw"].to_numpy()
     return fs2_all_ll_cred(tr, valid, line)
 
 
 def fs2_v2_m6_cred(train, valid, line):
-    """Punto 5 (18/10): come fs2_v2_cred ma con più iterazioni nella frequenza auto (mult 6 invece di 4)."""
+    """Point 5 (18/10): like fs2_v2_cred but with more iterations in motor frequency (mult 6 instead of 4)."""
     if line != "motor":
         return _reuse_oof("fs2_v2_cred").reindex(valid["row_id"]).to_numpy()
     import experience as X
@@ -771,19 +771,19 @@ def fs2_v2_m6_cred(train, valid, line):
 
 
 
-# --- stagionalità dei sinistri (19/10): tempesta e acqua condotta hanno dic–feb a 1,4–1,6 volte la media ---
-# L'esposizione di una riga parziale non vale "giorni/365" per tutti i perili: per i perili stagionali vale la quota
-# dei sinistri annui che cade nei mesi coperti. Pesi mensili stimati sui sinistri delle righe annuali del training,
-# con credibilità verso l'uniforme (k = 300 sinistri).
+# --- claims seasonality (19/10): storm and escape of water have Dec–Feb at 1.4–1.6 times the average ---
+# The exposure of a partial row is not "days/365" for every peril: for seasonal perils it is the share
+# of annual claims falling in the covered months. Monthly weights estimated on claims of annual training rows,
+# with credibility towards uniform (k = 300 claims).
 _SEASON_ON = False
-_PERIL_CRED_K = None   # 19/10: credibilità per perilo sulla storia della polizza (sinistri dello stesso perilo)
+_PERIL_CRED_K = None   # 19/10: per-peril credibility on the policy history (claims of the same peril)
 _PH_CACHE = {}
 
 
 def _peril_hist(line):
-    """Per ogni riga (train e test): N_p = sinistri passati della polizza nel perilo p (AY < anno della riga),
-    H_p = Σ sulle righe precedenti di esposizione × completezza_p × (1+trend_p)^(anno − 2025) (= attesi per unità di
-    frequenza 2025). Usa claims_clean (perilo noto per sinistro)."""
+    """For each row (train and test): N_p = past claims of the policy in peril p (AY < row year),
+    H_p = Σ over earlier rows of exposure × completeness_p × (1+trend_p)^(year − 2025) (= expected per unit of
+    2025 frequency). Uses claims_clean (peril known per claim)."""
     if line in _PH_CACHE:
         return _PH_CACHE[line]
     dev, claims, _ = _tables()
@@ -800,9 +800,9 @@ def _peril_hist(line):
         eh = rows["exposure"] * rows[f"pi_{p}"] * (1 + float(ft[p])) ** (rows["year"] - 2025)
         out[f"H_{p}"] = eh.groupby(rows["policy_id"]).transform(lambda s: s.shift().fillna(0).cumsum()).to_numpy()
         n = cl[cl["peril"] == p].pivot_table(index="policy_id", columns="ay", values="n", aggfunc="sum").fillna(0)
-        n = n.reindex(columns=sorted(n.columns)).cumsum(axis=1)          # cumulato fino all'AY incluso
+        n = n.reindex(columns=sorted(n.columns)).cumsum(axis=1)          # cumulative up to and including the AY
         prev = rows["year"] - 1
-        # N fino all'anno precedente: cumulato all'ultimo AY <= anno − 1
+        # N up to the previous year: cumulative at the last AY <= year − 1
         out[f"N_{p}"] = 0.0
         for ay in sorted(n.columns):
             sel = (prev >= ay).to_numpy()
@@ -815,11 +815,11 @@ def _peril_hist(line):
 def _peril_cred(f_va, e_va, valid, line, p, ft, k):
     h = _peril_hist(line).reindex(valid["row_id"].to_numpy())
     N = h[f"N_{p}"].to_numpy(float); H = h[f"H_{p}"].to_numpy(float)
-    lam = f_va / np.maximum(np.asarray(e_va, float), 1e-9)      # frequenza 2025 della riga
+    lam = f_va / np.maximum(np.asarray(e_va, float), 1e-9)      # 2025 frequency of the row
     M = (N + k) / (H * lam + k)
     out = f_va * M
     return out * f_va.sum() / out.sum()
-_SEV_OVERRIDE = None   # 19/10: prova di severità meno regolarizzata (A/E cresce con vehicle_value_group: 0,85 → 1,2)
+_SEV_OVERRIDE = None   # 19/10: test of less regularised severity (A/E grows with vehicle_value_group: 0.85 → 1.2)
 _SEV_ROUNDS = 150
 _LOSSM = None
 _SW_CACHE = {}
@@ -838,7 +838,7 @@ def _season_weights(train, line, p, k=300.0):
     c = _LOSSM[(_LOSSM["line"] == line) & (_LOSSM["peril"] == p) & _LOSSM["row_id"].isin(full)]
     cnt = c["m"].value_counts().reindex(range(1, 13), fill_value=0).to_numpy(float)
     days = np.array([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], float)
-    rate = cnt / days                                   # sinistri per giorno nel mese
+    rate = cnt / days                                   # claims per day in the month
     w = rate / (cnt.sum() / 365.0) if cnt.sum() else np.ones(12)
     z = cnt.sum() / (cnt.sum() + k)
     w = 1 + z * (w - 1)
@@ -859,21 +859,21 @@ def _season_expo(df, w):
 
 
 def fs2_season_cred(train, valid, line):
-    """fs2_v2_cred con esposizione stagionale per perilo nella frequenza."""
+    """fs2_v2_cred with seasonal exposure by peril in the frequency."""
     global _SEASON_ON
     _SEASON_ON = True
     try:
         return fs2_v2_cred(train, valid, line)
     finally:
         _SEASON_ON = False
-_PERIL_CRED_K = None   # 19/10: credibilità per perilo sulla storia della polizza (sinistri dello stesso perilo)
+_PERIL_CRED_K = None   # 19/10: per-peril credibility on the policy history (claims of the same peril)
 _PH_CACHE = {}
 
 
 def _peril_hist(line):
-    """Per ogni riga (train e test): N_p = sinistri passati della polizza nel perilo p (AY < anno della riga),
-    H_p = Σ sulle righe precedenti di esposizione × completezza_p × (1+trend_p)^(anno − 2025) (= attesi per unità di
-    frequenza 2025). Usa claims_clean (perilo noto per sinistro)."""
+    """For each row (train and test): N_p = past claims of the policy in peril p (AY < row year),
+    H_p = Σ over earlier rows of exposure × completeness_p × (1+trend_p)^(year − 2025) (= expected per unit of
+    2025 frequency). Uses claims_clean (peril known per claim)."""
     if line in _PH_CACHE:
         return _PH_CACHE[line]
     dev, claims, _ = _tables()
@@ -890,9 +890,9 @@ def _peril_hist(line):
         eh = rows["exposure"] * rows[f"pi_{p}"] * (1 + float(ft[p])) ** (rows["year"] - 2025)
         out[f"H_{p}"] = eh.groupby(rows["policy_id"]).transform(lambda s: s.shift().fillna(0).cumsum()).to_numpy()
         n = cl[cl["peril"] == p].pivot_table(index="policy_id", columns="ay", values="n", aggfunc="sum").fillna(0)
-        n = n.reindex(columns=sorted(n.columns)).cumsum(axis=1)          # cumulato fino all'AY incluso
+        n = n.reindex(columns=sorted(n.columns)).cumsum(axis=1)          # cumulative up to and including the AY
         prev = rows["year"] - 1
-        # N fino all'anno precedente: cumulato all'ultimo AY <= anno − 1
+        # N up to the previous year: cumulative at the last AY <= year − 1
         out[f"N_{p}"] = 0.0
         for ay in sorted(n.columns):
             sel = (prev >= ay).to_numpy()
@@ -905,17 +905,17 @@ def _peril_hist(line):
 def _peril_cred(f_va, e_va, valid, line, p, ft, k):
     h = _peril_hist(line).reindex(valid["row_id"].to_numpy())
     N = h[f"N_{p}"].to_numpy(float); H = h[f"H_{p}"].to_numpy(float)
-    lam = f_va / np.maximum(np.asarray(e_va, float), 1e-9)      # frequenza 2025 della riga
+    lam = f_va / np.maximum(np.asarray(e_va, float), 1e-9)      # 2025 frequency of the row
     M = (N + k) / (H * lam + k)
     out = f_va * M
     return out * f_va.sum() / out.sum()
-_SEV_OVERRIDE = None   # 19/10: prova di severità meno regolarizzata (A/E cresce con vehicle_value_group: 0,85 → 1,2)
+_SEV_OVERRIDE = None   # 19/10: test of less regularised severity (A/E grows with vehicle_value_group: 0.85 → 1.2)
 _SEV_ROUNDS = 150
 
 
-# --- ipotesi riviste (19/10): variabili di calendario e non proporzionalità all'esposizione ---
-# Residui OOF del blend: fabbricato ends_early A/E 0,78 / 0,74 (fold 2023 / 2024, ~540 sinistri per fold);
-# auto esposizione < 0,35 A/E 1,14 / 1,07. Nel test il 17-20% delle righe finisce prima di dicembre.
+# --- revised hypotheses (19/10): calendar variables and non-proportionality to exposure ---
+# OOF residuals of the blend: buildings ends_early A/E 0.78 / 0.74 (fold 2023 / 2024, ~540 claims per fold);
+# motor exposure < 0.35 A/E 1.14 / 1.07. In the test set 17-20% of rows end before December.
 _TIMING_EXTRA = ()
 
 
@@ -951,8 +951,8 @@ def _sev_variant(over, rounds):
     return f
 
 
-fs2_sev1_cred = _sev_variant({"lambda_l2": 5.0}, 300)            # meno shrinkage, più giri
-fs2_sev2_cred = _sev_variant({"lambda_l2": 5.0, "num_leaves": 4, "max_depth": 2}, 300)   # + interazioni di severità
+fs2_sev1_cred = _sev_variant({"lambda_l2": 5.0}, 300)            # less shrinkage, more rounds
+fs2_sev2_cred = _sev_variant({"lambda_l2": 5.0, "num_leaves": 4, "max_depth": 2}, 300)   # + severity interactions
 
 
 def _pc_variant(k, total_k=None):
@@ -968,7 +968,7 @@ def _pc_variant(k, total_k=None):
 
 
 def fs2_v2(train, valid, line):
-    """fs2_v2_cred senza la credibilità finale sul totale."""
+    """fs2_v2_cred without the final credibility on the total."""
     if line == "motor":
         return fs2_all_ll(_mil0(train), _mil0(valid), line)
     SEV_DRIVERS[line] = SEV_DRIVERS[line] + ["prem_rel"]
@@ -978,14 +978,14 @@ def fs2_v2(train, valid, line):
         SEV_DRIVERS[line] = [c for c in SEV_DRIVERS[line] if c != "prem_rel"]
 
 
-fs2_pc2 = _pc_variant(2.0)                 # credibilità per perilo k=2, senza quella sul totale
+fs2_pc2 = _pc_variant(2.0)                 # per-peril credibility k=2, without the one on the total
 fs2_pc4 = _pc_variant(4.0)
-fs2_pc4_cred = _pc_variant(4.0, 8)         # per perilo + totale (k=8)
+fs2_pc4_cred = _pc_variant(4.0, 8)         # per peril + total (k=8)
 
 
-# --- 19/10 sera (review esterna): GBM di Qwen stimato su un target senza IBNR spalmato per esposizione ---
-# target_gross = costo denunciato sviluppato / completezza attesa della riga (IBNR ripartito come il rischio osservato,
-# non come l'esposizione), riportato al totale per anno di target_b − LL, + LL × esposizione.
+# --- 19/10 evening (external review): Qwen GBM fitted on a target without IBNR spread by exposure ---
+# target_gross = developed reported cost / expected row completeness (IBNR allocated like the observed risk,
+# not like exposure), scaled to the per-year total of target_b − LL, + LL × exposure.
 _JG = None
 
 
@@ -1012,11 +1012,11 @@ def qwen_gbm73_gross(train, valid, line):
 qwen_gbm73_gross_cred = _cred(qwen_gbm73_gross, 8)
 
 
-# --- 20/10 notte: caricamento large loss proporzionale al rischio (verifica: elasticità dei grandi sinistri al rischio
-# previsto 1,22 (se 0,30) auto, 1,29 + 3,3·log SI fabbricato, 2,3 + 3,2·log SI contenuto: il riparto piatto/per quartili
-# è troppo piatto). Poisson sul numero di grandi sinistri per riga (stimata sulle righe di stima):
-#   log E[n_grandi] = log(esposizione) + a + b·log(costo attritivo previsto / esposizione) [+ c·log SI per la casa],
-# coefficienti con credibilità n/(n+K) verso 0 (= riparto piatto); totale del caricamento invariato.
+# --- 20/10 night: large-loss loading proportional to risk (check: elasticity of large losses to predicted
+# risk 1.22 (s.e. 0.30) motor, 1.29 + 3.3·log SI buildings, 2.3 + 3.2·log SI contents: the flat/quartile allocation
+# is too flat). Poisson on the number of large losses per row (fitted on the fitting rows):
+#   log E[n_large] = log(exposure) + a + b·log(predicted attritional cost / exposure) [+ c·log SI for household],
+# coefficients with credibility n/(n+K) towards 0 (= flat allocation); total loading unchanged.
 _LL_RISK = False
 _LL_K = 20.0
 _LARGE = None
@@ -1059,7 +1059,7 @@ def _ll_risk_weights(train, valid, line, tot_tr, tot_va, e_tr, e_va):
 
 
 def fs2_v2_llr_cred(train, valid, line):
-    """fs2_v2_cred con il caricamento large loss ripartito sul rischio previsto."""
+    """fs2_v2_cred with the large-loss loading allocated on predicted risk."""
     global _LL_RISK
     _LL_RISK = True
     try:
@@ -1068,8 +1068,8 @@ def fs2_v2_llr_cred(train, valid, line):
         _LL_RISK = False
 
 
-# --- 20/10: GBM di Qwen corretto da Claude (verifica indipendente): senza il vincolo monotono crescente su vehicle_age,
-# che nei dati non è monotono (costo relativo 0,87 → 1,09 a 5–8 anni → 0,97 oltre 12 anni)
+# --- 20/10: Qwen GBM corrected by Claude (independent check): without the increasing monotone constraint on vehicle_age,
+# which is not monotone in the data (relative cost 0.87 → 1.09 at 5–8 years → 0.97 beyond 12 years)
 def qwen_gbm73fix(train, valid, line):
     import importlib.util
     spec = importlib.util.spec_from_file_location("qwen_fix73", str(ROOT / "qwen" / "experiment_v73_fix.py"))
@@ -1094,8 +1094,8 @@ qwen_gbm73fix_gross_cred = _cred(qwen_gbm73fix_gross, 8)
 
 
 def fs2_v2_nocust_cred(train, valid, line):
-    """20/10: fs2_v2_cred senza le variabili dei sinistri del cliente su altre linee in auto e fabbricato (nei residui chi ha
-    sinistri solo su altre linee ha A/E 0,94/0,88 auto e 0,88/0,91 fabbricato nei due fold: effetto sovrastimato)."""
+    """20/10: fs2_v2_cred without the customer's other-line claims variables in motor and buildings (in the residuals, those with
+    claims only on other lines have A/E 0.94/0.88 motor and 0.88/0.91 buildings in the two folds: effect overestimated)."""
     global _DROP_CUST_LINES
     _DROP_CUST_LINES = {"motor": True, "buildings": True}
     try:
@@ -1106,20 +1106,20 @@ def fs2_v2_nocust_cred(train, valid, line):
         _DROP_CUST_LINES = {}
 
 
-# --- 20/10 pomeriggio: frequenza del freq×sev con i parametri scelti dalla griglia sul Mac (autoresearch_freq/grid.py) ---
-# Regola docs/17: per ogni linea/perilo si cambia un parametro solo se migliora la D² Poisson in entrambi i fold.
-# Scelte dalla griglia (results_s3/grid_freq_results.csv, 660 righe, D² Poisson per perilo, 2 fold):
-#  auto: lesioni extra_trees (+4,4/+6,0 e·4), cristalli e danni propri foglie ≥300 (+4,5/+4,3; +5,1/+3,3); scelta stabile
-#        anche con la selezione incrociata tra fold. Furto e RC cose: nessuna scelta stabile → invariati.
-#  fabbricato: la scelta per perilo non regge la selezione incrociata → una sola modifica su tutti i perili, ff 0,7
-#        (+4,7/+2,8 pesato col costo; già vista nel banco del container 20/10). Contenuto: nulla di stabile → invariato.
+# --- 20/10 afternoon: freq×sev frequency with the parameters chosen by the grid on the Mac (autoresearch_freq/grid.py) ---
+# Rule (see docs/WORKLOG.md): for each line/peril a parameter is changed only if it improves the Poisson D² in both folds.
+# Grid choices (results_s3/grid_freq_results.csv, 660 rows, per-peril Poisson D², 2 folds):
+#  motor: injury extra_trees (+4.4/+6.0 e·4), glass and own damage leaves ≥300 (+4.5/+4.3; +5.1/+3.3); choice stable
+#        also under cross-fold selection. Theft and third-party property: no stable choice → unchanged.
+#  buildings: per-peril choice does not survive cross-fold selection → a single change on all perils, ff 0.7
+#        (+4.7/+2.8 cost-weighted; already seen on the container bench 20/10). Contents: nothing stable → unchanged.
 FREQ_CHOSEN = {"motor": {"bodily_injury": {"extra_trees": True}, "glass_hail": {"min_data_in_leaf": 300},
                          "own_damage": {"min_data_in_leaf": 300}},
                "buildings": {"*": {"feature_fraction": 0.7}}}
 
 
 def fs2_v2f_cred(train, valid, line):
-    """fs2_v2_cred (con credibilità senza cedimento, come sub_29) con la frequenza riparametrizzata per perilo (FREQ_CHOSEN)."""
+    """fs2_v2_cred (with credibility excluding subsidence, as in sub_29) with frequency reparametrised by peril (FREQ_CHOSEN)."""
     global _FREQ_OVERRIDE
     _FREQ_OVERRIDE = FREQ_CHOSEN
     try:
@@ -1129,7 +1129,7 @@ def fs2_v2f_cred(train, valid, line):
 
 
 def fs2_v2f_llr_cred(train, valid, line):
-    """fs2_v2f_cred con il large loss ripartito sul rischio (come il fabbricato di sub_29)."""
+    """fs2_v2f_cred with the large loss allocated on risk (like buildings in sub_29)."""
     global _LL_RISK
     _LL_RISK = True
     try:
@@ -1138,14 +1138,14 @@ def fs2_v2f_llr_cred(train, valid, line):
         _LL_RISK = False
 
 
-# --- 20/10 pomeriggio: severità per perilo dal banco (results_s3/sev_bench_base.csv, D² Gamma, 2 fold, selezione incrociata) ---
-# auto danni propri e RC cose: severità su tutte le variabili (+24/+19 e +8/+21 e·4, stabile anche scegliendo su un solo fold);
-# auto lesioni: la media batte il GBM (+35/+15) → severità costante.
+# --- 20/10 afternoon: per-peril severity from the bench (results_s3/sev_bench_base.csv, Gamma D², 2 folds, cross-fold selection) ---
+# motor own damage and third-party property: severity on all variables (+24/+19 and +8/+21 e·4, stable even choosing on a single fold);
+# motor injury: the mean beats the GBM (+35/+15) → constant severity.
 SEV_CHOSEN = {"motor": {"own_damage": {"_all": True}, "third_party_prop": {"_all": True}, "bodily_injury": {"_mean": True}}}
 
 
 def fs2_v2fs_cred(train, valid, line):
-    """fs2_v2f_cred (frequenza da griglia) + severità per perilo da SEV_CHOSEN."""
+    """fs2_v2f_cred (frequency from the grid) + per-peril severity from SEV_CHOSEN."""
     global _SEV_PERIL
     _SEV_PERIL = SEV_CHOSEN
     try:
@@ -1155,7 +1155,7 @@ def fs2_v2fs_cred(train, valid, line):
 
 
 def fs2_v2fs_sevonly_cred(train, valid, line):
-    """Solo la severità per perilo (frequenza attuale), per separare i due effetti."""
+    """Per-peril severity only (current frequency), to separate the two effects."""
     global _SEV_PERIL
     _SEV_PERIL = SEV_CHOSEN
     try:
@@ -1165,7 +1165,7 @@ def fs2_v2fs_sevonly_cred(train, valid, line):
 
 
 def fs2_v2fs_nobi_cred(train, valid, line):
-    """Controllo (20/10 sera): come fs2_v2fs_cred ma lesioni con la severità attuale (solo danni propri e RC cose cambiano)."""
+    """Check (20/10 evening): like fs2_v2fs_cred but injury with the current severity (only own damage and third-party property change)."""
     global _SEV_PERIL
     _SEV_PERIL = {"motor": {k: v for k, v in SEV_CHOSEN["motor"].items() if k != "bodily_injury"}}
     try:
@@ -1175,8 +1175,8 @@ def fs2_v2fs_nobi_cred(train, valid, line):
 
 
 def fs2_v2fb_cred(train, valid, line):
-    """20/10 sera: fs2_v2f_cred + severità costante SOLO per le lesioni auto. La scomposizione di fs2_v2fs_cred mostra che il
-    guadagno viene tutto dalle lesioni (own +2,0/+0,6 e·4); danni propri e RC cose su tutte le variabili peggiorano (−1,3/−0,4)."""
+    """20/10 evening: fs2_v2f_cred + constant severity ONLY for motor injury. The decomposition of fs2_v2fs_cred shows that the
+    gain comes entirely from injury (own +2.0/+0.6 e·4); own damage and third-party property on all variables get worse (−1.3/−0.4)."""
     global _SEV_PERIL
     _SEV_PERIL = {"motor": {"bodily_injury": {"_mean": True}}}
     try:
@@ -1188,7 +1188,7 @@ def fs2_v2fb_cred(train, valid, line):
 
 def _decay_variant(dec):
     def f(train, valid, line):
-        """21/10 (idea di Simone: gli anni recenti somigliano di più al 2025): fs2_v2fb_cred con pesi per anno decay^(ultimo − anno)."""
+        """21/10 (idea: recent years resemble 2025 more closely): fs2_v2fb_cred with per-year weights decay^(last − year)."""
         global _YEAR_DECAY
         _YEAR_DECAY = dec
         try:
@@ -1204,8 +1204,8 @@ fs2_dec60_cred = _decay_variant(0.6)
 
 
 def fs2_v2_sevmix_cred(train, valid, line):
-    """21/10 sera (domanda di Simone, GLM o GBM per perilo): fs2_v2_cred con la severità dell'alluvione del contenuto =
-    media geometrica GBM × GLM Gamma (unico perilo che vince in entrambi gli anni nel banco glm_sev_bench)."""
+    """21/10 evening (question: GLM or GBM per peril?): fs2_v2_cred with contents flood severity =
+    geometric mean GBM × Gamma GLM (the only peril winning in both years on the glm_sev_bench bench)."""
     global _SEV_PERIL
     _SEV_PERIL = {"contents": {"flood": {"_mix_glm": True}}}
     try:
@@ -1215,9 +1215,9 @@ def fs2_v2_sevmix_cred(train, valid, line):
 
 
 def fs2_v2_llr_cust_cred(train, valid, line):
-    """21/10 sera (hist_scan.py): nel fabbricato chi ha sinistri del cliente su altre linee ha A/E 0,73–0,80 anche nel
-    blend di sub_41 (stesso evento meteo già contato dalla storia della polizza). Il freq×sev non vede la storia del cliente
-    sulle altre linee (era tra le esche): qui la vede (cust_other_prev_rate, cust_other_prev_n_last). Resto = fs2_v2_llr_cred."""
+    """21/10 evening (hist_scan.py): in buildings, policies whose customer has claims on other lines have A/E 0.73–0.80 even in the
+    sub_41 blend (same weather event already counted by the policy history). The freq×sev does not see the customer's history
+    on other lines (it was among the decoys): here it does (cust_other_prev_rate, cust_other_prev_n_last). Rest = fs2_v2_llr_cred."""
     global DECOYS
     old = DECOYS
     DECOYS = DECOYS - {"cust_other_prev_rate", "cust_other_prev_n_last"}
@@ -1228,9 +1228,9 @@ def fs2_v2_llr_cust_cred(train, valid, line):
 
 
 def fs2_v2_llr_lin_cred(train, valid, line):
-    """22/10 (banco meteo, scripts/weather_bench.py): frequenza di alluvione e incendio del fabbricato con linear_tree
-    (il meteo e le variabili continue pesano anche oltre il range visto): +22,6/+16,4 e +1,4/+9,4 e·4 di D² Poisson del perilo
-    nei due fold. Resto = fs2_v2_llr_cred (sub_40)."""
+    """22/10 (weather bench, scripts/weather_bench.py): buildings flood and fire frequency with linear_tree
+    (weather and continuous variables also matter beyond the observed range): +22.6/+16.4 and +1.4/+9.4 e·4 of per-peril Poisson D²
+    in the two folds. Rest = fs2_v2_llr_cred (sub_40)."""
     global _FREQ_OVERRIDE
     old = _FREQ_OVERRIDE
     lin = {"linear_tree": True, "linear_lambda": 1.0}
@@ -1242,7 +1242,7 @@ def fs2_v2_llr_lin_cred(train, valid, line):
 
 
 def fs2_v2_llr_linf_cred(train, valid, line):
-    """22/10: come fs2_v2_llr_lin_cred ma linear_tree solo sull'alluvione del fabbricato (alluvione+incendio: +0,73/−0,38 e·4)."""
+    """22/10: like fs2_v2_llr_lin_cred but linear_tree only on buildings flood (flood+fire: +0.73/−0.38 e·4)."""
     global _FREQ_OVERRIDE
     old = _FREQ_OVERRIDE
     _FREQ_OVERRIDE = {"buildings": {"flood": {"linear_tree": True, "linear_lambda": 1.0}}}
@@ -1264,14 +1264,14 @@ def _motor_ll_variant(mode):
     return f
 
 
-# 22/10 (ricerca: rischio dei grandi sinistri legato al profilo, non uniforme per esposizione): carico LL auto (28 per
-# anno-esposizione, ~5% del costo) ripartito sul rischio previsto totale ("tot") o sulla frequenza lesioni ("bi")
+# 22/10 (research: large-loss risk linked to the risk profile, not uniform by exposure): motor LL loading (28 per
+# exposure-year, ~5% of cost) allocated on total predicted risk ("tot") or on injury frequency ("bi")
 fs2_v2fb_llr_cred = _motor_ll_variant(True)
 fs2_v2fb_llrbi_cred = _motor_ll_variant("bi")
 
 
-# --- 22/10 sera: franchigia relativa al valore del bene nel GBM (domanda di Simone: "lordo e poi netto")
-# xs_rel = (franchigia volontaria + obbligatoria) ÷ valore (classe di valore del veicolo / somma assicurata)
+# --- 22/10 evening: deductible relative to insured value in the GBM ("gross then net")
+# xs_rel = (voluntary + compulsory deductible) ÷ value (vehicle value band / sum insured)
 _XS_COMP = {"motor": 250, "buildings": 350, "contents": 350}
 
 
@@ -1296,8 +1296,8 @@ def qwen_gbm73_gross_xs(train, valid, line):
 qwen_gbm73_gross_xs_cred = _cred(qwen_gbm73_gross_xs, 8)
 
 
-# perili dove xs_rel nella frequenza vince nei due anni (scripts/excess_bench.py): danni propri e furto auto,
-# danni accidentali fabbricato, acqua contenuto
+# perils where xs_rel in the frequency wins in both years (scripts/excess_bench.py): motor own damage and theft,
+# buildings accidental damage, contents water
 _XS_PERILS = {"motor": ("own_damage", "theft"), "buildings": ("accidental_damage",), "contents": ("escape_of_water",)}
 
 
@@ -1317,9 +1317,9 @@ fs2_v2_llr_xs_cred = _xs_variant(fs2_v2_llr_cred)
 fs2_v2_sevmix_xs_cred = _xs_variant(fs2_v2_sevmix_cred)
 
 
-# controlli per il guadagno di qwen_gbm73_gross_xs nel fabbricato: è la franchigia o solo una colonna in più?
-#  siinv = 1/somma assicurata senza franchigia (toglie l'effetto del vincolo monotono su sum_insured);
-#  rnd   = colonna di rumore (misura quanto cambia il GBM solo per il campionamento delle colonne)
+# checks on the gain of qwen_gbm73_gross_xs in buildings: is it the deductible or just one more column?
+#  siinv = 1/sum insured without deductible (removes the effect of the monotone constraint on sum_insured);
+#  rnd   = noise column (measures how much the GBM changes just from column sampling)
 def _add_col(kind, seed=11):
     def g(df, line):
         d = df.copy()
@@ -1344,7 +1344,7 @@ qwen_gbm73_gross_rnd_cred = _cred(qwen_gbm73_gross_rnd, 8)
 
 
 def _xs_factor(train, valid, line, n, mu_tr, k=50.0):
-    """Fattore franchigia volontaria × quintile di valore del bene: A/E sul train del modello senza franchigia, credibilità k sinistri."""
+    """Voluntary deductible × insured-value quintile factor: A/E on train of the model without deductible, credibility k claims."""
     sc = lambda d: (d["vehicle_value_group"] if line == "motor" else d["sum_insured"]).astype(float).to_numpy()
     edges = np.unique(np.quantile(sc(train), [0.2, 0.4, 0.6, 0.8]))
     q_tr, q_va = np.searchsorted(edges, sc(train), side="right"), np.searchsorted(edges, sc(valid), side="right")
@@ -1354,7 +1354,7 @@ def _xs_factor(train, valid, line, n, mu_tr, k=50.0):
     return get(train, q_tr), get(valid, q_va)
 
 
-# perili dove la versione a due fasi vince nei due anni (excess_bench.py, auto): danni propri +1,1/+2,9, furto +4,7/+5,1
+# perils where the two-phase version wins in both years (excess_bench.py, motor): own damage +1.1/+2.9, theft +4.7/+5.1
 _2PH_PERILS = {"motor": ("own_damage", "theft")}
 
 
@@ -1381,9 +1381,9 @@ def _rnd_seed(seed):
 qwen_gbm73_gross_rnd12_cred, qwen_gbm73_gross_rnd13_cred, qwen_gbm73_gross_rnd14_cred = _rnd_seed(12), _rnd_seed(13), _rnd_seed(14)
 
 
-# --- 23/10 mattina: "lordo poi netto" anche nel GBM e nella tempesta del fabbricato (richiesta di Simone, punti 1 e 2) ---
-# GBM a due fasi: stesso GBM senza franchigia volontaria (né xs_rel), poi fattore franchigia × quintile di valore del bene
-# = (Σ target + K) / (Σ previsione + K) sul train (previsione in-sample), K = 2000 righe di costo medio; applicato alla validazione.
+# --- 23/10 morning: "gross then net" also in the GBM and in buildings storm (points 1 and 2) ---
+# Two-phase GBM: same GBM without voluntary deductible (nor xs_rel), then deductible × insured-value quintile factor
+# = (Σ target + K) / (Σ prediction + K) on train (in-sample prediction), K = 2000 rows of mean cost; applied to validation.
 def _gbm_2ph(fn, gross):
     def f(train, valid, line):
         drop = [c for c in ("voluntary_excess", "xs_rel") if c in train.columns]
@@ -1404,13 +1404,13 @@ def _gbm_2ph(fn, gross):
     return f
 
 
-qwen_gbm73fix_2ph_cred = _cred(_gbm_2ph(qwen_gbm73fix, False), 8)          # auto (OOF come qwen_gbm73fix_cred)
-qwen_gbm73fix_gross_2ph_cred = _cred(_gbm_2ph(qwen_gbm73fix_gross, True), 8)  # auto, stima finale
-qwen_gbm73_gross_2ph_cred = _cred(_gbm_2ph(qwen_gbm73_gross, True), 8)        # fabbricato (sostituisce qwen_gbm73_gross_xs_cred)
-qwen_gbm73_2ph_cred = _cred(_gbm_2ph(qwen_gbm73, False), 8)                   # contenuto (sostituisce qwen_gbm73_cred)
+qwen_gbm73fix_2ph_cred = _cred(_gbm_2ph(qwen_gbm73fix, False), 8)          # motor (OOF as qwen_gbm73fix_cred)
+qwen_gbm73fix_gross_2ph_cred = _cred(_gbm_2ph(qwen_gbm73fix_gross, True), 8)  # motor, final fit
+qwen_gbm73_gross_2ph_cred = _cred(_gbm_2ph(qwen_gbm73_gross, True), 8)        # buildings (replaces qwen_gbm73_gross_xs_cred)
+qwen_gbm73_2ph_cred = _cred(_gbm_2ph(qwen_gbm73, False), 8)                   # contents (replaces qwen_gbm73_cred)
 
 
-# tempesta del fabbricato a due fasi (excess_bench: +1,6 / +1,0 sul perilo)
+# two-phase buildings storm (excess_bench: +1.6 / +1.0 on the peril)
 def fs2_v2_llr_2phs_cred(train, valid, line):
     global _FREQ_2PH
     _FREQ_2PH = {"buildings": ("storm",)}
@@ -1420,7 +1420,7 @@ def fs2_v2_llr_2phs_cred(train, valid, line):
         _FREQ_2PH = {}
 
 
-# --- 23/10 notte: Parte 2 (mercato emerging) — modelli di src/transfer.py richiamabili da oof_one.py / final_model_line.py
+# --- 23/10 night: Part 2 (emerging market) — src/transfer.py models callable from oof_one.py / final_model_line.py
 def _tr(name):
     def f(train, valid, line):
         import transfer as TR

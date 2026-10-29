@@ -1,9 +1,9 @@
-"""Parte 2: submission del mercato emerging stimata su tutti i dati nuovi (2023+2024) e il prior del developed.
-Specifica per linea (scelta sul fold F2024, scripts/p2_sweep2.py; docs/30_parte2.md):
-  motor     : prior developed × livello emerging × correzione genere (GLM ridge, offset = prior)
-  buildings : 0,9 × prior × livello + 0,1 × scratch (freq×sev solo emerging), stesso livello
-  contents  : prior × livello × correzione genere
-Uso: IAA_MARKET=configs/parte2.json python3 scripts/p2_final.py <nome> [--spec base|...]"""
+"""Part 2: emerging-market submission fitted on all the new data (2023+2024) and the developed prior.
+Specification by line (chosen on fold F2024, scripts/p2_sweep2.py; see docs/WORKLOG.md):
+  motor     : developed prior × emerging level × gender correction (ridge GLM, offset = prior)
+  buildings : 0.9 × prior × level + 0.1 × scratch (emerging-only freq×sev), same level
+  contents  : prior × level × gender correction
+Usage: IAA_MARKET=configs/parte2.json python3 scripts/p2_final.py <name> [--spec base|...]"""
 import sys, json
 from pathlib import Path
 import numpy as np, pandas as pd
@@ -12,51 +12,51 @@ import prepare as P, transfer as TR, models_extra as M  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 SPECS = {
     "v1": {"motor": ("gender", 0.0), "buildings": ("level", 0.1), "contents": ("gender", 0.0)},
-    "v2": {"motor": ("gender", 0.1), "buildings": ("level", 0.1), "contents": ("gender", 0.0)},   # + 10% scratch in auto (simulazione)
+    "v2": {"motor": ("gender", 0.1), "buildings": ("level", 0.1), "contents": ("gender", 0.0)},   # + 10% scratch in motor (simulation)
     "nonb": None,
-    # 24/10 sera: auto con correzione nuovo business stimata sull'emerging 2023+24 (A/E nuovo business 1,18 contro 0,98 dei rinnovi)
+    # 24/10 evening: motor with new-business correction estimated on emerging 2023+24 (A/E new business 1.18 vs 0.98 for renewals)
     "v3": {"motor": ("gender+nb", 0.0), "buildings": ("level", 0.1), "contents": ("gender", 0.0)},
     "level": {"motor": ("level", 0.0), "buildings": ("level", 0.0), "contents": ("level", 0.0)},
-    # 25/10: contenuto con livello per perilo (credibilità k 100/200 verso la linea) e genere sopra: banco 7 verifiche +8,1/+7,0, 6/7
+    # 25/10: contents with per-peril level (credibility k 100/200 toward the line) and gender on top: 7-check bench +8.1/+7.0, 6/7
     "v4": {"motor": ("gender+nb", 0.0), "buildings": ("level", 0.1), "contents": ("gender_peril", 0.0)},
-    # 25/10 sera: varianti del nuovo business in auto (decisione di Simone): nessuna correzione / correzione stimata su target tagliato a 25k
+    # 25/10 evening: motor new-business variants: no correction / correction estimated on target capped at 25k
     "v5": {"motor": ("gender", 0.0), "buildings": ("level", 0.1), "contents": ("gender_peril", 0.0)},
     "v6": {"motor": ("gender+nb_cap25k", 0.0), "buildings": ("level", 0.1), "contents": ("gender_peril", 0.0)},
-    # 26/10: v4 + fabbricato con livello proprio per storm (k 100/200), resto al livello della linea; banco p2_bench10 5/7 forma e own
-    # 26/10 sera: SONDA (non candidata, bench11 4/7 forma): v4 + fuel_type e cover_type nella correzione auto
+    # 26/10: v4 + buildings with own level for storm (k 100/200), rest at line level; bench p2_bench10 5/7 shape and own
+    # 26/10 evening: PROBE (not a candidate, bench11 4/7 shape): v4 + fuel_type and cover_type in the motor correction
     "v8": {"motor": ("gender+nb+fuel+cover", 0.0), "buildings": ("level", 0.1), "contents": ("gender_peril", 0.0)},
-    # 27/10: v7 (storm) + auto 50/50 tra la correzione di sub_10 e quella con fuel_type e cover_type; banco p2_bench12 6/7 forma e own
+    # 27/10: v7 (storm) + motor 50/50 between the sub_10 correction and the one with fuel_type and cover_type; bench p2_bench12 6/7 shape and own
     "v9": {"motor": ("half_fuel_cover", 0.0), "buildings": ("level_storm", 0.1), "contents": ("gender_peril", 0.0)},
-    # 27/10: v9 + contenuto × correzione di frequenza works_from_home (GLM Poisson su numeri, offset prior); banco p2_bench13 6/7
+    # 27/10: v9 + contents × works_from_home frequency correction (Poisson GLM on counts, prior offset); bench p2_bench13 6/7
     "v10": {"motor": ("half_fuel_cover", 0.0), "buildings": ("level_storm", 0.1), "contents": ("gender_peril_freqwfh", 0.0)},
-    # 27/10: v10 + auto × GBM Poisson sul numero di sinistri (alberi con lgb.cv); banco p2_bench14 +8,9 / +6,3, 5/7 (F2024 +34,5)
+    # 27/10: v10 + motor × Poisson GBM on claim count (trees via lgb.cv); bench p2_bench14 +8.9 / +6.3, 5/7 (F2024 +34.5)
     "v11": {"motor": ("half_fuel_cover_gbmfreq", 0.0), "buildings": ("level_storm", 0.1), "contents": ("gender_peril_freqwfh", 0.0)},
-    # 27/10: v11 + premio relativo in auto (idea di Simone dal modello migliore sul privato P1, fs2_v2_cred): prem_rel tra le variabili
-    # del GBM sul numero di sinistri e correzione di frequenza su prem_rel; banco p2_bench17b +18,2 / +11,7, 7/7 · 6/7 contro sub_18
+    # 27/10: v11 + relative premium in motor (idea from the best model on the P1 private score, fs2_v2_cred): prem_rel among the variables
+    # of the GBM on claim count and frequency correction on prem_rel; bench p2_bench17b +18.2 / +11.7, 7/7 · 6/7 vs sub_18
     "v12": {"motor": ("half_fuel_cover_gbmfreq_prem", 0.0), "buildings": ("level_storm", 0.1), "contents": ("gender_peril_freqwfh", 0.0)},
-    # 27/10: v12 con il prior del modello migliore sul privato P1 (fs2_v2 = premio relativo nel freq×sev del developed) in fabbricato
-    # e contenuto (source_pred_<linea>_p1v2, scripts/p2_export_p1.py); banco p2_bench19 +7,5 / +6,8 e +6,4 / +5,9, 5/7
+    # 27/10: v12 with the prior from the best model on the P1 private score (fs2_v2 = relative premium in the developed freq×sev) in buildings
+    # and contents (source_pred_<line>_p1v2, scripts/p2_export_p1.py); bench p2_bench19 +7.5 / +6.8 and +6.4 / +5.9, 5/7
     "v13": {"motor": ("half_fuel_cover_gbmfreq_prem", 0.0), "buildings": ("level_storm", 0.1), "contents": ("gender_peril_freqwfh", 0.0)},
-    # 28/10: SONDE = v13 con il prior auto mediato su due metà del developed (bagging), con e senza premio relativo nel prior
+    # 28/10: PROBES = v13 with the motor prior averaged over two halves of the developed market (bagging), with and without relative premium in the prior
     "v14": {"motor": ("half_fuel_cover_gbmfreq_prem", 0.0), "buildings": ("level_storm", 0.1), "contents": ("gender_peril_freqwfh", 0.0)},
     "v15": {"motor": ("half_fuel_cover_gbmfreq_prem", 0.0), "buildings": ("level_storm", 0.1), "contents": ("gender_peril_freqwfh", 0.0)},
     "v7": {"motor": ("gender+nb", 0.0), "buildings": ("level_storm", 0.1), "contents": ("gender_peril", 0.0)},
 }
 name = sys.argv[1]
 spec = SPECS[sys.argv[sys.argv.index("--spec") + 1] if "--spec" in sys.argv else "v1"]
-if "--prior" in sys.argv:   # 24/10: prior alternativo, es. --prior _meteo (estrapolazione del meteo, scripts/p2_weather.py)
+if "--prior" in sys.argv:   # 24/10: alternative prior, e.g. --prior _meteo (weather extrapolation, scripts/p2_weather.py)
     TR.PRIOR_SUFFIX = sys.argv[sys.argv.index("--prior") + 1]
 out, log = [], {}
 PRIOR_BY_LINE = {"v13": {"buildings": "_p1v2", "contents": "_p1v2"},
                  "v14": {"motor": "_blbagv2prem", "buildings": "_p1v2", "contents": "_p1v2"},
-                 "v15": {"motor": "_blbagv2", "buildings": "_p1v2", "contents": "_p1v2"}}   # 27/10: prior diverso per linea
+                 "v15": {"motor": "_blbagv2", "buildings": "_p1v2", "contents": "_p1v2"}}   # 27/10: different prior by line
 _spec_name = sys.argv[sys.argv.index("--spec") + 1] if "--spec" in sys.argv else "v1"
 _base_suffix = TR.PRIOR_SUFFIX
 for l in P.LINES:
     TR.PRIOR_SUFFIX = PRIOR_BY_LINE.get(_spec_name, {}).get(l, _base_suffix)
     tr, te = P.load(l), P.load(l, "test")
     kind, w = spec[l]
-    if kind.endswith("_prem"):   # 27/10: premio relativo (log premio lordo di sconto − mediana dell'anno), come in fs2_v2_cred
+    if kind.endswith("_prem"):   # 27/10: relative premium (log premium before discount − median of the year), as in fs2_v2_cred
         tr, te, kind = M._prem(tr), M._prem(te), kind[:-5]
         prem = True
     else:

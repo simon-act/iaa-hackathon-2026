@@ -1,5 +1,5 @@
-"""Aggrega i numeri per la pagina di visualizzazione del passo 1 (un solo JSON piccolo).
-Uso: python -I viz_data.py <raw> <interim> <model> <out_json>
+"""Aggregates the numbers for the step-1 visualisation page (a single small JSON).
+Usage: python -I viz_data.py <raw> <interim> <model> <out_json>
 """
 import json
 import sys
@@ -12,7 +12,7 @@ raw, interim, model, out = map(Path, sys.argv[1:5])
 J = {}
 LINES = ["motor", "buildings", "contents"]
 
-# --- pulizia sinistri
+# --- claims cleaning
 rc = json.loads((interim / "report_clean_claims.json").read_text())
 J["claims_steps"] = {"raw": rc["claims_raw"], "steps": rc["steps"], "clean": rc["claims_clean"]}
 rp = json.loads((interim / "report_clean_policies.json").read_text())
@@ -42,7 +42,7 @@ rd = json.loads((interim / "report_development.json").read_text())
 J["report_cdf"] = {"days": [0, 7, 14, 30, 60, 90, 180, 365, 730, 1095, 1460],
                    "curves": rd["reporting_cdf_at_days[0,7,14,30,60,90,180,365,730,1095,1460]"]}
 c = pd.read_parquet(interim / "claims_clean.parquet")
-# completezza per mese di accadimento: media sulle righe? usiamo F direttamente via develop: ricalcolo per mese
+# completeness by accident month: mean over rows? use F directly via develop: recompute by month
 sys.path.insert(0, str(Path(__file__).parent))
 from develop import reporting_cdf, completeness_by_day, MAX_LAG  # noqa: E402
 surf = {"months": [], "perils": [], "z": []}
@@ -56,7 +56,7 @@ for (line, peril), g in c.groupby(["line", "peril"]):
     surf["z"].append(z)
 J["completeness_surface"] = surf
 
-# --- sviluppo
+# --- development
 d = pd.read_parquet(interim / "development_onlevel.parquet")
 d["ibner_amt"] = d["n_rep"] * (d["sev_rep_ult"] - d["sev_rep"])
 d["ibnr_amt"] = d["cost_ult"] - d["n_rep"] * d["sev_rep_ult"]
@@ -68,7 +68,7 @@ J["trend"] = t[["line", "peril", "freq_trend", "freq_rule", "sev_trend", "sev_ru
 lv = pd.read_parquet(interim / "level_2025.parquet")
 J["level_2025"] = lv.round(3).reset_index().to_dict(orient="records")
 
-# --- large loss: istogramma log10 del costo netto per linea
+# --- large loss: log10 histogram of net cost by line
 bins = np.arange(0, 7.21, 0.1)
 J["claim_size_hist"] = {"bins": bins[:-1].round(2).tolist(), "cap": {"motor": 150000, "buildings": 250000, "contents": 50000}}
 for line, g in c.groupby("line"):
@@ -76,7 +76,7 @@ for line, g in c.groupby("line"):
     J["claim_size_hist"][line] = np.histogram(v, bins=bins)[0].tolist()
 J["largest"] = c.nlargest(8, "net_incurred")[["claim_id", "line", "peril", "status", "ay", "net_incurred", "net_paid"]].round(0).to_dict(orient="records")
 
-# --- meteo vs subsidence / hail
+# --- weather vs subsidence / hail
 w = pd.read_parquet(raw / "weather.parquet")
 wy = w.groupby("year")[["hail_days", "rainfall_mm", "wind_exposure_index", "dry_summer_index", "freezing_days", "mean_temperature_c"]].mean().round(4)
 J["weather_by_year"] = wy.reset_index().to_dict(orient="records")
@@ -84,7 +84,7 @@ sub = d[(d["line"] == "buildings") & (d["peril"].isin(["subsidence", "storm", "f
 sub = pd.concat([sub, d[(d["line"] == "motor") & (d["peril"] == "glass_hail")][["peril", "ay", "freq_ult"]]])
 J["weather_perils"] = sub.round(6).to_dict(orient="records")
 
-# --- 3D: flood buildings per zona × distanza dal fiume; subsidence per suolo × siccità
+# --- 3D: buildings flood by zone × distance from the river; subsidence by soil × drought
 mb = pd.read_parquet(model / "model_buildings.parquet",
                      columns=["exposure", "n_flood", "pi_flood", "flood_zone", "distance_to_river_km",
                               "n_subsidence", "pi_subsidence", "soil_type", "dry_summer_index", "trees_within_5m"])

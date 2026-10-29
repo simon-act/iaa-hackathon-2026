@@ -1,10 +1,10 @@
-"""Controllo sull'holdout chiuso e submission finale da una combinazione di modelli.
+"""Check on the closed holdout and final submission from a model blend.
 
-Uso:
-  python -I final.py holdout              # D² sull'holdout (stima 2021-23 senza holdout → holdout 2024)
-  python -I final.py submit <out.csv> [--all]   # stima su 2021-24 (senza holdout; --all = tutte le polizze) → previsione test 2025
-I modelli e i pesi per linea vengono da results/blend_weights.json (scritto da blend.py).
-Confronto di riferimento sull'holdout: sub_01 = 0,5·glm_b + 0,5·gbm_b.
+Usage:
+  python -I final.py holdout              # D² on the holdout (fit on 2021-23 without holdout → holdout 2024)
+  python -I final.py submit <out.csv> [--all]   # fit on 2021-24 (without holdout; --all = all policies) → 2025 test prediction
+Models and per-line weights come from results/blend_weights.json (written by blend.py).
+Reference comparison on the holdout: sub_01 = 0.5·glm_b + 0.5·gbm_b.
 """
 import json
 import sys
@@ -57,7 +57,7 @@ def main():
         print("POOLED holdout:", pooled)
     elif mode == "submit":
         out_csv = sys.argv[2]
-        use_all = "--all" in sys.argv   # stima finale su TUTTE le polizze (holdout compreso): +10% dati, stessa struttura
+        use_all = "--all" in sys.argv   # final fit on ALL policies (holdout included): +10% data, same structure
         subs = []
         for line in P.LINES:
             df = P.load(line)
@@ -78,7 +78,7 @@ def main():
         s = pd.concat(subs, ignore_index=True)
         s.to_parquet(RES / f"pred_{Path(out_csv).stem}.parquet", index=False)
         ss = pd.read_parquet(Path(P.CFG["raw"]) / "sample_submission.parquet")
-        assert len(s) == len(ss) and set(s["row_id"]) == set(ss["row_id"]), "row_id diversi dalla sample"
+        assert len(s) == len(ss) and set(s["row_id"]) == set(ss["row_id"]), "row_id differ from the sample"
         assert np.isfinite(s["prediction"]).all() and (s["prediction"] >= 0).all()
         s = ss[["row_id"]].merge(s, on="row_id", how="left")
         s["prediction"] = s["prediction"].round(3)

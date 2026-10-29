@@ -1,9 +1,9 @@
-"""Previsioni out-of-fold salvate (fold F2023 e F2024, holdout escluso) per diagnostica e blend.
+"""Saved out-of-fold predictions (folds F2023 and F2024, holdout excluded) for diagnostics and blending.
 
-Uso: python -I oof.py <nome_modello> [<nome_modello> ...]
-  nomi = funzioni di train.py (glm_b, gbm_b, ...) o di models_extra.py (se presente)
-Output: results/oof/<modello>.parquet con row_id, line, fold, year, exposure, target_b, pred
-        + riga in results/results.tsv
+Usage: python -I oof.py <model_name> [<model_name> ...]
+  names = functions of train.py (glm_b, gbm_b, ...) or of models_extra.py (if present)
+Output: results/oof/<model>.parquet with row_id, line, fold, year, exposure, target_b, pred
+        + a row in results/results.tsv
 """
 import json
 import sys
@@ -53,7 +53,7 @@ def run(name):
 
 
 def score(o):
-    """Stesso punteggio di prepare.evaluate a partire da previsioni salvate."""
+    """Same score as prepare.evaluate, computed from saved predictions."""
     w = {"motor": 254986, "buildings": 184155, "contents": 187498}
     by = {f"{l}|{f}": P.d2(g["target_b"], g["pred"]) for (l, f), g in o.groupby(["line", "fold"])}
     sc = sum(by[f"{l}|{f}"] * w[l] for l in P.LINES for f in P.FOLDS) / (sum(w.values()) * len(P.FOLDS))
@@ -61,11 +61,11 @@ def score(o):
     out = {"by": {k: round(v, 5) for k, v in by.items()}, "score": round(sc, 5),
            "pooled": {k: round(v, 5) for k, v in pool.items()}, "pooled_mean": round(float(np.mean(list(pool.values()))), 5)}
     own = {f"{l}|{f}": P.d2_own(g["row_id"], g["pred"]) for (l, f), g in o.groupby(["line", "fold"])}
-    if all(v is not None for v in own.values()):   # giudice secondario senza spalmatura (19/10)
+    if all(v is not None for v in own.values()):   # secondary judge without smoothing (19/10)
         out["by_own"] = {k: round(v, 5) for k, v in own.items()}
         out["score_own"] = round(sum(own[f"{l}|{f}"] * w[l] for l in P.LINES for f in P.FOLDS) / (sum(w.values()) * len(P.FOLDS)), 5)
     unc = {f"{l}|{f}": P.d2_unc(g["row_id"], g["pred"]) for (l, f), g in o.groupby(["line", "fold"])}
-    if all(v is not None for v in unc.values()):   # terzo giudice con i grandi sinistri veri (20/10)
+    if all(v is not None for v in unc.values()):   # third judge with the actual large losses (20/10)
         out["by_unc"] = {k: round(v, 5) for k, v in unc.items()}
         out["score_unc"] = round(sum(unc[f"{l}|{f}"] * w[l] for l in P.LINES for f in P.FOLDS) / (sum(w.values()) * len(P.FOLDS)), 5)
     return out

@@ -1,11 +1,11 @@
-"""Credibilità sull'esperienza della polizza (experience rating, Bühlmann–Straub su conteggi).
-Ipotesi: oltre alle variabili, ogni polizza ha un rischio latente (frailty) che si vede dai suoi sinistri passati.
-Modificatore per riga: M = (N_hist + k) / (E_hist + k)
-  N_hist = sinistri passati della polizza nella linea (AY < anno della riga, riportati alla data dei dati)
-  E_hist = sinistri attesi su quella storia = Σ_storia(esposizione × completezza) × frequenza attuale della riga
-           (frequenza attuale = previsione / (esposizione × severità media di linea))
-  k = sinistri attesi a cui la storia vale il 50% (k grande = poca credibilità), scelto per linea con validazione incrociata.
-Poi la previsione viene ribilanciata per non spostare il livello totale.
+"""Credibility on policy experience (experience rating, Bühlmann–Straub on counts).
+Assumption: beyond the rating variables, each policy has a latent risk (frailty) visible from its past claims.
+Row modifier: M = (N_hist + k) / (E_hist + k)
+  N_hist = past claims of the policy in the line (AY < row year, as reported at the data date)
+  E_hist = expected claims over that history = Σ_history(exposure × completeness) × current row frequency
+           (current frequency = prediction / (exposure × mean line severity))
+  k = expected claims at which the history gets 50% weight (large k = low credibility), chosen per line by cross-validation.
+The prediction is then rebalanced so as not to move the total level.
 """
 import sys
 from pathlib import Path
@@ -18,7 +18,7 @@ _cache = {}
 
 
 def history(line):
-    """per ogni riga (train e test): N_hist e H = Σ esposizione×completezza delle righe precedenti della stessa polizza."""
+    """for each row (train and test): N_hist and H = Σ exposure×completeness over earlier rows of the same policy."""
     if line in _cache:
         return _cache[line]
     tr = P.load(line); te = P.load(line, "test")
@@ -53,7 +53,7 @@ def apply(pred, valid, line, k):
 
 
 if __name__ == "__main__":
-    # tuning di k sulle previsioni out-of-fold di un modello: python -I experience.py <modello>
+    # tuning of k on a model's out-of-fold predictions: python -I experience.py <model>
     name = sys.argv[1]
     o = pd.read_parquet(P.RESULTS / "oof" / f"{name}.parquet")
     ks = [0.25, 0.5, 1, 2, 4, 8, 16, 1e9]
@@ -65,17 +65,17 @@ if __name__ == "__main__":
         print(line, {f: {k: round(v, 5) for k, v in res[(line, f)].items()} for f in ("F2023", "F2024")}, flush=True)
 
 
-# --- 20/10: credibilità senza i perili che non si ripetono ---
-# Residui del freq×sev nel fabbricato: chi ha avuto solo sinistri di cedimento ha A/E 0,62/0,48 (2023/2024), chi ha avuto
-# altri sinistri 1,14/1,18. Il cedimento dipende da terreno e siccità dell'anno, non dall'assicurato: non entra nel
-# conteggio N della credibilità; gli attesi E si riducono della sua quota di sinistri. Verifica sulle OOF (k=8):
-# blend fabbricato +0,00006 / +0,00006 nei due fold. Config: credibility.exclude_perils = {"buildings": ["subsidence"]}.
+# --- 20/10: credibility without non-recurring perils ---
+# freq×sev residuals in buildings: policies with only subsidence claims have A/E 0.62/0.48 (2023/2024), those with
+# other claims 1.14/1.18. Subsidence depends on the year's soil and drought, not on the insured: it is excluded from
+# the credibility count N; expected E is reduced by its share of claims. Check on OOF (k=8):
+# buildings blend +0.00006 / +0.00006 in the two folds. Config: credibility.exclude_perils = {"buildings": ["subsidence"]}.
 EXCL_DEFAULT = {"buildings": ["subsidence"]}
 _cache_x = {}
 
 
 def history_excl(line, excl):
-    """N2 = sinistri passati della polizza senza i perili esclusi (AY < anno), H come in history(), quota dei conteggi tenuti."""
+    """N2 = past claims of the policy excluding the excluded perils (AY < year), H as in history(), share of counts kept."""
     key = (line, tuple(excl))
     if key in _cache_x:
         return _cache_x[key]
@@ -110,7 +110,7 @@ def apply_excl(pred, valid, line, k, excl=None):
 
 
 def uncred(pred_cred, valid, line, k):
-    """Inverte apply(): dalla previsione con credibilità k alla previsione senza (esatta, iterazione sul riscalamento)."""
+    """Inverts apply(): from the prediction with credibility k to the one without (exact, iterating on the rescaling)."""
     h, n, sev = history(line)
     H = h.reindex(valid["row_id"]).to_numpy(); N = n.reindex(valid["row_id"]).to_numpy()
     a = H / (valid["exposure"].to_numpy() * sev); out = np.asarray(pred_cred, float); s = 1.0
@@ -122,19 +122,19 @@ def uncred(pred_cred, valid, line, k):
     return pr
 
 
-# --- 22/10 notte: storia dell'ultimo anno completata con i sinistri tardivi attesi dai contatti ---
-# Nel test la storia 2024 è ai denunciati entro il 31/12/2024 (−7% dei sinistri in auto). I contatti col servizio
-# clienti della riga 2024 nascono anche dai sinistri non ancora denunciati: fra le righe senza denunce, P(tardivo)
-# = 0,03% / 0,45% / 3,4% / 17% / 63% con 0/1/2/3/≥4 contatti (2022 e 2023 uguali; scripts/contacts_late.py).
-# Qui: N += E[tardivi | contatti, denunciati] della riga 2024 della polizza (tabella 2022+2023), H riportata alla
-# completezza piena (quella delle righe 2023, per mese). Simulazione nei fold (scripts/contacts_cred_bench.py):
-# auto +0,34/+0,39 ufficiale, +0,23/+0,15 senza spalmatura (e·4) → tenuta; casa e contenuto negative → no.
+# --- 22/10 night: last-year history completed with the expected late claims inferred from contacts ---
+# In the test set the 2024 history holds claims reported by 31/12/2024 (−7% of claims in motor). Customer-service
+# contacts of the 2024 row also arise from not-yet-reported claims: among rows without reports, P(late)
+# = 0.03% / 0.45% / 3.4% / 17% / 63% with 0/1/2/3/≥4 contacts (2022 and 2023 alike; scripts/contacts_late.py).
+# Here: N += E[late | contacts, reported] of the policy's 2024 row (2022+2023 table), H brought to
+# full completeness (that of the 2023 rows, by month). Fold simulation (scripts/contacts_cred_bench.py):
+# motor +0.34/+0.39 official, +0.23/+0.15 without smoothing (e·4) → kept; buildings and contents negative → no.
 CS_MAX, NR_MAX = 6, 2
 _cache_fix = {}
 
 
 def history_fix(line, last_year=2024, fit_years=(2022, 2023)):
-    """N_fix e H_fix per le righe del test: storia completata sull'anno last_year."""
+    """N_fix and H_fix for the test rows: history completed for last_year."""
     key = (line, last_year)
     if key in _cache_fix:
         return _cache_fix[key]
@@ -166,7 +166,7 @@ def history_fix(line, last_year=2024, fit_years=(2022, 2023)):
 
 
 def apply_fix(pred, valid, line, k):
-    """come apply(), con la storia dell'ultimo anno completata (solo righe del test)."""
+    """like apply(), with the last-year history completed (test rows only)."""
     N_fix, H_fix, sev, _, _ = history_fix(line)
     pred = np.asarray(pred, float)
     H = H_fix.reindex(valid["row_id"]).to_numpy(); N = N_fix.reindex(valid["row_id"]).to_numpy()
