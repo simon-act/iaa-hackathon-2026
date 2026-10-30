@@ -10,6 +10,11 @@ Expected 2025 claim cost (risk premium) per policy row, motor and home (building
 | 1 — developed | `sub_51` | `1f3c985a9506` | `run_all.sh configs/parte1_s3.json`, `run_final.sh` |
 | 2 — emerging | `p2_sub_21_auto_prem_costo` | `c126730083a5` | command block "Part 2" in the README |
 
+Second Kaggle selection for Part 2 (a hedge, not the model): `p2_sonda_tw05_nbx`, the motor correction GLM with the exact
+Tweedie offset (weight prior^0.5) and new-business-specific terms. +0.005 on the public third, but its new-business terms
+change sign between 2023 and 2024 and it fails both benches (strict bench −26 / −17 e·4). Scripts: `scripts/p2_bench33.py`,
+`scripts/p2_sub_tw05_nbx.py` in the working notes.
+
 ## 1. Target
 
 Built like a reserve, then priced:
@@ -71,7 +76,11 @@ emerging data lack (no credit band, mileage or telematics) and sets the slope, n
 3. Contents frequency corrections use the raw prior as offset, not the prior already corrected for gender and levels.
 4. Two years of emerging data: buildings level uncertain by about ±16%; 2025 new business (76% of the book, from an
    acquired broker portfolio) has no claims of its own and is priced through the new-business correction.
-5. Part 2 rebuilt from raw data is equivalent but not bit-identical (LightGBM multi-threading); from the saved priors the
+5. The relative premium is a transfer device, not a lasting rating factor: predictions depend on the centring convention
+   (median of the year's whole book, the same rule in train and test), and once a new tariff is live the variable becomes
+   circular and must be refitted. Bodily-injury development was re-checked at equal age (emerging vs developed accident
+   years 2023–24): open shares and reported severity move together (severity ratio 0.62–0.65), so the borrowed development stands.
+6. Part 2 rebuilt from raw data is equivalent but not bit-identical (LightGBM multi-threading); from the saved priors the
    chain gives the identical file.
 
 ## 6. Office premium (Part 2 reference policies)
