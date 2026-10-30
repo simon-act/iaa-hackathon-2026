@@ -126,14 +126,12 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
   </header>
 
   <div class="wf-tiles">
-    <div class="wf-tile"><div class="lab">Models fitted and judged (Part 1)</div><div class="big"><span data-source="model_counts" data-field="models" class="dash-skeleton">—</span></div>
-      <div class="sub"><span data-source="model_counts" data-field="unused">—</span> tested and dropped, on three judges</div></div>
-    <div class="wf-tile"><div class="lab">Columns in the database</div><div class="big"><span data-source="col_counts" data-field="used" class="dash-skeleton">—</span> used</div>
-      <div class="sub">of <span data-source="col_counts" data-field="total">—</span>; <span data-source="col_counts" data-field="excluded">—</span> excluded with a reason</div></div>
-    <div class="wf-tile"><div class="lab">Autonomous AI experiments</div><div class="big"><span data-source="loops_total" data-field="experiments" class="dash-skeleton">—</span></div>
-      <div class="sub"><span data-source="loops_total" data-field="kept">—</span> kept by the frozen judge, then re-checked</div></div>
-    <div class="wf-tile"><div class="lab">Corrections tested on the Part 2 bench</div><div class="big"><span data-source="bench_counts" data-field="tests" class="dash-skeleton">—</span></div>
-      <div class="sub"><span data-source="bench_counts" data-field="kept">—</span> kept, each by a rule fixed before the test</div></div>
+    <div class="wf-tile"><div class="lab">Models tested (Part 1)</div><div class="big"><span data-source="model_counts" data-field="models" class="dash-skeleton">—</span></div>
+      <div class="sub"><span data-source="model_counts" data-field="unused">—</span> tried and dropped; every model on the same three judges</div></div>
+    <div class="wf-tile"><div class="lab">Data-cleaning fixes applied</div><div class="big"><span data-source="clean_counts" data-field="applied" class="dash-skeleton">—</span></div>
+      <div class="sub"><span data-source="clean_counts" data-field="p1">—</span> in Part 1, <span data-source="clean_counts" data-field="p2">—</span> in Part 2 with the same code; <span data-source="clean_counts" data-field="other">—</span> more flagged or tried and dropped</div></div>
+    <div class="wf-tile"><div class="lab">Autonomous AI experiments (Qwen, local)</div><div class="big"><span data-source="loops_total" data-field="experiments" class="dash-skeleton">—</span></div>
+      <div class="sub"><span data-source="loops_total" data-field="kept">—</span> kept by the frozen judge, then re-checked on our judges</div></div>
   </div>
 
   <nav class="wf-tabs" role="tablist" aria-label="Sections">
@@ -504,6 +502,10 @@ dash.calc('bench_counts', {
   inputs: ['p2_bench_decisions'], title: 'Part 2 bench tests', description: 'Rows of the Part 2 bench decisions (one test on one line) and how many were kept.',
   fn: (p2_bench_decisions) => [{ tests: p2_bench_decisions.length, kept: p2_bench_decisions.filter((r) => String(r.verdict).startsWith('kept')).length }],
 });
+dash.calc('clean_counts', {
+  inputs: ['tech_cleaning'], title: 'Data-cleaning fixes', description: 'Cleaning rules applied per market, and the issues only flagged or tried and dropped.',
+  fn: (tech_cleaning) => { const a = tech_cleaning.filter((r) => r.status === 'applied'); return [{ applied: a.length, p1: a.filter((r) => r.market === 'Part 1').length, p2: a.filter((r) => r.market === 'Part 2').length, other: tech_cleaning.length - a.length }]; },
+});
 dash.calc('model_counts', {
   inputs: ['tech_models'], title: 'Models by use', description: 'Number of Part 1 models scored on the three judges, and how many were tested and never submitted.',
   fn: (tech_models) => [{ models: tech_models.length, unused: tech_models.filter((r) => r.used === 'tested, not used').length }],
@@ -557,7 +559,7 @@ function drawText() {
 }
 function drawTiles() {
   const put = (src, row) => document.querySelectorAll(`[data-source="${src}"][data-field]`).forEach((el) => { if (el.dataset.where) return; el.classList.toggle('dash-skeleton', !row); el.textContent = row ? d3.format(',')(row[el.dataset.field]) : '—'; });
-  ['loops_total', 'model_counts', 'col_counts', 'bench_counts'].forEach((id) => { const g = dash.data(id); put(id, g.status === 'ok' ? g.data[0] : null); });
+  ['loops_total', 'model_counts', 'col_counts', 'bench_counts', 'clean_counts'].forEach((id) => { const g = dash.data(id); put(id, g.status === 'ok' ? g.data[0] : null); });
 }
 const num = (fmt) => (td, v) => { td.className = 'num'; td.textContent = v === '' || v == null || isNaN(+v) ? '' : d3.format(fmt)(+v); };
 const pill = (cls) => (td, v) => { if (!v) return; const s = document.createElement('span'); s.className = 'pill ' + cls(v); s.textContent = v; td.append(s); };
