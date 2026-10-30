@@ -6,7 +6,7 @@
   tw05_nbx : D1 + the new-business terms
 Rule fixed BEFORE the results: candidate only if (1) it passes the strict bench 27 on all rows (mean > 0 on shape and own,
 >= 4/6 on both, mean > 0 in both time directions) AND (2) the own judge on new-business rows only is > 0 in both directions.
-Outcome: no variant passes (docs/MODEL_CARD.md). tw05_nbx is the second Kaggle selection, as a hedge.
+Outcome: no variant passes (docs/MODEL_CARD.md); tw05_nbx was kept as a public-board probe only, not selected.
 Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_bench33.py <7|27> [fold,..]"""
 import sys
 from pathlib import Path

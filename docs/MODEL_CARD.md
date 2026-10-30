@@ -10,10 +10,11 @@ Expected 2025 claim cost (risk premium) per policy row, motor and home (building
 | 1 — developed | `sub_51` | `1f3c985a9506` | `run_all.sh configs/parte1_s3.json`, `run_final.sh` |
 | 2 — emerging | `p2_sub_21_auto_prem_costo` | `c126730083a5` | command block "Part 2" in the README |
 
-Second Kaggle selection for Part 2 (a hedge, not the model): `p2_sonda_tw05_nbx`, the motor correction GLM with the exact
-Tweedie offset (weight prior^0.5) and new-business-specific terms. +0.005 on the public third, but its new-business terms
-change sign between 2023 and 2024 and it fails both benches (strict bench −26 / −17 e·4). Scripts: `scripts/p2_bench33.py`,
-`scripts/p2_sub_tw05_nbx.py`.
+Probe not selected (30/10): `p2_sonda_tw05_nbx`, the motor correction GLM with the exact Tweedie offset (weight prior^0.5)
+and new-business-specific terms. +0.005 on the public third, but its new-business terms change sign between 2023 and 2024,
+it fails both benches (strict bench −26 / −17 e·4), and applied to a random half of the motor rows it keeps the whole gain:
+the gain is concentrated on few rows (likely a few large claims in the public third). Kaggle allows one selection: p2_sub_21.
+Scripts: `scripts/p2_bench33.py`, `scripts/p2_sub_tw05_nbx.py`.
 
 ## 1. Target
 

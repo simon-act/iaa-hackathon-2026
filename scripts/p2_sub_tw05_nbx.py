@@ -1,5 +1,5 @@
-"""Second Kaggle selection for Part 2 (30/10, a hedge, not the model): p2_sub_21 with motor multiplied by tw05_nbx / sub_21
-(exact Tweedie offset + new-business terms, scripts/p2_bench33.py). It fails both benches; see docs/MODEL_CARD.md.
+"""Public-board probe for Part 2 (30/10, not selected): p2_sub_21 with motor multiplied by tw05_nbx / sub_21
+(exact Tweedie offset + new-business terms, scripts/p2_bench33.py). It fails both benches and its public gain is concentrated on few rows; see docs/MODEL_CARD.md.
 Usage: IAA_MARKET=configs/parte2_llc.json python3 scripts/p2_sub_tw05_nbx.py"""
 import sys
 from pathlib import Path
