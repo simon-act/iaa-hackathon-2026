@@ -1,0 +1,10 @@
+line,order,step,cost_per_exposure,factor,note
+Motor,1,Prior (Part 1 model),715.3,,Part 1 frequency x severity refitted on the shared columns
+Motor,2,x Level (emerging data),572.8,0.801,emerging cost / prior on 2023-24 with IBNR and IBNER
+Motor,3,x Corrections = final,658.4,1.149,"new business x1.18, renewals x1.00; gender, insurer's premium, fuel and cover, claim-count boost"
+Buildings,1,Prior (Part 1 model),562.7,,Part 1 model with relative premium
+Buildings,2,x Level (emerging data),486.3,0.864,emerging cost / prior on 2023-24
+Buildings,3,x Corrections = final,486.2,1.000,"storm at its own level, 10% emerging-only model: reshuffle rows (p5-p95 0.95-1.13), level unchanged"
+Contents,1,Prior (Part 1 model),119.7,,Part 1 model with relative premium
+Contents,2,x Level (emerging data),105.9,0.885,emerging cost / prior on 2023-24
+Contents,3,x Corrections = final,105.8,0.999,"gender, working from home, peril levels: reshuffle rows (p5-p95 0.91-1.09), level unchanged"
