@@ -54,6 +54,19 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
   .wf-fold > summary:hover { color: var(--color-fg); }
   .wf-page { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
   .wf-page[hidden] { display: none; }
+  .wf-body { display: flex; flex-direction: column; gap: var(--cds-gap-md); min-width: 0; }
+  @media (min-width: 960px) {
+    .wf { max-width: 1440px; }
+    .wf-page:not([hidden]) { flex-direction: row; align-items: flex-start; gap: var(--cds-gap-lg); }
+    .wf-page > .wf-lineage { position: sticky; top: var(--cds-pad-md); flex: 0 0 200px; flex-direction: column; align-items: stretch; flex-wrap: nowrap; gap: 4px; max-height: calc(100vh - 32px); overflow-y: auto; }
+    .wf-page > .wf-lineage .arr { display: none; }
+    .wf-page > .wf-lineage button { text-align: left; border-radius: var(--cds-radius); counter-increment: wfstep; }
+    .wf-page > .wf-lineage button::before { content: counter(wfstep) ". "; color: var(--color-fg-muted); }
+    .wf-page > .wf-lineage { counter-reset: wfstep; }
+    .wf-page > .wf-lineage button[aria-current="true"] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+    .wf-page > .wf-lineage button[aria-current="true"]::before { color: var(--color-bg); }
+    .wf-page > .wf-body { flex: 1 1 auto; }
+  }
   .wf-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--cds-gap-md); }
   .wf-tile, .wf-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; }
   .wf-tile .lab { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
@@ -128,6 +141,7 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
 
   <section class="wf-page" id="p1data">
     <nav class="wf-lineage" aria-label="Summary"><button type="button" data-goto="card-tables">Raw tables</button><span class="arr">→</span><button type="button" data-goto="card-columns">Columns used / excluded</button><span class="arr">→</span><button type="button" data-goto="card-cleaning">Cleaning</button><span class="arr">→</span><button type="button" data-goto="card-counts">Claims and sizes</button><span class="arr">→</span><button type="button" data-goto="card-delay">Reporting delays</button><span class="arr">→</span><button type="button" data-goto="card-chain">IBNR + IBNER</button><span class="arr">→</span><button type="button" data-goto="card-trend">Trend to 2025</button><span class="arr">→</span><button type="button" data-goto="card-large">Large losses</button></nav>
+    <div class="wf-body">
     <div class="wf-card" id="card-tables">
       <h2>The tables</h2>
       <div class="wf-text" data-text="data_intro" data-source="narrative"></div>
@@ -192,10 +206,12 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
           <thead><tr><th data-field="line">Line</th><th class="num" data-field="cap">Cap</th><th class="num" data-field="large_claims">Claims above</th><th class="num" data-field="excess">Excess</th><th class="num" data-field="excess_share_pct">% of incurred</th><th class="num" data-field="load_per_exposure">Load / exposure year</th></tr></thead><tbody></tbody></table></div></details>
       </div>
     </div>
+    </div>
   </section>
 
   <section class="wf-page" id="p1model" hidden>
     <nav class="wf-lineage" aria-label="Summary"><button type="button" data-goto="card-judges">Three judges</button><span class="arr">→</span><button type="button" data-goto="card-structure">Structure test</button><span class="arr">→</span><button type="button" data-goto="card-models">All models</button><span class="arr">→</span><button type="button" data-goto="card-qloops">Qwen loops</button><span class="arr">→</span><button type="button" data-goto="card-qcurve">Experiments</button><span class="arr">→</span><button type="button" data-goto="card-qkept">What it kept</button><span class="arr">→</span><button type="button" data-goto="card-p1final">Final model</button><span class="arr">→</span><button type="button" data-goto="card-oneway">One-way checks</button><span class="arr">→</span><button type="button" data-goto="card-cred">Experience rating</button><span class="arr">→</span><button type="button" data-goto="card-error">Error left</button></nav>
+    <div class="wf-body">
     <div class="wf-card" id="card-judges">
       <h2>The judges, and why three</h2>
       <div class="wf-text small" data-text="judges_intro" data-source="narrative"></div>
@@ -275,10 +291,12 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
         <div class="wf-chart ch-error" data-source="tech_error" style="min-height:200px"></div>
       </div>
     </div>
+    </div>
   </section>
 
   <section class="wf-page" id="p2compare" hidden>
     <nav class="wf-lineage" aria-label="Summary"><button type="button" data-goto="card-perils">Perils: P1 vs P2</button><span class="arr">→</span><button type="button" data-goto="card-obs">Observed P1 vs P2</button><span class="arr">→</span><button type="button" data-goto="card-broker">Broker portfolio</button><span class="arr">→</span><button type="button" data-goto="card-mix">Composition</button><span class="arr">→</span><button type="button" data-goto="card-backtest">Delays backtest</button></nav>
+    <div class="wf-body">
     <div class="wf-card"><div class="wf-text" data-text="nm_intro" data-source="narrative"></div></div>
     <div class="wf-card" id="card-perils">
       <h2>Perils: developed against emerging market</h2>
@@ -314,10 +332,12 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
       <div class="wf-text small" data-text="nm_backtest" data-source="narrative"></div>
       <div class="wf-chart ch-backtest" data-source="p2_backtest_reporting" style="min-height:380px"></div>
     </div>
+    </div>
   </section>
 
   <section class="wf-page" id="p2model" hidden>
     <nav class="wf-lineage" aria-label="Summary"><button type="button" data-goto="card-p2how">The model, step by step</button><span class="arr">→</span><button type="button" data-goto="card-transfer">Prior vs new data</button><span class="arr">→</span><button type="button" data-goto="card-bench">7-check bench</button><span class="arr">→</span><button type="button" data-goto="card-qp2">Qwen cross-check</button><span class="arr">→</span><button type="button" data-goto="card-nb">New business</button><span class="arr">→</span><button type="button" data-goto="card-premium">The insurer's premium</button><span class="arr">→</span><button type="button" data-goto="card-final">Final model</button></nav>
+    <div class="wf-body">
     <div class="wf-card" id="card-p2how">
       <h2>The final Part 2 model (p2_sub_21), step by step</h2>
       <div class="wf-text"><p>Two years of new data cannot support a model of their own, so they adjust the Part 1 model instead of replacing it: <b>1</b> start from the Part 1 model as prior, <b>2</b> rescale it to the emerging cost level, <b>3</b> add only the few corrections the new data can support. The rest of this tab shows the evidence for each step.</p></div>
@@ -357,10 +377,12 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
       <div class="wf-text small" data-text="nm_final" data-source="narrative"></div>
       <div class="wf-tablebox"><table data-source="p2_final_model" data-row-key="line,step"><thead><tr><th data-field="line">Line</th><th data-field="step">Step</th><th data-field="what">What it does</th><th data-field="kept_in">Entered in (bench Δ shape / own ×10⁻⁴, checks won)</th></tr></thead><tbody></tbody></table></div>
     </div>
+    </div>
   </section>
 
   <section class="wf-page" id="p2price" hidden>
     <nav class="wf-lineage" aria-label="Summary"><button type="button" data-goto="card-price">Office premium</button><span class="arr">→</span><button type="button" data-goto="card-sens">Sensitivity</button></nav>
+    <div class="wf-body">
     <div class="wf-card" id="card-price">
       <h2>From risk premium to the price the customer pays</h2>
       <div class="wf-text"><p>Part 2 also asks for the <b>office premium</b> of 20 reference policies: the model gives the expected claims cost (risk premium); expenses, reinsurance, commissions, tax and profit turn it into a price. This tab shows that step and how uncertain the price is.</p><p>All rates are given by the competition (the <code>expenses</code> table, emerging column). Our choices, with their effect on the total of the 20 policies: the fixed expense is pro-rated by exposure (per policy instead: +2.7%); tax and profit are shares of the office premium (on the risk premium instead: −13.5%); cat reinsurance applies to the property lines only (without it: −3.8%); the comparison-site commission is blank in the emerging market and none of the 20 policies uses that channel.</p></div>
@@ -377,10 +399,12 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
       <div class="wf-text small" data-text="nm_sens" data-source="narrative"></div>
       <details class="wf-fold"><summary>Show the table</summary><div class="wf-tablebox"><table data-source="p2_sensitivity" data-row-key="assumption"><thead><tr><th data-field="assumption">Assumption changed</th><th class="num" data-field="motor_pct">Motor %</th><th class="num" data-field="buildings_pct">Buildings %</th><th class="num" data-field="contents_pct">Contents %</th></tr></thead><tbody></tbody></table></div></details>
     </div>
+    </div>
   </section>
 
   <section class="wf-page" id="governance" hidden>
     <nav class="wf-lineage" aria-label="Summary"><button type="button" data-goto="card-workflow">Direction → execution</button><span class="arr">→</span><button type="button" data-goto="card-qreview">Code review</button><span class="arr">→</span><button type="button" data-goto="card-issues">Errors caught</button><span class="arr">→</span><button type="button" data-goto="card-audit">Recomputation</button><span class="arr">→</span><button type="button" data-goto="card-noise">Leaderboard as a check</button></nav>
+    <div class="wf-body">
     <div class="wf-card"><div class="wf-text" data-text="ai_intro" data-source="narrative"></div></div>
     <div class="wf-card" id="card-workflow">
       <h2>Where AI sits in the actuarial workflow</h2>
@@ -410,6 +434,7 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
         <div class="wf-chart ch-p1" data-source="p1_submissions" style="min-height:300px"></div>
       </div>
     </div>
+    </div>
   </section>
 
 
@@ -429,6 +454,13 @@ let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout
     try { if (window.wfRedraw) window.wfRedraw(); } catch (e) { console.error('[wf] redraw: ' + e.message); }
   };
   window.wfShow = show;
+  // side summary: highlight the card in view
+  try {
+    const io = new IntersectionObserver((ents) => { ents.forEach((en) => { if (!en.isIntersecting) return; const sec = en.target.closest('.wf-page');
+      sec.querySelectorAll('.wf-lineage button[data-goto]').forEach((b) => b.setAttribute('aria-current', String(b.dataset.goto === en.target.id))); }); },
+      { rootMargin: '-20% 0px -60% 0px' });
+    document.querySelectorAll('.wf-lineage button[data-goto]').forEach((b) => { const el = document.getElementById(b.dataset.goto); if (el) io.observe(el); });
+  } catch (e) { /* highlight is optional */ }
   document.addEventListener('click', (e) => { const g = e.target.closest('button[data-goto]'); if (!g) return; const el = document.getElementById(g.dataset.goto); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   nav.addEventListener('click', (e) => { const g = e.target.closest('button[data-group]'); if (g) return show(g.dataset.group); const b = e.target.closest('button[data-page]'); if (b) show(b.dataset.page); });
   const start = location.hash.slice(1); if (pages.includes(start)) show(start);
