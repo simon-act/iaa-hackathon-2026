@@ -13,7 +13,7 @@ Expected 2025 claim cost (risk premium) per policy row, motor and home (building
 Second Kaggle selection for Part 2 (a hedge, not the model): `p2_sonda_tw05_nbx`, the motor correction GLM with the exact
 Tweedie offset (weight prior^0.5) and new-business-specific terms. +0.005 on the public third, but its new-business terms
 change sign between 2023 and 2024 and it fails both benches (strict bench −26 / −17 e·4). Scripts: `scripts/p2_bench33.py`,
-`scripts/p2_sub_tw05_nbx.py` in the working notes.
+`scripts/p2_sub_tw05_nbx.py`.
 
 ## 1. Target
 
