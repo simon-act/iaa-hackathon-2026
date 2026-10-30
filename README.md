@@ -118,6 +118,6 @@ Out-of-fold predictions: `scripts/oof_one.py <model> <line> <fold>`; scores on t
 | `docs/` | `MODEL_CARD.md`, `DECISIONS_actuary.md`, `WORKLOG.md`, `AI_ledger.md`, dashboard |
 | `autoresearch*/`, `qwen/` | local LLM loops and the code they produced |
 | `results*/` | aggregated results (row-level files and data are not versioned) |
-| `docs/dashboard_IAA_2026_offline.html` | the dashboard as one offline HTML file (built by `scripts/build_dashboard_offline.py` from `docs/dashboard_index.html` and `docs/dashboard_data/`) |
+| `docs/dashboard_IAA_2026_offline.html` | the dashboard as one offline HTML file (all charts and tables read `docs/dashboard_data/`, embedded) |
 
 Data and predictions are not in the repository (competition rules). Credentials are never stored (`.gitignore`).

@@ -18,4 +18,4 @@ c16,Part 2,5 · Price and limits,"scripts/p2_office_premium.py · scripts/p2_sen
 c17,Governance,Tests,"hackathon_checks/tests/","submission contract (rows, format, no negatives) and excluded columns"
 c18,Governance,Code review by Qwen,"autoresearch_review/","findings, self-refutation and the manual check"
 c19,Governance,Documentation,"README.md · docs/MODEL_CARD.md · docs/DECISIONS_actuary.md · docs/AI_ledger.md · docs/WORKLOG.md","start here; models on one page; who decided what; how AI was used; the work by phase"
-c20,Governance,This dashboard,"scripts/build_dashboard_offline.py · docs/dashboard_data/ · docs/dashboard_IAA_2026_offline.html","the data behind every chart, and the offline page"
+c20,Governance,This dashboard,"docs/dashboard_data/ · docs/dashboard_IAA_2026_offline.html","the data behind every chart, and the offline page"
